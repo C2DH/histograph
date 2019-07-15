@@ -241,8 +241,10 @@ angular.module('histograph')
         resource.result.item.props.start_time * 1000,
         resource.result.item.props.end_time * 1000,
       ])
+    } else {
+      $scope.setCurrentResourceRange()
     }
-    
+  
     // merge all versions (simply concat annotations and join them with entity URI if any matches identification)
     
     var yamls = [];

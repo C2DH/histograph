@@ -179,6 +179,10 @@ angular.module('histograph')
       $scope.timeline = items;
     }
 
+    $scope.setCurrentResourceRange = v => {
+      $scope.currentResourceRange = v
+    }
+
     /*
       language handlers
     */
@@ -519,7 +523,9 @@ angular.module('histograph')
     */
     $scope.$on('$locationChangeStart', function (e, path) {
       $log.log('CoreCtrl @locationChangeStart');
-      
+
+      $scope.currentResourceRange = undefined
+
       $scope.$broadcast(EVENTS.LOCATION_CHANGE_START)
       $scope.setMessage(MESSAGES.LOADING);
     });

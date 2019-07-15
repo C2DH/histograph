@@ -428,38 +428,36 @@ angular.module('histograph')
             .attr('height', 10)
             .attr('fill', d => tim.fn.color(d.weight))
 
-          if (scope.currentitemrange) {
-            const currentItemContainer = tim.svg
-              .selectAll('.current-item')
-              .data([scope.currentitemrange])
-              .join('g')
-              .attr('class', 'current-item')
+          const currentItemContainer = tim.svg
+            .selectAll('.current-item')
+            // eslint-disable-next-line no-confusing-arrow
+            .data(() => scope.currentitemrange ? [scope.currentitemrange] : [])
+            .join('g')
+            .attr('class', 'current-item')
 
-            currentItemContainer
-              .selectAll('.line')
-              .data(d => [d])
-              .join('rect')
-              .attr('class', 'line')
-              .attr('x', d => tim.fn.x(d[0]))
-              .attr('width', d => tim.fn.x(d[1]) - tim.fn.x(d[0]))
-              .attr('height', tim.height())
-              .attr('fill', '#2b56b19e')
-            currentItemContainer
-              .selectAll('.pointer')
-              .data(d => [d])
-              .join('rect')
-              .attr('class', 'pointer')
-              .attr('transform', d => {
-                const x = tim.fn.x(d[0]) + 10 / 2
-                return `rotate(45, ${x}, 0)`
-              })
-              .attr('x', d => tim.fn.x(d[0]) - 10 / 2 + (tim.fn.x(d[1]) - tim.fn.x(d[0])) / 2)
-              .attr('width', 10)
-              .attr('height', 10)
-              .attr('y', -3)
-              .attr('fill', '#2b56b1')
-
-          }
+          currentItemContainer
+            .selectAll('.line')
+            .data(d => [d])
+            .join('rect')
+            .attr('class', 'line')
+            .attr('x', d => tim.fn.x(d[0]))
+            .attr('width', d => tim.fn.x(d[1]) - tim.fn.x(d[0]))
+            .attr('height', tim.height())
+            .attr('fill', '#2b56b19e')
+          currentItemContainer
+            .selectAll('.pointer')
+            .data(d => [d])
+            .join('rect')
+            .attr('class', 'pointer')
+            .attr('transform', d => {
+              const x = tim.fn.x(d[0]) + 10 / 2
+              return `rotate(45, ${x}, 0)`
+            })
+            .attr('x', d => tim.fn.x(d[0]) - 10 / 2 + (tim.fn.x(d[1]) - tim.fn.x(d[0])) / 2)
+            .attr('width', 10)
+            .attr('height', 10)
+            .attr('y', -3)
+            .attr('fill', '#2b56b1')
 
           if (scope.timeline) { tim.draw() } // draw or redraw
         }

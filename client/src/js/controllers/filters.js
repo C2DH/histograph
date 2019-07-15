@@ -216,9 +216,6 @@ angular.module('histograph')
      })
 
 
-    $scope.setCurrentResourceRange = v => {
-      $scope.currentResourceRange = v
-    }
 
   })
   

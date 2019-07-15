@@ -51,7 +51,7 @@ class TopicModellingTimeline {
   }
 
   render() {
-    if (this.data.topicsScores.length === 0) return
+    if (!this.data.topicsScores || this.data.topicsScores.length === 0) return
 
     const dataLength = this.data.topicsScores.length
     const topicsCount = d3.max(this.data.topicsScores.map(i => i.length))
