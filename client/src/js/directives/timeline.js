@@ -441,7 +441,10 @@ angular.module('histograph')
             .join('rect')
             .attr('class', 'line')
             .attr('x', d => tim.fn.x(d[0]))
-            .attr('width', d => tim.fn.x(d[1]) - tim.fn.x(d[0]))
+            .attr('width', d => {
+              const w = tim.fn.x(d[1]) - tim.fn.x(d[0])
+              return w < 1 ? 1 : w
+            })
             .attr('height', tim.height())
             .attr('fill', '#2b56b19e')
           currentItemContainer
