@@ -1,3 +1,5 @@
+/* eslint-env browser */
+/* globals angular, _ */
 /**
  * @ngdoc function
  * @name histograph.controller:FiltersCtrl
@@ -7,7 +9,8 @@
  * it was written in order to simplify CoreCtrl debugging
  */
 angular.module('histograph')
-  .controller('FiltersCtrl', function ($scope, $log, $http, $location, $stateParams, SuggestFactory,EVENTS) {
+  // eslint-disable-next-line prefer-arrow-callback
+  .controller('FiltersCtrl', function controller($scope, $log, $http, $location, $stateParams, SuggestFactory,EVENTS) {
     $log.debug('FiltersCtrl ready, filters active:', $location.search());
     
     $scope.filters = {};
@@ -211,4 +214,11 @@ angular.module('histograph')
         $scope.grammar = state.grammar
     
      })
+
+
+    $scope.setCurrentResourceRange = v => {
+      $scope.currentResourceRange = v
+    }
+
   })
+  

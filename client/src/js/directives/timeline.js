@@ -16,7 +16,8 @@ angular.module('histograph')
       scope: {
         timeline: '=t',
         contextualTimeline: '=cxt',
-        filters: '='
+        filters: '=',
+        currentitemrange: '='
       },
       template: '<div class="brushdate left tk-proxima-nova"></div><div class="brushdate right tk-proxima-nova"></div><div class="date left tk-proxima-nova"></div><div class="date right tk-proxima-nova"></div><div class="mouse tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="viewer"></div>',
       // eslint-disable-next-line prefer-arrow-callback
@@ -427,6 +428,39 @@ angular.module('histograph')
             .attr('height', 10)
             .attr('fill', d => tim.fn.color(d.weight))
 
+          if (scope.currentitemrange) {
+            const currentItemContainer = tim.svg
+              .selectAll('.current-item')
+              .data([scope.currentitemrange])
+              .join('g')
+              .attr('class', 'current-item')
+
+            currentItemContainer
+              .selectAll('.line')
+              .data(d => [d])
+              .join('rect')
+              .attr('class', 'line')
+              .attr('x', d => tim.fn.x(d[0]))
+              .attr('width', d => tim.fn.x(d[1]) - tim.fn.x(d[0]))
+              .attr('height', tim.height())
+              .attr('fill', '#2b56b19e')
+            currentItemContainer
+              .selectAll('.pointer')
+              .data(d => [d])
+              .join('rect')
+              .attr('class', 'pointer')
+              .attr('transform', d => {
+                const x = tim.fn.x(d[0]) + 10 / 2
+                return `rotate(45, ${x}, 0)`
+              })
+              .attr('x', d => tim.fn.x(d[0]) - 10 / 2 + (tim.fn.x(d[1]) - tim.fn.x(d[0])) / 2)
+              .attr('width', 10)
+              .attr('height', 10)
+              .attr('y', -3)
+              .attr('fill', '#2b56b1')
+
+          }
+
           if (scope.timeline) { tim.draw() } // draw or redraw
         }
 
@@ -454,6 +488,10 @@ angular.module('histograph')
           tim.drawCtx()
         })
 
+        scope.$watch('currentitemrange', () => {
+          tim.drawCtx()
+        })
+
         /*
           @filters
         */
@@ -467,6 +505,7 @@ angular.module('histograph')
             }
           }
         })
+
         /*
           listen to resize window event
         */

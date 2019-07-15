@@ -235,6 +235,13 @@ angular.module('histograph')
     $scope.isFavItem = resource.result.item.loved_by_user;
     
     $log.info('ResourceCtrl', resource);
+
+    if (resource) {
+      $scope.setCurrentResourceRange([
+        resource.result.item.props.start_time * 1000,
+        resource.result.item.props.end_time * 1000,
+      ])
+    }
     
     // merge all versions (simply concat annotations and join them with entity URI if any matches identification)
     

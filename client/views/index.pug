@@ -719,7 +719,7 @@ html
           
           div#milkyway(sigma, isloading='isLoading', params='params', user='user', graph='graph', freeze='freeze', tips='headers.graph', togglemenu='toggleMenu(e, item, tag)', class='{{currentState.name|humanizeState}} {{queueStatus}} viewpoint-{{viewpoint.selected.name}}', controller='currentCtrl', setmessage='setMessage(message)', redirect='redirect(path)', queue="addToQueue(items)", filter='addFilter(key, value)')
           
-          div(id='timeline', timeline, class='{{currentState.name}} {{queueStatus}}', t='timeline', cxt='contextualTimeline', filters="filters")
+          div(id='timeline', timeline, class='{{currentState.name}} {{queueStatus}}', t='timeline', cxt='contextualTimeline', filters="filters" currentItemRange="currentResourceRange")
             
           div(id='pop', popit, user='user', target="target", redirect='redirect(path)', filter='addFilter(key, item)', comment="startCommenting(item, tag, hashtag)", queue="queue(item, inprog)", inspect='inspect(item)')
           

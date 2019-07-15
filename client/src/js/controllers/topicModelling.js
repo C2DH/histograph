@@ -1,5 +1,5 @@
 /* eslint-env browser */
-/* globals angular, moment */
+/* globals angular, moment, _ */
 angular.module('histograph')
   // eslint-disable-next-line prefer-arrow-callback, func-names
   .controller('TopicModellingCtrl', function (
@@ -132,7 +132,11 @@ angular.module('histograph')
 
         $scope.busyCounter += 1
         TopicModellingScoresService.get({ bins, from, to }).$promise
-          .then(data => { $scope.topicModellingData = data })
+          .then(data => {
+            $scope.topicModellingData = data
+
+            $scope.resourcesCountPerPartition = _.get(data, 'aggregatesMeta.0.totalResources')
+          })
           .catch(e => $log.error(e))
           .finally(() => { $scope.busyCounter -= 1 })
 

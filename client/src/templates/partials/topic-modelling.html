@@ -46,6 +46,10 @@
          hi-item-click-handler="itemClickHandler"
          class="topic-modelling-timeline-container">
     </div>
+    <div class="sans-serif scale-legend"
+         ng-if="resourcesCountPerPartition">
+      1 bar = {{resourcesCountPerPartition}} resource{{ resourcesCountPerPartition === 1 ? '' : 's'}}
+    </div>
 
     <div class="selected-resources related-resources-container">
       <div ng-repeat="relatedItem in selectedResources" 
