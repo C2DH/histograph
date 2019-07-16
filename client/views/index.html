@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>histograph</title>
+  <meta name="pinterest" content="nopin" description="contents subject to copyright" />
+  <link href="css/bootstrap.min.css" rel="stylesheet" />
+  <link href="css/font-awesome.min.css" rel="stylesheet" />
+  <link href="css/perfect-scrollbar.min.css" rel="stylesheet" />
+  <link href="css/annotator.css" rel="stylesheet" />
+  <link href="css/annotorious.css" rel="stylesheet" />
+  <link href="css/codemirror.css" rel="stylesheet" />
+  <link href="css/style.css" rel="stylesheet" />
+  <link href="css/leaflet.css" rel="stylesheet" />
+  <link href="css/base.css" rel="stylesheet" />
+
+  <!-- <script src="socket.io/socket.io.js"></script> -->
+  <script src="//use.typekit.net/fwe7tir.js"></script>
+  <script>
+    try { Typekit.load(); } catch (e) { }
+  </script>
+</head>
+
+<body ng-app="histograph">
+  <!-- <script type="text/javascript">
+    var socket = io(); 
+  </script> -->
+  <div ng-controller="CoreCtrl">
+    <div ng-controller="FiltersCtrl">
+      <div ng-show="user.is_authentified">
+        <header class="{{queueStatus}}">
+          <div class="row" ng-cloak="ng-cloak">
+            <div class="col-sm-12">
+
+              <div class="navbar-header">
+                <a class="serif" href="/#/">
+                  <span>Histograph</span>
+                </a>
+              </div>
+
+              <ul class="menu nav navbar-nav navbar-right">
+                <li class='{{currentState.name == "explore.resources"?"active":""}}'>
+                  <a href="#/?{{qs}}">
+                    <span id="tip1">gallery</span>
+                  </a>
+                </li>
+                <li class='{{currentState.name == "explore.persons"?"active":""}}'>
+                  <a ng-href="#/projection/person/person?{{qs}}">
+                    <span id="tip2">graph</span>
+                  </a>
+                </li>
+                <li class='{{currentState.name == "explore.persons"?"active":""}}'
+                  ng-if="optionalFeatures.topicModellingTimeline.enabled">
+                  <a ng-href="#/topic-modelling?{{qs}}">
+                    <span id="tip2">topic modelling</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="with-number" ng-click="toggleQueue()" uib-tooltip="pinboard" tooltip-placement="bottom">
+                    my pinboard
+                    <div class="number animated lite">{{playlist.length}}
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <a href="#/u/{{user.id}}">my bookmarks</a>
+                </li>
+                <li id="tip-notification" ng-controller="PulseController">
+                  <span uib-dropdown="uib-dropdown" on-toggle="toggle(open)">
+                    <a class="with-number" href="#/" uib-dropdown-toggle="uib-dropdown-toggle">
+                      <i class="fa fa-flash"></i>
+                      <div class="number animated" ng-if="pulsations &gt; 0">{{pulsations}}</div>
+                    </a>
+                    <ul class="uib-dropdown-menu dropdown-menu">
+                      <li>
+                        <a href="#" ng-if="syncing">loading...</a>
+                      </li>
+                      <li ng-repeat="relatedItem in notifications" ng-include="'templates/partials/action-lite.html'">
+                      </li>
+                      <li>
+                        <a href="#/noise" ng-if="!syncing" translate="header.activities"> </a>
+                      </li>
+                    </ul>
+                  </span>
+                </li>
+                <li
+                  class="{{currentState.name === 'search.resources' || currentState.name === 'search.persons' ? 'active' : ''}}">
+                  <div>
+                    <form id="search-field" ng-submit="setQuery(query)">
+                      <input class="form-control" type="text" name="test" ng-model="__query"
+                        typeahead-on-select="setQuery($item, $model, $label)" typeahead-editable="false"
+                        placeholder="search" typeahead="item for items in suggest($viewValue)" typeahead-wait-ms="100"
+                        typeahead-template-url="templates/partials/helpers/suggest.html" />
+                    </form>
+                  </div>
+                </li>
+                <li id="tip-user">
+                  <span uib-dropdown="">
+                    <a uib-dropdown-toggle="uib-dropdown-toggle">
+                      <img ng-src="{{user.picture}}" />
+                      <span>{{user.username}}</span>
+                    </a>
+                    <ul class="uib-dropdown-menu dropdown-menu">
+                      <li>
+                        <a style="cursor:pointer" ng-click="startGuidedTour()">start guided tour!</a>
+                      </li>
+                      <li>
+                        <span>API Key&nbsp;</span>
+                        <input value="{{user.apiKey}}" onclick="event.stopPropagation();" />
+                      </li>
+                      <li>
+                        <a href="#/u/adoH5fZmc">favourites</a>
+                      </li>
+                      <li>
+                        <a href="/logout">logout</a>
+                      </li>
+                    </ul>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      <div ng-hide="user.is_authentified || isLoading">
+        <div id="logo">
+          <img src="images/cvce.svg" />
+        </div>
+        <div id="flickr">
+          <div flickr=""></div>
+          <div class="halftone-overlay"></div>
+        </div>
+        <div id="login">
+          <h5>Histograph</h5>
+          <form>
+            <p>
+              <span translate="login.welcome"></span>
+            </p>
+            <p>
+              <div class="checkbox">
+                <label class="sans-serif">
+                  <input type="checkbox" ng-model="acceptTermsOfService" />
+                  <span translate="termsofservice.check"></span>
+                </label>
+              </div>
+            </p>
+
+            <div role="group">
+              <a class="btn btn-block btn-default btn-line expanded" ng-disabled="!acceptTermsOfService"
+                ng-href="auth/twitter?next={{locationPath}}&jsonparams={{locationJson}}">
+                <span translate="button.login.with.twitter"> </span><i class="fa fa-twitter"></i>
+              </a>
+              <a class="btn btn-block  btn-default btn-line expanded" ng-disabled="!acceptTermsOfService"
+                ng-href="auth/google?next={{locationPath}}&jsonparams={{locationJson}}">
+                <span translate="button.login.with.google"> </span><i class="fa fa-google-plus"></i>
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div ng-show="user.is_authentified">
+
+        <div class="loader animated" ng-class="isLoading? 'fadeIn' : 'fadeOut'">
+          <div class="sk-double-bounce">
+            <div class="sk-child sk-double-bounce1"></div>
+            <div class="sk-child sk-double-bounce2"></div>
+          </div>
+        </div>
+
+        <div
+          class="view {{currentCtrl}} {{currentState.name|humanizeState}} {{queueStatus}} viewpoint-{{viewpoint.selected.name}}"
+          infinite-scroll="addMoreItems()" infinite-scroll-collection="relatedItems">
+          <div ui-view=""></div>
+        </div>
+
+        <div class="{{currentState.name|humanizeState}} {{queueStatus}} viewpoint-{{viewpoint.selected.name}}"
+          id="milkyway" sigma="sigma" isloading="isLoading" params="params" user="user" graph="graph" freeze="freeze"
+          tips="headers.graph" togglemenu="toggleMenu(e, item, tag)" controller="currentCtrl"
+          setmessage="setMessage(message)" redirect="redirect(path)" queue="addToQueue(items)"
+          filter="addFilter(key, value)">
+        </div>
+
+        <div class="{{currentState.name}} {{queueStatus}}" id="timeline" timeline="timeline" t="timeline"
+          cxt="contextualTimeline" filters="filters" currentItemRange="currentResourceRange">
+        </div>
+
+        <div id="pop" popit="popit" user="user" target="target" redirect="redirect(path)" filter="addFilter(key, item)"
+          comment="startCommenting(item, tag, hashtag)" queue="queue(item, inprog)" inspect="inspect(item)">
+        </div>
+
+        <div class="sans-serif {{isVisible? 'animated fadeIn' : 'animated fadeOut' }}" id="crowd"
+          ng-controller="CrowdCtrl" ng-include="'templates/partials/crowd.html'">
+          <div>campaign</div>
+        </div>
+        <div id="the-annotator-wrapper">
+          <div id="the-annotator"></div>
+        </div>
+
+        <div class="mouse tooltip sigma" id="tooltip-sigma">
+          <div class="tooltip-wrapper">
+            <div class="tooltip-inner"></div>
+          </div>
+        </div>
+
+        <div class="mouse tooltip sigma" id="tooltip-sigma-edge">
+          <div class="tooltip-wrapper">
+            <div class="tooltip-inner"></div>
+          </div>
+        </div>
+
+        <div id="playlist" ng-class="queueStatus">
+          <div id="playlist-close" ng-click="closeQueue()">
+            <i class="fa fa-times-circle"></i>
+          </div>
+
+          <div id="playlist-queue" perfect-scrollbar="perfect-scrollbar" use-both-wheel-axes="false"
+            suppress-scroll-x="true" wheel-propagation="true" refresh-on-change="playlist">
+            <div id="playlist-queue-rail">
+              <div class="playlist-item" ng-repeat="item in playlist">
+                <div class="playlist-item-wrapper">
+                  <div class="pic" ng-if="item.type == 'person'">
+                    <a ng-href="/#/e/{{item.id}}" tooltip-append-to-body="true" tooltip="visit person page">
+                      <img ng-src="{{item.props.thumbnail}}" ng-if="item.props.thumbnail" />
+                    </a>
+                  </div>
+
+                  <div class="pic" ng-if="item.type == 'location' || item.type == 'place' ">
+                    <a ng-href="/#/e/{{item.id}}" tooltip-append-to-body="true" tooltip="visit location page">
+                    </a>
+                  </div>
+
+                  <div class="pic" ng-if="item.type == 'resource'">
+                    <a ng-href="/#/r/{{item.id}}" tooltip-append-to-body="true" tooltip="visit resource page">
+                      <img ng-if="item.props.mimetype == 'image' && item.props.url" ng-src="media/{{item.props.url}}" />
+                    </a>
+                  </div>
+
+                  <h5 data-id="{{item.id}}" tooltip-append-to-body="true" tooltip="{{item.props | title : language }}">
+                    {{item.props | title : language : 24 }}</h5>
+
+                  <a class="action" ng-click="removeFromQueue(item)" tooltip-append-to-body="true"
+                    tooltip="remove from this set">
+                    <i class="fa fa-times-circle"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-group" id="playlist-actions">
+            <h5 translate="playlist.title"></h5>
+            <div class="contents">
+              <p translate="playlist.description"></p>
+              <p ng-if="!playlist.length" translate="playlist.noitems"></p>
+              <a class="btn btn-block btn-default btn-line-white" ng-disabled="playlist.length < 2"
+                ng-href="/#/neighbors/{{playlist | map:'id'}}" tooltip-append-to-body="true"
+                tooltip="explore connections between your pinned items (min. 2 items)">
+                explore connections <i class="fa fa-diamond"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="{{queueStatus}} {{currentState.name|humanizeState}} " id="playlist-shadow" ng-click="toggleQueue()">
+        </div>
+
+        <div id="fullsize" fullsize="fullsize"></div>
+
+        <div ng-controller="GuidedTourCtrl">
+          <tour id="guided-tour" step="currentStep">
+            <virtual-step tourtip="guided-tour.welcome" tourtip-element=".view" tourtip-placement="center-top"
+              tourtip-step="0"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.gallery" tourtip-element="#tip1" tourtip-placement="bottom"
+              tourtip-step="1"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.filters.type" tourtip-element=".grammar-choice"
+              tourtip-placement="bottom" tourtip-step="2"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.filters.related-to" tourtip-element=".grammar-choice.related-to"
+              tourtip-placement="bottom" tourtip-step="3"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.filters.timeline" tourtip-element="#timeline"
+              tourtip-offset-horizontal="200" tourtip-placement="top" tourtip-step="4"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.gallery.resource" tourtip-element=".related  h4 a"
+              tourtip-offset-vertical="50" tourtip-placement="bottom" tourtip-step="5"></virtual-step>
+            <virtual-step tourtip="this is a person" tourtip-element=".tag.person" tourtip-placement="bottom"
+              tourtip-step="6">
+            </virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.resource" tourtip-element=".resource.item"
+              tourtip-offset-horizontal="0" tourtip-placement="center-top" tourtip-step="7"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.resource.seealso" tourtip-element="#see-also"
+              tourtip-offset-horizontal="0" tourtip-placement="center-top" tourtip-step="8"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.resource.seealso.filters"
+              tourtip-element=".grammar-choice.related-to" tourtip-offset-horizontal="0" tourtip-placement="bottom"
+              tourtip-step="9"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.resource.add" tourtip-element=".resource.item .btn-contribute"
+              tourtip-offset-horizontal="0" tourtip-placement="top" tourtip-step="10"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.resource.click.entity" tourtip-element="#see-also"
+              tourtip-placement="center-top" tourtip-step="11"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.resource.annotate" tourtip-element=".resource.item blockquote"
+              tourtip-offset-horizontal="0" tourtip-placement="top" tourtip-step="15"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.resource.favourites" tourtip-element=".resource.item .actions"
+              tourtip-offset-horizontal="0" tourtip-placement="bottom" tourtip-step="14"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.resource.pinboard" tourtip-element=".resource.item .actions"
+              tourtip-offset-horizontal="0" tourtip-placement="bottom" tourtip-step="16"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.resource.notifications" tourtip-element="#tip-notification"
+              tourtip-offset-horizontal="0" tourtip-placement="bottom" tourtip-step="17"></virtual-step>
+            <virtual-step tourtip="guided-tour.step.view.graph" tourtip-element="#milkyway"
+              tourtip-offset-horizontal="0" tourtip-placement="center-top" tourtip-step="12"></virtual-step>
+            <virtual-step tourtip="guided-tour.skip" tourtip-element="#tip-user" tourtip-offset-horizontal="0"
+              tourtip-placement="bottom" tourtip-step="13"></virtual-step>
+          </tour>
+        </div>
+      </div>
+    </div>
+
+    <div class="sans-serif {{messaging? 'active': ''}}" id="messenger">
+      <div class="inner"><span translate="{{message}}"></span></div>
+    </div>
+  </div>
+</body>
+
+</html>
