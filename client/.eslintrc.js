@@ -11,6 +11,8 @@ module.exports = {
         "no-underscore-dangle": "off",
         "arrow-parens": "off",
         "comma-dangle": "off",
-        "class-methods-use-this": "off"
+        "class-methods-use-this": "off",
+        "func-names": "off",
+        "prefer-arrow-callback": "off"
     }
 };

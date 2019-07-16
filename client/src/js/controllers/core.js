@@ -16,9 +16,12 @@ angular.module('histograph')
     ResourceRelatedFactory, SuggestFactory, cleanService,
     VisualizationFactory, EntityExtraFactory, EntityRelatedExtraFactory,
     localStorageService, EntityRelatedFactory, EVENTS, VIZ, MESSAGES,
-    ORDER_BY, SETTINGS, UserFactory, OptionalFeaturesService, $window) {
+    ORDER_BY, SETTINGS, UserFactory, OptionalFeaturesService, $window,
+    HgSettings) {
+    $scope.apiBaseUrl = HgSettings.apiBaseUrl
 
-    $log.debug('CoreCtrl ready');
+    $log.info('CoreCtrl ready', $location);
+    $scope.absoluteLocationUrl = $location.absUrl()
     $scope.locationPath = $location.path();
     $scope.locationJson = JSON.stringify($location.search());
 

@@ -25,7 +25,7 @@
 //   ]
 // });
 
-angular
+module.exports = angular
   .module('histograph', [
     // core
     'ui.router',
@@ -1250,6 +1250,9 @@ angular
     
   })
   .config(function ($httpProvider) {
+    // eslint-disable-next-line no-param-reassign
+    $httpProvider.defaults.withCredentials = true
+
     $httpProvider.interceptors.push(function ($q, $log, $rootScope, EVENTS) {
       return {
         // response: function(response) {
@@ -1267,8 +1270,4 @@ angular
         }
       };
     });
-  })
-
-  .run(function(Analytics) {
-    console.log('hg running...')
   })

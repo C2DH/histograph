@@ -1,5 +1,7 @@
 'use strict';
 
+import marked from 'marked'
+
 /**
  * @ngdoc overview
  * @name histograph
@@ -215,7 +217,6 @@ angular.module('histograph')
           // $log.log('::marked @marked changed', val);
           if(scope.context && scope.context.locations && scope.context.persons) {
             entities = scope.context.locations.concat(scope.context.persons )//, scope.context.organizations, scope.context.social_groups)
-            
             element.html(marked(scope.marked, {
               renderer: renderer
             }));

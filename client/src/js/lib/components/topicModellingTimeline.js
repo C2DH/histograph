@@ -1,7 +1,7 @@
 /* globals d3, window */
 
 // eslint-disable-next-line no-unused-vars
-class TopicModellingTimeline {
+export default class TopicModellingTimeline {
   constructor(element, options = {}) {
     this.container = d3.select(element)
     this.svg = this.container.append('svg')

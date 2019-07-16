@@ -12,7 +12,7 @@ angular.module('histograph')
   // eslint-disable-next-line prefer-arrow-callback
   .controller('FiltersCtrl', function controller($scope, $log, $http, $location, $stateParams, SuggestFactory,EVENTS) {
     $log.debug('FiltersCtrl ready, filters active:', $location.search());
-    
+
     $scope.filters = {};
     $scope.filterItems  = {};
     $scope.facets = {}; // available facets, per filter key

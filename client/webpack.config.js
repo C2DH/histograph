@@ -17,6 +17,7 @@ module.exports = (env, options) => {
       { from: './src/images', to: 'images' },
       { from: './src/locale', to: 'locale' },
       { from: './src/css', to: 'css' },
+      { from: './src/settings.dev.js', to: 'settings.js' },
     ]),
     new HtmlWebPackPlugin({
       template: './views/index.html',
@@ -85,8 +86,12 @@ module.exports = (env, options) => {
       }
     },
     watchOptions: {
-      ignored: /node_modules/,
-      poll: 1000 // Check for changes every second
+      ignored: [
+        /node_modules/,
+        /src\/js\/lib/
+      ],
+      aggregateTimeout: 300,
+      poll: 1500
     },
     plugins,
     module: {

@@ -14,17 +14,14 @@
   <link href="css/leaflet.css" rel="stylesheet" />
   <link href="css/base.css" rel="stylesheet" />
 
-  <!-- <script src="socket.io/socket.io.js"></script> -->
   <script src="//use.typekit.net/fwe7tir.js"></script>
   <script>
     try { Typekit.load(); } catch (e) { }
   </script>
+  <script src="settings.js"></script>
 </head>
 
 <body ng-app="histograph">
-  <!-- <script type="text/javascript">
-    var socket = io(); 
-  </script> -->
   <div ng-controller="CoreCtrl">
     <div ng-controller="FiltersCtrl">
       <div ng-show="user.is_authentified">
@@ -148,11 +145,11 @@
 
             <div role="group">
               <a class="btn btn-block btn-default btn-line expanded" ng-disabled="!acceptTermsOfService"
-                ng-href="auth/twitter?next={{locationPath}}&jsonparams={{locationJson}}">
+                ng-href="{{apiBaseUrl}}/auth/twitter?next={{absoluteLocationUrl}}&jsonparams={{locationJson}}">
                 <span translate="button.login.with.twitter"> </span><i class="fa fa-twitter"></i>
               </a>
               <a class="btn btn-block  btn-default btn-line expanded" ng-disabled="!acceptTermsOfService"
-                ng-href="auth/google?next={{locationPath}}&jsonparams={{locationJson}}">
+                ng-href="{{apiBaseUrl}}/auth/google?next={{absoluteLocationUrl}}&jsonparams={{locationJson}}">
                 <span translate="button.login.with.google"> </span><i class="fa fa-google-plus"></i>
               </a>
             </div>

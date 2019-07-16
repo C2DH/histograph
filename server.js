@@ -138,6 +138,15 @@ if ('production' == env) {
   app.use(express.static('./client/dist'));
 } else {
   app.use(express.static('./client/src'));
+
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', req.get('origin'))
+    res.header('Access-Control-Allow-Methods', 'OPTIONS, POST, PUT, DELETE, GET')
+    res.header('Access-Control-Allow-Headers',
+      'X-Requested-With, Content-Type, Cookie, Set-Cookie')
+    res.header('Access-Control-Allow-Credentials', 'true')
+    next()
+  })
 }
 // serve docco documentation
 // app.use('/docs', express.static('./docs'));
@@ -311,7 +320,11 @@ clientRouter.route('/auth/twitter/callback')
           return next(err);
         if(req.session.redirectAfterLogin) {
           console.log('redirect to', req.session.redirectAfterLogin)
-          return res.redirect('/#' + req.session.redirectAfterLogin)
+          if (req.session.redirectAfterLogin.startsWith('http')) {
+            return res.redirect(req.session.redirectAfterLogin)
+          } else {
+            return res.redirect('/#' + req.session.redirectAfterLogin)
+          }
         }
           
         return res.redirect('/');

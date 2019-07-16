@@ -1,5 +1,8 @@
 /* eslint-env browser */
-/* globals angular, TopicModellingTimeline */
+/* globals angular */
+
+import TopicModellingTimeline from '../lib/components/topicModellingTimeline'
+
 angular.module('histograph')
   // eslint-disable-next-line prefer-arrow-callback
   .directive('hiTopicModellingTimeline', function directive() {

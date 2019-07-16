@@ -1,3 +1,5 @@
+import marked from 'marked'
+
 /**
  * @ngdoc filters
  * @name histograph.filters

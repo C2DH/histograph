@@ -3,8 +3,15 @@ const jquery = require('jquery')
 
 window.jQuery = jquery
 window.$ = jquery
+window._ = require('lodash')
+window.d3 = require('d3')
+window.sigma = require('sigma')
+window.Masonry = require('masonry-layout')
+window.moment = require('moment')
 
 const angular = require('angular')
+const io = require('socket.io-client')
+
 require('angular-ui-router')
 require('angular-route')
 require('angular-resource')
@@ -17,23 +24,24 @@ require('angular-translate-loader-static-files')
 require('perfect-scrollbar')
 require('angular-perfect-scrollbar')
 require('angular-local-storage')
+
+window.imagesLoaded = require('imagesloaded')
 // https://github.com/klederson/angular-masonry-directive
 require('./lib/angular-masonry.min.js')
 require('angular-tour/dist/angular-tour')
 require('angular-tour/dist/angular-tour-tpls')
 
-window.io = require('socket.io-client')
-window._ = require('lodash')
-window.d3 = require('d3')
-window.sigma = require('sigma')
-window.Masonry = require('masonry-layout')
 
-require('./lib/components/topicModellingTimeline.js')
+window.io = io(window.__hg_settings.apiBaseUrl)
 
-require('./app.js')
+const app = require('./app.js')
+
+app.factory('HgSettings', () => window.__hg_settings)
+
 require('./constant.js')
-require('./services.js')
 require('./filters.js')
+require('./services.js')
+
 // require('./templates.js')
 
 require('./controllers/core.js')
@@ -62,8 +70,10 @@ require('./controllers/modals/contribute.js')
 require('./controllers/modals/create-entity.js')
 require('./controllers/modals/inspect.js')
 
+window.Annotator = require('./lib/annotator.min').Annotator
+require('./lib/annotator.unsupported.min')
 
-// require('./directives/annotator.js')
+require('./directives/annotator.js')
 require('./directives/annotorious.js')
 require('./directives/sigma.js')
 require('./directives/snippets.js')
@@ -89,7 +99,8 @@ function importTemplates() {
 
 importTemplates()
 
-const socket = window.io()
-console.log('Socket set up', socket)
+app.run(function ($log) {
+  $log.info('hg running...')
+})
 
 export default {}
