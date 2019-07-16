@@ -63,10 +63,10 @@ require('./controllers/modals/create-entity.js')
 require('./controllers/modals/inspect.js')
 
 
-// require('./directives/annotator.js') 
+// require('./directives/annotator.js')
 require('./directives/annotorious.js')
-require('./directives/sigma.js')  
-require('./directives/snippets.js') 
+require('./directives/sigma.js')
+require('./directives/snippets.js')
 require('./directives/timeline.js')
 require('./directives/reporter.js')
 require('./directives/popit.js')
@@ -75,7 +75,7 @@ require('./directives/iiifImage.js')
 require('./directives/topicModellingTimeline.js')
 
 function importTemplates() {
-  const ctx = require.context('../templates', true, /.*\.html$/);
+  const ctx = require.context('../templates', true, /.*\.html$/)
 
   angular.module('histograph').run([
     '$templateCache',
