@@ -282,7 +282,7 @@ angular.module('histograph')
       // $log.info('CoreCtrl -> suggest', query);
       $scope.query = ''+ query
       $scope.freeze = 'sigma'
-      return $http.get('/api/suggest', {
+      return $http.get(`${HgSettings.apiBaseUrl}/api/suggest`, {
         params: {
           query: query
         }
