@@ -1,7 +1,7 @@
 /* globals d3, window */
 
 // eslint-disable-next-line no-unused-vars
-class TopicModellingTimeline {
+export default class TopicModellingTimeline {
   constructor(element, options = {}) {
     this.container = d3.select(element)
     this.svg = this.container.append('svg')
@@ -157,9 +157,7 @@ class TopicModellingTimeline {
       .join('g')
       .attr('class', 'hotspots')
       .selectAll('circle')
-      .data((d, stepIndex) => {
-        return d.map(value => ({ value, stepIndex }))
-      })
+      .data((d, stepIndex) => d.map(value => ({ value, stepIndex })))
       .join('circle')
       .attr('cy', (d, i) => yScale(i))
       .attr('fill', () => '#33333300')

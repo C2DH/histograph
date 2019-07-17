@@ -14,7 +14,7 @@ angular.module('histograph')
     $scope.entity = entity.result.item;
     $scope.user = user;
     // @todo wrongtype
-    $scope.setIssues = function(properties) {
+    $scope.setIssues = function (properties) {
       $scope.entity.isWrong = properties.issues && properties.issues.indexOf('wrong') != -1;
       $scope.entity.isIncomplete = !_.compact([properties.links_wiki, properties.links_viaf]).length;
       $scope.isUpvotedByUser = properties.upvote && properties.upvote.indexOf(core.user.username) != -1;
@@ -27,24 +27,24 @@ angular.module('histograph')
     $scope.offset = 0;
     $scope.modalStatus = 'quiet';
     $scope.language = language;
-    
+
     $scope.isLocked = false;
 
-    $scope.queue = function(item) {
+    $scope.queue = function (item) {
       $log.log('InspectModalCtrl  -~> queue()', item);
-      core.queue(item.id? item : $scope.entity, true);
+      core.queue(item.id ? item : $scope.entity, true);
     };
 
-    $scope.favourite = function(item) {
+    $scope.favourite = function (item) {
       $scope.isLocked = true;
-      core.favourite(item, function(){
+      core.favourite(item, function () {
         $scope.isLocked = false;
       });
     };
 
-    $scope.unfavourite = function(item) {
+    $scope.unfavourite = function (item) {
       $scope.isLocked = true;
-      core.unfavourite(item, function(){
+      core.unfavourite(item, function () {
         $scope.isLocked = false;
       });
     };
@@ -58,51 +58,51 @@ angular.module('histograph')
     };
 
 
-    $scope.askQuestion = function(question){
+    $scope.askQuestion = function (question) {
       $scope.question = question;
     }
 
-    $scope.cancelQuestion = function() {
+    $scope.cancelQuestion = function () {
       $scope.question = undefined;
     }
 
-    $scope.confirm = function() {
+    $scope.confirm = function () {
       $log.log('InspectModalCtrl  -~> confirm()');
       $scope.isLocked = true;
-      core.confirm($scope.entity, function(){
+      core.confirm($scope.entity, function () {
         $scope.isLocked = false;
       });
     };
 
-    $scope.unconfirm = function() {
+    $scope.unconfirm = function () {
       $log.log('InspectModalCtrl  -~> unconfirm()');
       $scope.isLocked = true;
-      core.unconfirm($scope.entity, function(){
+      core.unconfirm($scope.entity, function () {
         $scope.isLocked = false;
       });
     };
 
-    $scope.raiseIssue = function(type, solution) {
+    $scope.raiseIssue = function (type, solution) {
       $log.log('InspectModalCtrl  -~> raiseIssue() type:', type, '- solution:', solution);
       $scope.isLocked = true;
       $scope.cancelQuestion();
-      core.raiseIssue($scope.entity, null, type, solution, function(){
+      core.raiseIssue($scope.entity, null, type, solution, function () {
         $scope.isLocked = false;
       });
     };
 
-    $scope.raiseIssueSelected = function(type, solution) {
+    $scope.raiseIssueSelected = function (type, solution) {
 
     };
     /*
       Disagree with the specific topic.
       If you have already voted this do not apply.
     */
-    $scope.downvoteIssue = function(type, solution) {
+    $scope.downvoteIssue = function (type, solution) {
       $log.log('InspectModalCtrl  -~> downvoteIssue() type:', type, '- solution:', solution);
       $scope.isLocked = true;
       $scope.cancelQuestion();
-      core.downvoteIssue($scope.entity, null, type, solution, function() {
+      core.downvoteIssue($scope.entity, null, type, solution, function () {
         $scope.isLocked = false;
       });
     };
@@ -113,23 +113,19 @@ angular.module('histograph')
     */
     socket.on('entity:upvote:done', function (result) {
       $log.info('InspectModalCtrl socket@entity:upvote:done - by:', result.user);
-      if(result.data.id == $scope.entity.id)
-        $scope.entity.props.upvote = result.data.props.upvote;
-      if(result.user == core.user.username)
-        $scope.isUpvotedByUser = true;
+      if (result.data.id == $scope.entity.id) { $scope.entity.props.upvote = result.data.props.upvote; }
+      if (result.user == core.user.username) { $scope.isUpvotedByUser = true; }
     })
     socket.on('entity:downvote:done', function (result) {
       $log.info('InspectModalCtrl socket@entity:downvote:done - by:', result.user);
-      if(result.data.id == $scope.entity.id)
-        $scope.entity.props.upvote = result.data.props.upvote;
-      if(result.user == core.user.username)
-        $scope.isUpvotedByUser = false;
+      if (result.data.id == $scope.entity.id) { $scope.entity.props.upvote = result.data.props.upvote; }
+      if (result.user == core.user.username) { $scope.isUpvotedByUser = false; }
     })
 
     socket.on('entity:create-related-issue:done', function (result) {
       $log.info('InspectModalCtrl socket@entity:create-related-issue:done - by:', result.user, '- result:', result);
-      
-      if(result.data.id == $scope.entity.id){
+
+      if (result.data.id == $scope.entity.id) {
         $scope.entity.props = result.data.props;
         $scope.setIssues(result.data.props);
       }
@@ -137,17 +133,16 @@ angular.module('histograph')
 
     socket.on('entity:remove-related-issue:done', function (result) {
       $log.info('InspectModalCtrl socket@entity:remove-related-issue:done - by:', result.user, '- result:', result);
-      if(result.data.id == $scope.entity.id){
+      if (result.data.id == $scope.entity.id) {
         $scope.entity.props = result.data.props;
         $scope.setIssues(result.data.props);
       }
     });
 
-    
 
-    $scope.upvote = function(resource) {
+    $scope.upvote = function (resource) {
       $scope.modalStatus = 'voting';
-      
+
       EntityRelatedExtraFactory.save({
         id: $scope.entity.id,
         model: relatedModel,
@@ -172,20 +167,20 @@ angular.module('histograph')
       });
     }
 
-    $scope.next = function() {
+    $scope.next = function () {
       $scope.modalStatus = 'quiet';
-      $scope.offset = Math.min($scope.totalItems -1, $scope.offset + 1);
+      $scope.offset = Math.min($scope.totalItems - 1, $scope.offset + 1);
       $scope.sync();
     };
 
-    $scope.previous = function() {
-      $scope.offset = Math.max($scope.offset -1, 0);
+    $scope.previous = function () {
+      $scope.offset = Math.max($scope.offset - 1, 0);
       $scope.sync();
     };
 
-    $scope.sync = function(){
+    $scope.sync = function () {
       $scope.modalStatus = 'loading';
-      if($scope.entity.id) {
+      if ($scope.entity.id) {
         relatedFactory.get({
           id: $scope.entity.id,
           model: relatedModel,
@@ -200,5 +195,4 @@ angular.module('histograph')
     };
     // start everthing
     $scope.sync();
-
   })

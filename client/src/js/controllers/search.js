@@ -9,11 +9,10 @@ angular.module('histograph')
     $log.debug('SearchCtrl ready, query "', $stateParams.query, '" matches', stats);
 
     $scope.query = $stateParams.query
-    
-    $scope.resourcesStats = _.filter(stats.info.groups, {group:'resource'});
-    $scope.entitiesStats  = _.filter(stats.info.groups, {group:'entity'});
+
+    $scope.resourcesStats = _.filter(stats.info.groups, { group: 'resource' });
+    $scope.entitiesStats = _.filter(stats.info.groups, { group: 'entity' });
     /*
     	Update stats on params update?
     */
-    
   })

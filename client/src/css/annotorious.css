@@ -43,7 +43,7 @@
   position:absolute;
   top:6px;
   left: 5px;
-  background:url('feather_icon.png');
+  background:url('/images/feather_icon.png');
   background-repeat:no-repeat;
   width:19px;
   height:22px;
@@ -140,7 +140,7 @@
 }
 
 .annotorious-popup-button-edit {
-  background:url(pencil.png);
+  background:url(/images/pencil.png);
   width:16px;
   height:16px;
   text-indent:100px;
@@ -148,7 +148,7 @@
 }
 
 .annotorious-popup-button-delete {
-  background:url(delete.png);
+  background:url(/images/delete.png);
   width:16px;
   height:16px;
   text-indent:100px;

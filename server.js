@@ -45,7 +45,7 @@ var app           = exports.app = express(),                 // define our app u
     _             = require('lodash'),
     
     // app client scripts dependencies (load scripts in jade)
-    clientFiles  = require('./client/src/files')[env],
+    // clientFiles  = require('./client/src/files')[env],
 
     // session middleware
     sessionMiddleware;
@@ -134,10 +134,21 @@ app.use(morgan('combined', {
   stream: fs.createWriteStream(settings.paths.accesslog, {flags: 'a'})
 }));
 
+app.use(express.static('./client/dist'));
+
 if ('production' == env) {
-  app.use(express.static('./client/dist'));
+  // app.use(express.static('./client/dist'));
 } else {
-  app.use(express.static('./client/src'));
+  // app.use(express.static('./client/src'));
+
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', req.get('origin'))
+    res.header('Access-Control-Allow-Methods', 'OPTIONS, POST, PUT, DELETE, GET')
+    res.header('Access-Control-Allow-Headers',
+      'X-Requested-With, Content-Type, Cookie, Set-Cookie')
+    res.header('Access-Control-Allow-Credentials', 'true')
+    next()
+  })
 }
 // serve docco documentation
 // app.use('/docs', express.static('./docs'));
@@ -224,7 +235,7 @@ clientRouter.route('/').
       types: settings.types,
       title: settings.title,
       analytics: settings.analytics,
-      scripts: clientFiles.scripts
+      // scripts: clientFiles.scripts
     });
   });
   
@@ -236,7 +247,7 @@ clientRouter.route('/terms').
       types: settings.types,
       title: settings.title,
       analytics: settings.analytics,
-      scripts: clientFiles.scripts
+      // scripts: clientFiles.scripts
     });
   });
 
@@ -311,7 +322,11 @@ clientRouter.route('/auth/twitter/callback')
           return next(err);
         if(req.session.redirectAfterLogin) {
           console.log('redirect to', req.session.redirectAfterLogin)
-          return res.redirect('/#' + req.session.redirectAfterLogin)
+          if (req.session.redirectAfterLogin.startsWith('http')) {
+            return res.redirect(req.session.redirectAfterLogin)
+          } else {
+            return res.redirect('/#' + req.session.redirectAfterLogin)
+          }
         }
           
         return res.redirect('/');

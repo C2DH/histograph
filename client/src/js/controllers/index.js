@@ -9,13 +9,11 @@ angular.module('histograph')
     $log.debug('IndexCtrl ready', $scope.params);
   // the original index page, almost empty
   })
-  
+
   .controller('ExploreCtrl', function ($scope, $log, $timeout, ResourceFactory, CooccurrencesFactory, cleanService, InquiryFactory, EVENTS) {
     $log.debug('ExploreCtrl ready', $scope.params);
-    
-    
-    
-    
+
+
     /*
       Set graph title
     */
@@ -23,49 +21,43 @@ angular.module('histograph')
       graph: 'cooccurrences network of people connected if they appear in the same document',
       seealso: 'A list of resources to start with'
     });
-    
-   
-    
-    
+
+
     /*
       listener: $scope.timeline
       load the contextual timeline, if some filters are specified.
     */
     $scope.$watch('timeline', function (timeline) {
-      if(!timeline)
-        return;
+      if (!timeline) return;
       $log.log('IndexCtrl @timeline ready');
     });
-    
+
     // start
     // $scope.sync();
     // $scope.syncGraph();
   })
-  
+
   /*
     wall of issues
     ---
   */
   .controller('ExploreIssuesCtrl', function ($scope, $log, IssueFactory, EVENTS) {
     $log.debug('ExploreIssuesCtrl ready', $scope.params);
-    $scope.limit  = 20;
+    $scope.limit = 20;
     $scope.offset = 0;
 
-    $scope.sync = function() {
+    $scope.sync = function () {
       $scope.loading = true;
       IssueFactory.get(angular.extend({
         limit: $scope.limit,
         offset: $scope.offset
       }, $scope.params), function (res) {
         $scope.loading = false;
-        $scope.offset  = res.info.offset;
-        $scope.limit   = res.info.limit;
+        $scope.offset = res.info.offset;
+        $scope.limit = res.info.limit;
         $scope.totalItems = res.info.total_items;
-        if($scope.offset > 0)
-          $scope.addRelatedItems(res.result.items);
-        else
-          $scope.setRelatedItems(res.result.items);
-
+        if ($scope.offset > 0) $scope.addRelatedItems(res.result.items);
+        else $scope.setRelatedItems(res.result.items);
       })
     };
     $scope.sync();
@@ -77,10 +69,10 @@ angular.module('histograph')
   */
   .controller('ExploreNoiseCtrl', function ($scope, $log, UserFactory, EVENTS) {
     $log.debug('ExploreNoiseCtrl ready', $scope.params);
-    $scope.limit  = 20;
+    $scope.limit = 20;
     $scope.offset = 0;
 
-    $scope.sync = function() {
+    $scope.sync = function () {
       $scope.loading = true;
       UserFactory.get(angular.extend({
         method: 'noise',
@@ -88,18 +80,15 @@ angular.module('histograph')
         offset: $scope.offset
       }, $scope.params), function (res) {
         $scope.loading = false;
-        $scope.offset  = res.info.offset;
-        $scope.limit   = res.info.limit;
+        $scope.offset = res.info.offset;
+        $scope.limit = res.info.limit;
         $scope.totalItems = res.info.total_items;
-        if($scope.offset > 0)
-          $scope.addRelatedItems(res.result.items);
-        else
-          $scope.setRelatedItems(res.result.items);
-
+        if ($scope.offset > 0) $scope.addRelatedItems(res.result.items);
+        else $scope.setRelatedItems(res.result.items);
       })
     };
 
-    $scope.$on(EVENTS.API_PARAMS_CHANGED, function() {
+    $scope.$on(EVENTS.API_PARAMS_CHANGED, function () {
       $scope.offset = 0;
       $log.debug('ExploreNoiseCtrl @API_PARAMS_CHANGED', $scope.params);
       $scope.sync();
@@ -107,8 +96,8 @@ angular.module('histograph')
     });
 
     $scope.$on(EVENTS.INFINITE_SCROLL, function (e) {
-      $scope.offset = $scope.offset + $scope.limit;
-      $log.debug('ExploreCtrl @INFINITE_SCROLL', '- skip:',$scope.offset,'- limit:', $scope.limit);
+      $scope.offset += $scope.limit;
+      $log.debug('ExploreCtrl @INFINITE_SCROLL', '- skip:', $scope.offset, '- limit:', $scope.limit);
       $scope.sync();
     });
 
@@ -120,12 +109,12 @@ angular.module('histograph')
   */
   .controller('ExploreResourcesCtrl', function ($scope, $log, socket, ResourceVizFactory, VIZ, ResourceFactory, EVENTS) {
     $log.debug('ExploreResourcesCtrl ready', $scope.params);
-    $scope.limit  = 20;
+    $scope.limit = 20;
     $scope.offset = 0;
     /*
       Reload related items, with filters.
     */
-    $scope.sync = function() {
+    $scope.sync = function () {
       $scope.lock('ExploreResourcesCtrl');
       ResourceFactory.get(angular.extend({
         limit: $scope.limit,
@@ -133,74 +122,65 @@ angular.module('histograph')
       }, $scope.params), function (res) {
         $scope.unlock('ExploreResourcesCtrl');
         $scope.loading = false;
-        $scope.offset  = res.info.offset;
-        $scope.limit   = res.info.limit;
+        $scope.offset = res.info.offset;
+        $scope.limit = res.info.limit;
         $scope.totalItems = res.info.total_items;
-        if($scope.offset > 0)
-          $scope.addRelatedItems(res.result.items);
-        else
-          $scope.setRelatedItems(res.result.items);
+        if ($scope.offset > 0) $scope.addRelatedItems(res.result.items);
+        else $scope.setRelatedItems(res.result.items);
         // reset if needed
         $scope.setFacets('type', res.info.groups);
-        
-      }) 
+      })
     }
-    
+
     /*
       LoadTimeline
       ---
 
       load the timeline of filtered resources
     */
-    $scope.syncTimeline = function() {
-      if(!_.isEmpty($scope.params))
+    $scope.syncTimeline = function () {
+      if (!_.isEmpty($scope.params)) {
         ResourceVizFactory.get(angular.extend({
           viz: 'timeline'
         }, $scope.params), function (res) {
-          // if(res.result.titmeline)
+        // if(res.result.titmeline)
           $scope.setTimeline(res.result.timeline)
         });
-      else
-        $scope.setTimeline([])
+      } else $scope.setTimeline([])
     };
 
     /*
       listener: EVENTS.API_PARAMS_CHANGED
       some query parameter has changed, reload the list accordingly.
     */
-    $scope.$on(EVENTS.API_PARAMS_CHANGED, function() {
+    $scope.$on(EVENTS.API_PARAMS_CHANGED, function () {
       $scope.offset = 0;
       $log.debug('ExploreCtrl @API_PARAMS_CHANGED', $scope.params);
       $scope.sync();
       // $scope.syncGraph();
       $scope.syncTimeline();
-
     });
-    
+
     $scope.$on(EVENTS.INFINITE_SCROLL, function (e) {
-      $scope.offset = $scope.offset + $scope.limit;
-      $log.debug('ExploreCtrl @INFINITE_SCROLL', '- skip:',$scope.offset,'- limit:', $scope.limit);
+      $scope.offset += $scope.limit;
+      $log.debug('ExploreCtrl @INFINITE_SCROLL', '- skip:', $scope.offset, '- limit:', $scope.limit);
       $scope.sync();
     });
 
     function onSocket(result) {
       console.log('ExploreResourcesCtrl @socket', result)
-      for(var i=0, l=$scope.relatedItems.length; i < l; i++){
-        if($scope.relatedItems[i].id == result.resource.id) {
+      for (let i = 0, l = $scope.relatedItems.length; i < l; i++) {
+        if ($scope.relatedItems[i].id == result.resource.id) {
           $scope.relatedItems[i] = result.data.related.resource
           break;
         }
       }
-    };
+    }
 
     socket.on('entity:upvote-related-resource:done', onSocket);
     // socket.on('entity:create-related-issue:done', onSocket);
 
-    if(!_.isEmpty($scope.params))
-      $scope.syncTimeline();
+    if (!_.isEmpty($scope.params)) $scope.syncTimeline();
 
     $scope.sync();
   })
-
-
-

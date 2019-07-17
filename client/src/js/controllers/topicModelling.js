@@ -160,10 +160,10 @@ angular.module('histograph')
     )
   })
   // eslint-disable-next-line prefer-arrow-callback
-  .factory('TopicModellingAspectsService', function service($resource) {
-    return $resource('/api/resource/topic-modelling/aspects/:aspect/:extra', {}, {})
+  .factory('TopicModellingAspectsService', function service($resource, HgSettings) {
+    return $resource(`${HgSettings.apiBaseUrl}/api/resource/topic-modelling/aspects/:aspect/:extra`, {}, {})
   })
   // eslint-disable-next-line prefer-arrow-callback
-  .factory('TopicModellingScoresService', function service($resource) {
-    return $resource('/api/resource/topic-modelling/scores', {}, {})
+  .factory('TopicModellingScoresService', function service($resource, HgSettings) {
+    return $resource(`${HgSettings.apiBaseUrl}/api/resource/topic-modelling/scores`, {}, {})
   })

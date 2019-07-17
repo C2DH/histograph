@@ -16,6 +16,7 @@ package-lock.json
 contents
 dist
 temp
+logs
 
 __*.*
 __*

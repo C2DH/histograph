@@ -1,5 +1,8 @@
 settings.js
 contents
 node_modules
+logs
+client/node_modules
+client/dist
 docker
 .git

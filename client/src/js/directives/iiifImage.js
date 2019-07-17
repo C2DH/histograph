@@ -1,7 +1,5 @@
 /* eslint-env browser */
-// eslint-disable-next-line no-undef
 angular.module('histograph')
-  // eslint-disable-next-line prefer-arrow-callback
   .directive('iiifImage', function directive() {
     return {
       restrict: 'A',
@@ -10,19 +8,17 @@ angular.module('histograph')
       },
       template: '<div class="iiif-image"></div>',
       link: function link(scope, element) {
-        // eslint-disable-next-line no-var
-        var root = element.find('.iiif-image')[0]
+        const root = element.find('.iiif-image')[0]
 
-        /* global L */
-        // eslint-disable-next-line no-var
-        var map = L.map(root, {
-          center: [0, 0],
-          crs: L.CRS.Simple,
-          zoom: 0,
-          // scrollWheelZoom: false
+        setTimeout(() => {
+          const map = window.L.map(root, {
+            center: [0, 0],
+            crs: window.L.CRS.Simple,
+            zoom: 0,
+            // scrollWheelZoom: false
+          })
+          window.L.tileLayer.iiif(scope.url).addTo(map)
         })
-
-        L.tileLayer.iiif(scope.url).addTo(map)
       }
     }
   })
