@@ -1,7 +1,6 @@
-HG
+Histograph
 ===
 
-! __wip__
 
 HG is the new Histograph, a **node-express**application aiming at providing digital humanities specialists with an online *collaborative* environment.
 Connections between **people**, **documents** and **images** are stored in a [Neo4j](http://neo4j.com/) graph database.
@@ -11,8 +10,10 @@ Connections between **people**, **documents** and **images** are stored in a [Ne
 ## installation
 Once cloned,
 	
-	npm install
-	
+```shell
+npm install && cd client && npm install
+```
+
 and install mocha globally (to test settings)
 
 	npm install -g mocha
@@ -88,10 +89,37 @@ If everything is ok, run global unit tests
 
 	npm test
 	
-And finally,
 
-	npm start
- 
+### Running in development mode
+
+1. Start API on port `8000`
+
+```
+npm start
+```
+
+2. Start web app on port `8080`
+
+```
+cd client && npm start
+```
+
+3. Web app will open in the browser.
+
+### Running in production mode
+
+Option 1: Build docker image and run it.
+
+```
+make build
+```
+
+Option 2: Compile client app and get API/Express app serve it.
+
+```
+cd client && npm run build
+npm start # then visit `http://localhost:8000/`
+```
 
 ## import data: manage.js script
 Once histograph has been installed, documents and links can be loaded from a JSON graph file via the **import** script by running:
