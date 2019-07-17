@@ -157,9 +157,7 @@ export default class TopicModellingTimeline {
       .join('g')
       .attr('class', 'hotspots')
       .selectAll('circle')
-      .data((d, stepIndex) => {
-        return d.map(value => ({ value, stepIndex }))
-      })
+      .data((d, stepIndex) => d.map(value => ({ value, stepIndex })))
       .join('circle')
       .attr('cy', (d, i) => yScale(i))
       .attr('fill', () => '#33333300')

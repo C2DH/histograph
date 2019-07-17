@@ -1,5 +1,5 @@
 /* eslint-env browser */
-/* globals angular */
+/* globals angular, io */
 /* eslint-disable prefer-arrow-callback, func-names, object-shorthand */
 /**
  * @ngdoc service
@@ -27,7 +27,7 @@ angular.module('histograph')
   */
   .factory('ResourcesFactory', function ($resource, HgSettings) {
     return $resource(`${HgSettings.apiBaseUrl}/api/resource`, {}, {
-        query: {method: 'GET' },
+      query: { method: 'GET' },
     });
   })
   /*
@@ -35,7 +35,7 @@ angular.module('histograph')
   */
   .factory('ResourceFactory', function ($resource, HgSettings) {
     return $resource(`${HgSettings.apiBaseUrl}/api/resource/:id`, {}, {
-        query: {method: 'GET' },
+      query: { method: 'GET' },
     });
   })
   /*
@@ -43,7 +43,7 @@ angular.module('histograph')
   */
   .factory('ResourceVizFactory', function ($resource, HgSettings) {
     return $resource(`${HgSettings.apiBaseUrl}/api/resource/:id/:viz`, {}, {
-        query: {method: 'GET' },
+      query: { method: 'GET' },
     });
   })
   /*
@@ -52,8 +52,8 @@ angular.module('histograph')
   */
   .factory('VisualizationFactory', function ($http, HgSettings) {
     return {
-      resource: function(viz, options) {
-        return $http.get(`${HgSettings.apiBaseUrl}/api/resource/` +viz, {
+      resource: function (viz, options) {
+        return $http.get(`${HgSettings.apiBaseUrl}/api/resource/${viz}`, {
           params: options
         });
       }
@@ -65,7 +65,7 @@ angular.module('histograph')
   */
   .factory('ResourceCommentsFactory', function ($resource, HgSettings) {
     return $resource(`${HgSettings.apiBaseUrl}/api/resource/:id/related/comment`, {}, {
-        query: {method: 'GET' },
+      query: { method: 'GET' },
     });
   })
   /*
@@ -134,7 +134,7 @@ angular.module('histograph')
   */
   .factory('CooccurrencesFactory', function ($resource, HgSettings) {
     return $resource(`${HgSettings.apiBaseUrl}/api/cooccurrences/:model/related/:projected_model`, {}, {
-        query: {method: 'GET' },
+      query: { method: 'GET' },
     });
   })
   /*
@@ -142,11 +142,11 @@ angular.module('histograph')
   */
   .factory('CommentFactory', function ($http, HgSettings) {
     return {
-      upvote: function(options) {
-        return $http.post(`${HgSettings.apiBaseUrl}/api/comment/` + options.id + '/upvote');
+      upvote: function (options) {
+        return $http.post(`${HgSettings.apiBaseUrl}/api/comment/${options.id}/upvote`);
       },
-      downvote: function(options) {
-        return $http.post(`${HgSettings.apiBaseUrl}/api/comment/` + options.id + '/downvote');
+      downvote: function (options) {
+        return $http.post(`${HgSettings.apiBaseUrl}/api/comment/${options.id}/downvote`);
       },
     };
   })
@@ -177,14 +177,14 @@ angular.module('histograph')
         method: 'GET',
         params: {
           m: 'viaf',
-          model:''
+          model: ''
         }
       },
       getDbpedia: {
         method: 'GET',
         params: {
           m: 'dbpedia',
-          model:''
+          model: ''
         }
       },
       getUnknownNodes: {
@@ -222,14 +222,14 @@ angular.module('histograph')
           model: ''
         }
       },
-      allInBetween:{
+      allInBetween: {
         method: 'GET',
         params: {
           m: 'all-in-between',
           model: ''
         }
       },
-      getShared:{
+      getShared: {
         method: 'GET',
         params: {
           m: 'shared',
@@ -238,32 +238,32 @@ angular.module('histograph')
       }
     });
   })
-  
+
   .factory('SuggestAllInBetweenFactory', function ($resource, HgSettings) {
     return $resource(`${HgSettings.apiBaseUrl}/api/suggest/all-in-between/:ids/:model`);
   })
-  
+
   .factory('SuggestAllInBetweenVizFactory', function ($resource, HgSettings) {
     return $resource(`${HgSettings.apiBaseUrl}/api/suggest/all-in-between/:ids/:model/:viz`);
   })
-  
+
   .factory('SearchFactory', function ($resource, HgSettings) {
     return $resource(`${HgSettings.apiBaseUrl}/api/suggest/:model`);
   })
-  
+
   .factory('SearchVizFactory', function ($resource, HgSettings) {
     return $resource(`${HgSettings.apiBaseUrl}/api/suggest/:model/:viz`);
   })
-  
+
 
   .factory('IssueFactory', function ($resource, HgSettings) {
     return $resource(`${HgSettings.apiBaseUrl}/api/issue`);
   })
-  
+
   .factory('DbpediaFactory', function ($resource) {
-    return $resource('http://lookup.dbpedia.org/api/search.asmx/PrefixSearch',{}, {
-      headers: { 
-        'Accept': 'application/json' 
+    return $resource('http://lookup.dbpedia.org/api/search.asmx/PrefixSearch', {}, {
+      headers: {
+        Accept: 'application/json'
       }
     });
   })
@@ -272,19 +272,17 @@ angular.module('histograph')
     Socket.io service, thqnks to http://briantford.com/blog/angular-socket-io
   */
   .factory('socket', function ($rootScope) {
-    var socket = io.connect();
+    const socket = io.connect();
     return {
       on: function (eventName, callback) {
-        socket.on(eventName, function () {  
-          var args = arguments;
+        socket.on(eventName, function (...args) {
           $rootScope.$apply(function () {
             callback.apply(socket, args);
           });
         });
       },
       emit: function (eventName, data, callback) {
-        socket.emit(eventName, data, function () {
-          var args = arguments;
+        socket.emit(eventName, data, function (...args) {
           $rootScope.$apply(function () {
             if (callback) {
               callback.apply(socket, args);

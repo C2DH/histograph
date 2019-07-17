@@ -7,12 +7,17 @@ module.exports = {
     },
     "plugins": [],
     "rules": {
-        "semi": ["warn", "never"],
+        "semi": "off",
         "no-underscore-dangle": "off",
         "arrow-parens": "off",
         "comma-dangle": "off",
         "class-methods-use-this": "off",
         "func-names": "off",
-        "prefer-arrow-callback": "off"
+        "prefer-arrow-callback": "off",
+    },
+    "globals": {
+        "angular": "readonly",
+        "moment": "readonly",
+        "_": "readonly"
     }
-};
+}

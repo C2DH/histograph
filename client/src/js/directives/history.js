@@ -1,4 +1,4 @@
-'use strict';
+
 
 /**
  * @ngdoc overview
@@ -9,11 +9,11 @@
  * show various trails
  */
 angular.module('histograph')
-  
 
-  .directive('flickr', function() {
+
+  .directive('flickr', function () {
     return {
-      link: function(scope, element) {
+      link(scope, element) {
         // get random palette to be used as background
         // element.css({
         //   position: 'absolute',
@@ -29,127 +29,127 @@ angular.module('histograph')
       }
     }
   })
-  .directive('history', function($log) {
+  .directive('history', function ($log) {
     return {
-      restrict : 'A',
+      restrict: 'A',
       template: '<div></div>',
       transclude: true,
       scope: {
         trails: '='
       },
-      link : function(scope, element, attrs) {
+      link(scope, element, attrs) {
         $log.info('::history ready', scope.trails);
         return;
-        var svg = d3.select(element[0])
+        const svg = d3.select(element[0])
           .append('svg');
-        
+
         function draw(trails) {
-          var mapped = trails.map(function (d, i) {
-              return {
-                paths: d.paths.map(function (_d, _i) { // remap to x,y 
-                  return {
-                    x: 10 + d.index * 40 + 40 * _i,
-                    y: 10 + i*15
-                  }
-                }),
-                id: i,
-                level: d.level,
-                index: d.index,
-                start: d.start
-              }
-            });
-              
-          var branches = svg.selectAll('g.branch')
-                .data(mapped, function(d, i) { return d.id;})
-          
-            
+          const mapped = trails.map(function (d, i) {
+            return {
+              paths: d.paths.map(function (_d, _i) { // remap to x,y
+                return {
+                  x: 10 + d.index * 40 + 40 * _i,
+                  y: 10 + i * 15
+                }
+              }),
+              id: i,
+              level: d.level,
+              index: d.index,
+              start: d.start
+            }
+          });
+
+          const branches = svg.selectAll('g.branch')
+            .data(mapped, function (d, i) { return d.id; })
+
+
           // new
           branches.enter()
             .append('g')
-              .attr({
-                'class': 'branch',
-                transform: function(d, i) {
-                  return ['translate(', 10 + d.index * 40, ',', 10 + i*15, ')'].join('')  
-                }
-              });
-              
+            .attr({
+              class: 'branch',
+              transform(d, i) {
+                return ['translate(', 10 + d.index * 40, ',', 10 + i * 15, ')'].join('')
+              }
+            });
+
           // basic xy drawing
-          var line = d3.svg.line()
+          const line = d3.svg.line()
             .x(function (d) { return d.x; })
             .y(function (d) { return d.y; });
-          
-          
-          var lines = svg.selectAll('path.line')
+
+
+          const lines = svg.selectAll('path.line')
             .data(mapped, function (d, i) {
-              return 'l'+d.id
+              return `l${d.id}`
             });
-            
-          
+
+
           lines.attr('d', function (d, i) {
-            var steer = [];
-            if(d.level != i) 
+            const steer = [];
+            if (d.level != i) {
               steer.push({
                 x: d.paths[0].x,
-                y: 10 + d.level*15
+                y: 10 + d.level * 15
               });
+            }
             return line(steer.concat(d.paths));
           });
-          
+
           lines.enter()
             .append('path')
-              .attr({
-                'class': 'line',
-                id: function(d) {
-                  return d.id
-                },
-                d: function(d) {
-                  return line(d.paths)
-                },
-                'stroke-width': 1,
-                'stroke': '#151515' 
-              });
-          
-          
-          var locations = branches.selectAll('g.location')
+            .attr({
+              class: 'line',
+              id(d) {
+                return d.id
+              },
+              d(d) {
+                return line(d.paths)
+              },
+              'stroke-width': 1,
+              stroke: '#151515'
+            });
+
+
+          const locations = branches.selectAll('g.location')
             .data(function (d, i) {
               return d.paths;
-            }, function(d,i) {
+            }, function (d, i) {
               return i
             });
-          
+
           locations.enter()
             .append('g')
-              .attr('class', 'location')
-                .append('circle').attr({
-                  r: 4,
-                  cy: 0,
-                  cx: function (d, i) {
-                    return 40 * i
-                  }
-                })
+            .attr('class', 'location')
+            .append('circle')
+            .attr({
+              r: 4,
+              cy: 0,
+              cx(d, i) {
+                return 40 * i
+              }
+            })
           // draw the line
-          
-          
+
+
           // // old
           // var locations = branches.select('g.branch')
-            
+
           //   .append()
-              
+
           // for(var i in trails) {
           //   console.log('trail i', i)
           //   for(var j in trails[i].paths)
           //     console.log(trails[i].index, trails[i].paths.length)
           // }
         }
-         
+
         // on graph change, change the timeline as well
         scope.$watch('trails', function (trails) {
-          if(!trails)
-            return;
-          
+          if (!trails) return;
+
           $log.info('::history @trails changed', trails);
           draw(trails);
-          
         }, true);
       }
     }

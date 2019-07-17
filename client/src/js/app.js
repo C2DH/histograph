@@ -38,7 +38,7 @@ module.exports = angular
     'angular-google-analytics',
 
     'ui.bootstrap',
-    'pascalprecht.translate',// angular-translate
+    'pascalprecht.translate', // angular-translate
     // 'ui.codemirror',
     'perfect_scrollbar',
     'LocalStorageModule',
@@ -46,12 +46,12 @@ module.exports = angular
     'angular-tour'
   ])
   .constant('LOCALES', {
-    'locales': {
-      'en_US': 'English'
+    locales: {
+      en_US: 'English'
     },
-    'preferredLocale': 'en_US'
+    preferredLocale: 'en_US'
   })
-  .constant("EVENTS", {
+  .constant('EVENTS', {
     USE_USER: 'use_user',
     USER_NOT_AUTHENTIFIED: 'user_not_authentified',
     API_PARAMS_CHANGED: 'api_params_changed',
@@ -69,20 +69,20 @@ module.exports = angular
     // start tour
     START_GUIDED_TOUR: 'start_guided_tour',
   })
-  .constant("VIZ", {
+  .constant('VIZ', {
     TIMELINE: 'timeline'
   })
-  .constant("MESSAGES", {
+  .constant('MESSAGES', {
     LOADING: 'loading, please wait',
     LOADED: 'loaded',
     AUTH_REQUIRED: 'please connect with your credentials'
   })
-  .constant("ORDER_BY", {
+  .constant('ORDER_BY', {
     RELEVANCE: {
       label: 'relevance',
       value: 'relevance'
     },
-    
+
     CLOSEST_DATE: {
       label: 'date (closest)',
       value: '-date'
@@ -97,7 +97,7 @@ module.exports = angular
       label: 'date (closest first)',
       value: '-date'
     }
-    
+
   })
   /*
     Angular-translate configs
@@ -107,24 +107,25 @@ module.exports = angular
     // $translateProvider.useMissingTranslationHandlerLog();
     $translateProvider.useSanitizeValueStrategy('sanitize');
     $translateProvider.useStaticFilesLoader({
-        prefix: 'locale/locale-',// path to translations files
-        suffix: '.json'// suffix, currently- extension of the translations
+      prefix: 'locale/locale-', // path to translations files
+      suffix: '.json'// suffix, currently- extension of the translations
     });
     $translateProvider.preferredLanguage('en_US');// is applied on first load
-    
-    //@ todo guided tour provider
+
+    // @ todo guided tour provider
   })
   /*
     Angular analytics config
   */
   .config(function (AnalyticsProvider, SETTINGS) {
-    if(SETTINGS.analytics.account)
+    if (SETTINGS.analytics.account) {
       AnalyticsProvider
         .setAccount(SETTINGS.analytics.account)
         .setDomainName(SETTINGS.analytics.domainName || 'none')
         .trackUrlParams(true)
-        // .logAllCalls(true)
+      // .logAllCalls(true)
         .setPageEvent('$stateChangeSuccess');
+    }
   })
   /*
     Local-storage module config. cfr
@@ -146,20 +147,20 @@ module.exports = angular
   })
   .config(function ($stateProvider, $urlRouterProvider, GRAMMAR) {
     $urlRouterProvider
-      .otherwise("/");
+      .otherwise('/');
 
     /*
       set up states and rules to be used as grammar for the filters controller, cfr js/controllers/filters.js
-    */  
+    */
     $stateProvider
       .state('index', {
         url: '/in',
-       
+
         templateUrl: 'templates/index.html',
         controller: 'IndexCtrl',
         reloadOnSearch: false,
       })
-      
+
       .state('explore', {
         url: '/',
         abstract: true,
@@ -173,7 +174,7 @@ module.exports = angular
               name: 'explore.resources',
               label: 'gallery of resources',
 
-            }, 
+            },
             {
               name: 'explore.projection',
               label: 'graph of person--person co-occurrences',
@@ -285,10 +286,10 @@ module.exports = angular
           }
         },
         resolve: {
-          relatedModel: function($stateParams) {
+          relatedModel: function ($stateParams) {
             return $stateParams.modelA
           },
-          projectedModel: function($stateParams) {
+          projectedModel: function ($stateParams) {
             return $stateParams.modelB
           },
         }
@@ -330,10 +331,10 @@ module.exports = angular
             {
               name: 'entity.resources',
               label: 'related documents'
-            },  {
+            }, {
               name: 'entity.graph',
               label: 'graph of related people'
-            },  {
+            }, {
               name: 'entity.graph.themes',
               label: 'graph of related themes'
             }, {
@@ -343,13 +344,13 @@ module.exports = angular
           ],
         },
         resolve: {
-          entity: function(EntityFactory, $stateParams) {
+          entity: function (EntityFactory, $stateParams) {
             return EntityFactory.get({
               id: $stateParams.id
             }).$promise;
           },
           // cooccurrences (appearing with)
-          persons: function(EntityRelatedFactory, $stateParams) {
+          persons: function (EntityRelatedFactory, $stateParams) {
             return EntityRelatedFactory.get({
               id: $stateParams.id,
               model: 'person',
@@ -357,7 +358,7 @@ module.exports = angular
             }, {}).$promise;
           },
           // lcoation cooccurrences (appearing with)
-          locations: function(EntityRelatedFactory, $stateParams) {
+          locations: function (EntityRelatedFactory, $stateParams) {
             return EntityRelatedFactory.get({
               id: $stateParams.id,
               model: 'location',
@@ -391,16 +392,16 @@ module.exports = angular
             typeahead: 'entity'
           }
         },
-        resolve:{
-          specials: function() {
+        resolve: {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function() {
+          relatedModel: function () {
             return 'person'
           },
-          relatedVizFactory: function(EntityRelatedVizFactory) {
+          relatedVizFactory: function (EntityRelatedVizFactory) {
             return EntityRelatedVizFactory
           }
         }
@@ -423,16 +424,16 @@ module.exports = angular
             typeahead: 'entity'
           }
         },
-        resolve:{
-          specials: function() {
+        resolve: {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function() {
+          relatedModel: function () {
             return 'theme'
           },
-          relatedVizFactory: function(EntityRelatedVizFactory) {
+          relatedVizFactory: function (EntityRelatedVizFactory) {
             return EntityRelatedVizFactory
           }
         }
@@ -456,21 +457,21 @@ module.exports = angular
           }
         },
         resolve: {
-          specials: function() {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function(){
+          relatedModel: function () {
             return 'person'
           },
-          relatedVizFactory: function(EntityRelatedVizFactory) {
+          relatedVizFactory: function (EntityRelatedVizFactory) {
             return EntityRelatedVizFactory
           },
-          relatedFactory: function(EntityRelatedFactory) {
+          relatedFactory: function (EntityRelatedFactory) {
             return EntityRelatedFactory
           },
-          relatedItems: function(EntityRelatedFactory, $stateParams, $location) {
+          relatedItems: function (EntityRelatedFactory, $stateParams, $location) {
             return EntityRelatedFactory.get(angular.extend({}, $location.search(), {
               id: $stateParams.id,
               model: 'person',
@@ -485,16 +486,16 @@ module.exports = angular
         templateUrl: 'templates/partials/entities.html',
         controller: 'EntitiesCtrl',
         resolve: {
-          model: function(){
+          model: function () {
             return 'organization'
           },
-          relatedVizFactory: function(EntityRelatedVizFactory) {
+          relatedVizFactory: function (EntityRelatedVizFactory) {
             return EntityRelatedVizFactory
           },
-          relatedFactory: function(EntityRelatedFactory) {
+          relatedFactory: function (EntityRelatedFactory) {
             return EntityRelatedFactory
           },
-          entities: function(EntityRelatedFactory, $stateParams) {
+          entities: function (EntityRelatedFactory, $stateParams) {
             return EntityRelatedFactory.get({
               id: $stateParams.id,
               model: 'organization',
@@ -508,16 +509,16 @@ module.exports = angular
         templateUrl: 'templates/partials/entities.html',
         controller: 'EntitiesCtrl',
         resolve: {
-          model: function(){
+          model: function () {
             return 'location'
           },
-          relatedVizFactory: function(EntityRelatedVizFactory) {
+          relatedVizFactory: function (EntityRelatedVizFactory) {
             return EntityRelatedVizFactory
           },
-          relatedFactory: function(EntityRelatedFactory) {
+          relatedFactory: function (EntityRelatedFactory) {
             return EntityRelatedFactory
           },
-          entities: function(EntityRelatedFactory, $stateParams) {
+          entities: function (EntityRelatedFactory, $stateParams) {
             return EntityRelatedFactory.get({
               id: $stateParams.id,
               model: 'location',
@@ -530,7 +531,7 @@ module.exports = angular
         url: '',
         // templateUrl: 'templates/partials/resources.html',
         templateUrl: 'templates/partials/resources-masonry.html',
-        
+
         controller: 'RelatedItemsCtrl',
         grammar: {
           label: 'related documents',
@@ -547,22 +548,22 @@ module.exports = angular
           }
         },
         resolve: {
-          specials: function() {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function() {
+          relatedModel: function () {
             return 'resource'
           },
-          relatedVizFactory: function(EntityRelatedVizFactory) {
+          relatedVizFactory: function (EntityRelatedVizFactory) {
             return EntityRelatedVizFactory
           },
-          relatedFactory: function(EntityRelatedFactory) {
+          relatedFactory: function (EntityRelatedFactory) {
             return EntityRelatedFactory
           },
-          relatedItems: function(EntityRelatedFactory, $stateParams, $location) {
-            return EntityRelatedFactory.get(angular.extend({},$location.search(), {
+          relatedItems: function (EntityRelatedFactory, $stateParams, $location) {
+            return EntityRelatedFactory.get(angular.extend({}, $location.search(), {
               id: $stateParams.id,
               model: 'resource',
               limit: 10
@@ -570,7 +571,7 @@ module.exports = angular
           },
         }
       })
-    
+
       /*
         user
         /u          - the authenticated user profile
@@ -592,7 +593,7 @@ module.exports = angular
           ],
         },
         resolve: {
-          pulse: function(UserFactory, $stateParams) {
+          pulse: function (UserFactory, $stateParams) {
             return UserFactory.get({
               method: 'pulse'
             }).$promise;
@@ -634,22 +635,22 @@ module.exports = angular
           }
         },
         resolve: {
-          specials: function() {
+          specials: function () {
             return [
               'syncGraph'
             ]
           },
-          relatedModel: function() {
+          relatedModel: function () {
             return 'resource'
           },
-          relatedVizFactory: function(UserRelatedVizFactory) {
+          relatedVizFactory: function (UserRelatedVizFactory) {
             return UserRelatedVizFactory
           },
-          relatedFactory: function(UserRelatedFactory) {
+          relatedFactory: function (UserRelatedFactory) {
             return UserRelatedFactory
           },
-          relatedItems: function(UserRelatedFactory, $stateParams, $location) {
-            return UserRelatedFactory.get(angular.extend({},$location.search(), {
+          relatedItems: function (UserRelatedFactory, $stateParams, $location) {
+            return UserRelatedFactory.get(angular.extend({}, $location.search(), {
               id: $stateParams.id,
               model: 'resource',
               limit: 10
@@ -658,7 +659,7 @@ module.exports = angular
         }
       })
 
-       /*
+    /*
         resources
         @todo
       */
@@ -669,13 +670,13 @@ module.exports = angular
         controller: 'ResourceCtrl',
         reloadOnSearch: false,
         resolve: {
-          resource: function(ResourceFactory, $stateParams) {
+          resource: function (ResourceFactory, $stateParams) {
             return ResourceFactory.get({
               id: $stateParams.id
             }).$promise;
           },
           // user annotations, if any
-          annotations: function(ResourceRelatedFactory, $stateParams) {
+          annotations: function (ResourceRelatedFactory, $stateParams) {
             return ResourceRelatedFactory.get({
               model: 'annotate',
               id: $stateParams.id
@@ -689,11 +690,11 @@ module.exports = angular
             {
               name: 'resource.resources',
               label: 'documents'
-            }, 
+            },
             {
               name: 'resource.graph',
               label: 'graph of documents'
-            }, 
+            },
             {
               name: 'resource.persons',
               label: 'people'
@@ -732,23 +733,23 @@ module.exports = angular
             typeahead: 'entity'
           }
         },
-        resolve:{
-          specials: function() {
+        resolve: {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function() {
+          relatedModel: function () {
             return 'resource'
           },
-          relatedVizFactory: function(ResourceRelatedVizFactory) {
+          relatedVizFactory: function (ResourceRelatedVizFactory) {
             return ResourceRelatedVizFactory
           }
         }
       })
       .state('resource.resources', {
         url: '',
-        //templateUrl: 'templates/partials/resources.html',
+        // templateUrl: 'templates/partials/resources.html',
         templateUrl: 'templates/partials/resources-masonry.html',
         controller: 'ResourceContextCtrl',
         grammar: {
@@ -766,22 +767,21 @@ module.exports = angular
           }
         },
         resolve: {
-          specials: function() {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function() {
+          relatedModel: function () {
             return 'resource'
           },
-          relatedVizFactory: function(ResourceRelatedVizFactory) {
+          relatedVizFactory: function (ResourceRelatedVizFactory) {
             return ResourceRelatedVizFactory
           },
-          relatedFactory: function(ResourceRelatedFactory) {
+          relatedFactory: function (ResourceRelatedFactory) {
             return ResourceRelatedFactory
           },
-          relatedItems: function(ResourceRelatedFactory, $stateParams, $location) {
-            
+          relatedItems: function (ResourceRelatedFactory, $stateParams, $location) {
             return ResourceRelatedFactory.get(angular.extend({
               id: $stateParams.id,
               model: 'resource',
@@ -811,21 +811,21 @@ module.exports = angular
           }
         },
         resolve: {
-          specials: function() {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function(){
+          relatedModel: function () {
             return 'person'
           },
-          relatedVizFactory: function(ResourceRelatedVizFactory) {
+          relatedVizFactory: function (ResourceRelatedVizFactory) {
             return ResourceRelatedVizFactory
           },
-          relatedFactory: function(ResourceRelatedFactory) {
+          relatedFactory: function (ResourceRelatedFactory) {
             return ResourceRelatedFactory
           },
-          relatedItems: function(ResourceRelatedFactory, $stateParams, $location) {
+          relatedItems: function (ResourceRelatedFactory, $stateParams, $location) {
             return ResourceRelatedFactory.get(angular.extend({
               id: $stateParams.id,
               model: 'person',
@@ -869,21 +869,21 @@ module.exports = angular
           }
         },
         resolve: {
-          specials: function() {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function(){
+          relatedModel: function () {
             return 'organization'
           },
-          relatedVizFactory: function(ResourceRelatedVizFactory) {
+          relatedVizFactory: function (ResourceRelatedVizFactory) {
             return ResourceRelatedVizFactory
           },
-          relatedFactory: function(ResourceRelatedFactory) {
+          relatedFactory: function (ResourceRelatedFactory) {
             return ResourceRelatedFactory
           },
-          entities: function(ResourceRelatedFactory, $stateParams) {
+          entities: function (ResourceRelatedFactory, $stateParams) {
             return ResourceRelatedFactory.get({
               id: $stateParams.id,
               model: 'organization',
@@ -892,7 +892,7 @@ module.exports = angular
           }
         }
       })
-      
+
       .state('resource.users', {
         url: '/u',
         templateUrl: 'templates/partials/users.html',
@@ -908,21 +908,21 @@ module.exports = angular
           }
         },
         resolve: {
-          specials: function() {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function(){
+          relatedModel: function () {
             return 'user'
           },
-          relatedVizFactory: function(ResourceRelatedVizFactory) {
+          relatedVizFactory: function (ResourceRelatedVizFactory) {
             return ResourceRelatedVizFactory
           },
-          relatedFactory: function(ResourceRelatedFactory) {
+          relatedFactory: function (ResourceRelatedFactory) {
             return ResourceRelatedFactory
           },
-          relatedItems: function(ResourceRelatedFactory, $stateParams, $location) {
+          relatedItems: function (ResourceRelatedFactory, $stateParams, $location) {
             return ResourceRelatedFactory.get(angular.extend({
               id: $stateParams.id,
               model: 'user',
@@ -947,21 +947,21 @@ module.exports = angular
           }
         },
         resolve: {
-          specials: function() {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function(){
+          relatedModel: function () {
             return 'inquiry'
           },
-          relatedVizFactory: function(ResourceRelatedVizFactory) {
+          relatedVizFactory: function (ResourceRelatedVizFactory) {
             return ResourceRelatedVizFactory
           },
-          relatedFactory: function(ResourceRelatedFactory) {
+          relatedFactory: function (ResourceRelatedFactory) {
             return ResourceRelatedFactory
           },
-          relatedItems: function(ResourceRelatedFactory, $stateParams, $location) {
+          relatedItems: function (ResourceRelatedFactory, $stateParams, $location) {
             return ResourceRelatedFactory.get(angular.extend({
               id: $stateParams.id,
               model: 'inquiry',
@@ -975,14 +975,14 @@ module.exports = angular
         templateUrl: 'templates/partials/inquiry.html',
         controller: 'InquiryCtrl',
         resolve: {
-          inquiry: function(InquiryFactory, $stateParams) {
+          inquiry: function (InquiryFactory, $stateParams) {
             return InquiryFactory.get({
               id: $stateParams.inquiry_id
             }).$promise;
           }
         }
       })
-      
+
       .state('resource.createInquiry', {
         url: '/inq/create',
         templateUrl: 'templates/partials/inquiries.create.html',
@@ -993,18 +993,18 @@ module.exports = angular
         templateUrl: 'templates/partials/issues.create.html',
         controller: 'IssueCreateCtrl'
       })
-      
-      /*
+
+    /*
         collections
         @todo
-      */    
-      //.state('collections', {})
-      //.state('collection', {})
-      
+      */
+    // .state('collections', {})
+    // .state('collection', {})
+
       /*
         MISC
         @todo
-      */    
+      */
       .state('neighbors', {
         abstract: true,
         url: '/neighbors/{ids:[0-9,A-Z_a-z-]+}',
@@ -1050,25 +1050,25 @@ module.exports = angular
           }
         },
         resolve: {
-          specials: function() {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function() {
+          relatedModel: function () {
             return 'resource'
           },
-          relatedVizFactory: function(SuggestAllInBetweenVizFactory) {
+          relatedVizFactory: function (SuggestAllInBetweenVizFactory) {
             return SuggestAllInBetweenVizFactory;
           },
-          relatedFactory: function(SuggestAllInBetweenFactory) {
+          relatedFactory: function (SuggestAllInBetweenFactory) {
             return SuggestAllInBetweenFactory;
           },
-          relatedItems: function(SuggestAllInBetweenFactory, $stateParams, $location) {
+          relatedItems: function (SuggestAllInBetweenFactory, $stateParams, $location) {
             return SuggestAllInBetweenFactory.get(angular.extend({
               limit: 10,
               model: 'resource'
-            }, $stateParams, $location.search())).$promise; 
+            }, $stateParams, $location.search())).$promise;
           }
         }
       })
@@ -1093,13 +1093,13 @@ module.exports = angular
       //         ids: $stateParams.ids,
       //         limit: 10,
       //         model: 'person'
-      //       }).$promise; 
+      //       }).$promise;
       //     }
       //   }
       // })
-    
+
       .state('search', {
-        abstract:true,
+        abstract: true,
         url: '/search/:query',
         templateUrl: 'templates/search.html',
         controller: 'SearchCtrl',
@@ -1114,7 +1114,7 @@ module.exports = angular
           ]
         },
         resolve: {
-          stats: function(SuggestFactory, $stateParams) {
+          stats: function (SuggestFactory, $stateParams) {
             return SuggestFactory.getStats({
               query: $stateParams.query
             }).$promise;
@@ -1156,22 +1156,22 @@ module.exports = angular
           }
         },
         resolve: {
-          specials: function() {
+          specials: function () {
             return [
 
             ]
           },
-          relatedModel: function() {
+          relatedModel: function () {
             return 'resource'
           },
-          relatedVizFactory: function(SearchVizFactory) {
+          relatedVizFactory: function (SearchVizFactory) {
             return SearchVizFactory
           },
-          relatedFactory: function(SearchFactory) {
+          relatedFactory: function (SearchFactory) {
             return SearchFactory
           },
-          relatedItems: function(SearchFactory, $stateParams, $location) {
-            return SearchFactory.get(angular.extend({},$location.search(), {
+          relatedItems: function (SearchFactory, $stateParams, $location) {
+            return SearchFactory.get(angular.extend({}, $location.search(), {
               model: 'resource',
               query: $stateParams.query,
               limit: 10
@@ -1214,17 +1214,17 @@ module.exports = angular
           }
         },
         resolve: {
-          model: function(){
+          model: function () {
             return 'person'
           },
-          relatedVizFactory: function(SearchVizFactory) {
+          relatedVizFactory: function (SearchVizFactory) {
             return SearchVizFactory
           },
-          relatedFactory: function(SearchFactory) {
+          relatedFactory: function (SearchFactory) {
             return SearchFactory
           },
-          entities: function(SearchFactory, $stateParams, $location) {
-            return SearchFactory.get(angular.extend({},$location.search(), {
+          entities: function (SearchFactory, $stateParams, $location) {
+            return SearchFactory.get(angular.extend({}, $location.search(), {
               model: 'entity',
               query: $stateParams.query,
               limit: 10
@@ -1247,7 +1247,6 @@ module.exports = angular
         templateUrl: 'templates/partials/entities.html',
         controller: 'SearchEntitiesCtrl',
       })
-    
   })
   .config(function ($httpProvider) {
     // eslint-disable-next-line no-param-reassign
@@ -1260,8 +1259,8 @@ module.exports = angular
         //     $rootScope.$broadcast(EVENTS.USE_USER, response.data.user);
         //   return response
         // },
-        responseError: function(rejection) {
-          if(rejection.status === 403) {
+        responseError: function (rejection) {
+          if (rejection.status === 403) {
             $rootScope.$broadcast(EVENTS.USER_NOT_AUTHENTIFIED);
             $log.error('redirecting, authorization problems');
             // location.reload(true);

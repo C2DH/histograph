@@ -7,38 +7,38 @@
 angular.module('histograph')
   .controller('InquiryCtrl', function ($scope, $log, $stateParams, inquiry, ResourceFactory, CommentFactory, InquiryRelatedFactory, socket) {
     $log.debug('InquiryCtrl ready, resource id:', $stateParams.id, '- inquiry id:', $stateParams.inquiry_id);
-    
+
     $scope.comment = {};
     /*
-    
+
       Create a new comment
       ----------------------
     */
-    $scope.createComment = function() {
+    $scope.createComment = function () {
       $log.debug('InquiryCtrl -> createComment()', $scope.comment);
-      
+
       InquiryRelatedFactory.save({
         id: $scope.inquiry.id,
         model: 'comment'
       }, {
         content: $scope.comment.content
-      }, function(data) {
+      }, function (data) {
         $log.debug('InquiryCtrl -> createComment() success', data);
-        $scope.comment = {};  
+        $scope.comment = {};
       })
     };
     /**
       vote up
     */
-    $scope.upvote = function(comment) {
+    $scope.upvote = function (comment) {
       console.log(comment)
-      CommentFactory.upvote(comment).then(function(res) {
+      CommentFactory.upvote(comment).then(function (res) {
         console.log(res)
       });
     }
-    $scope.downvote = function(comment) {
+    $scope.downvote = function (comment) {
       console.log(comment)
-      CommentFactory.downvote(comment).then(function(res) {
+      CommentFactory.downvote(comment).then(function (res) {
         console.log(res)
       });
     }
@@ -50,19 +50,19 @@ angular.module('histograph')
     */
     $scope.inquiry = inquiry.result.item;
 
-    
+
     // list of ids, without any scope
-    var relatedItemsIds = [];
-    
+    let relatedItemsIds = [];
+
     // load related items
     InquiryRelatedFactory.get({
       id: +$stateParams.inquiry_id,
       model: 'comment'
-    }, function(data) {
+    }, function (data) {
       $scope.inquiry.relatedItems = data.result.items;
-      relatedItemsIds = data.result.items.map(function (d) {return d.id});
+      relatedItemsIds = data.result.items.map(function (d) { return d.id });
     })
-    
+
     /*
       listeners for creations
     */
@@ -85,51 +85,48 @@ angular.module('histograph')
       //   }
       // }
     });
-    
+
     socket.on('done:update_comment', function (result) {
       // check if you're looking at the same
       $log.log('socket@done:update_comment / InquiryCtrl #comment_id =', result.data.id);
-      
-      for(var i in $scope.relatedItems) {
-        if($scope.relatedItems[i].id == result.data.id) {
+
+      for (const i in $scope.relatedItems) {
+        if ($scope.relatedItems[i].id == result.data.id) {
           $scope.relatedItems[i] = result.data;
         }
       }
     });
-
   })
   .controller('InquiryCreateCtrl', function ($scope, $log, $stateParams, $location, ResourceRelatedFactory, socket) {
     $log.debug('InquiryCreateCtrl ready, resource id:', $stateParams.id, 'loaded');
-    
+
     // the current, empty inquiry
     $scope.inquiry = {
       name: '',
       description: 'Basic Multiline description\nWith more text than expected'
     };
     /*
-    
+
       Create a new inquiry
       ----------------------
     */
-    $scope.createInquiry = function() {
+    $scope.createInquiry = function () {
       // validate content, otherwise launch alarm!
       $log.debug('InquiryCreateCtrl -> createInquiry()', $scope.inquiry);
-      if($scope.inquiry.name.trim().length > 3) {
+      if ($scope.inquiry.name.trim().length > 3) {
         ResourceRelatedFactory.save({
           id: $stateParams.id,
           model: 'inquiry'
         }, angular.copy($scope.inquiry), function (data) {
           $log.debug('InquiryCreateCtrl -> createInquiry() success', data.result.item.id);
           // redirect...
-          $location.path('/r/'+ $stateParams.id +'/inq/' + data.result.item.id)
+          $location.path(`/r/${$stateParams.id}/inq/${data.result.item.id}`)
         })
-      };
+      }
     }
-   
   })
   .controller('InquiriesCtrl', function ($scope, $log, $stateParams, inquiries, socket) {
     $log.debug('InquiriesCtrl ready', $stateParams.id, 'loaded', inquiries);
     $scope.relatedItems = inquiries.result.items
     $scope.totalItems = inquiries.info.total_count || 0
-    
   })

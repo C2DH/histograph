@@ -8,6 +8,8 @@ window.d3 = require('d3')
 window.sigma = require('sigma')
 window.Masonry = require('masonry-layout')
 window.moment = require('moment')
+window.L = require('leaflet')
+require('leaflet-iiif')
 
 const angular = require('angular')
 const io = require('socket.io-client')
@@ -27,7 +29,7 @@ require('angular-local-storage')
 
 window.imagesLoaded = require('imagesloaded')
 // https://github.com/klederson/angular-masonry-directive
-require('./lib/angular-masonry.min.js')
+require('./lib/angular-masonry.min')
 require('angular-tour/dist/angular-tour')
 require('angular-tour/dist/angular-tour-tpls')
 
@@ -98,6 +100,15 @@ function importTemplates() {
 }
 
 importTemplates()
+
+require('../css/bootstrap.min.css')
+require('../css/font-awesome.min.css')
+require('../css/perfect-scrollbar.min.css')
+require('../css/annotator.css')
+require('../css/annotorious.css')
+require('../css/style.css')
+require('leaflet/dist/leaflet.css')
+require('../css/base.css')
 
 app.run(function ($log) {
   $log.info('hg running...')

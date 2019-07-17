@@ -10,12 +10,12 @@ angular.module('histograph')
   })
   .controller('IssueCreateCtrl', function ($scope, $log, $stateParams, ResourceRelatedFactory, socket) {
     $log.debug('IssueCreateCtrl ready, resource id:', $stateParams.id, 'type', $stateParams.type);
-    
-    var defaultTitles = {
-      'date': 'Main date is not correct or is not found',
-      'title':'The title of the document is not correct'
+
+    const defaultTitles = {
+      date: 'Main date is not correct or is not found',
+      title: 'The title of the document is not correct'
     }
-    
+
     // the current, empty inquiry
     $scope.issue = {
       type: $stateParams.type,
@@ -23,9 +23,9 @@ angular.module('histograph')
       description: 'no description',
       language: $scope.language
     };
-    
+
     $scope.createIssue = function () {
-      if($scope.issue.type == 'date')
+      if ($scope.issue.type == 'date') {
         ResourceRelatedFactory.save({
           model: 'issue',
           id: $stateParams.id
@@ -34,10 +34,10 @@ angular.module('histograph')
           solution: [$scope.start_date, $scope.end_date],
           description: $scope.issue.description || '',
           title: $scope.issue.title || ''
-        }, function(res) {
+        }, function (res) {
           console.log(res)
-          //$modalInstance.close();
+        // $modalInstance.close();
         });
+      }
     };
-   
   })

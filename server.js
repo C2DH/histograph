@@ -45,7 +45,7 @@ var app           = exports.app = express(),                 // define our app u
     _             = require('lodash'),
     
     // app client scripts dependencies (load scripts in jade)
-    clientFiles  = require('./client/src/files')[env],
+    // clientFiles  = require('./client/src/files')[env],
 
     // session middleware
     sessionMiddleware;
@@ -134,10 +134,12 @@ app.use(morgan('combined', {
   stream: fs.createWriteStream(settings.paths.accesslog, {flags: 'a'})
 }));
 
+app.use(express.static('./client/dist'));
+
 if ('production' == env) {
-  app.use(express.static('./client/dist'));
+  // app.use(express.static('./client/dist'));
 } else {
-  app.use(express.static('./client/src'));
+  // app.use(express.static('./client/src'));
 
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', req.get('origin'))
@@ -233,7 +235,7 @@ clientRouter.route('/').
       types: settings.types,
       title: settings.title,
       analytics: settings.analytics,
-      scripts: clientFiles.scripts
+      // scripts: clientFiles.scripts
     });
   });
   
@@ -245,7 +247,7 @@ clientRouter.route('/terms').
       types: settings.types,
       title: settings.title,
       analytics: settings.analytics,
-      scripts: clientFiles.scripts
+      // scripts: clientFiles.scripts
     });
   });
 

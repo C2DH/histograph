@@ -27,6 +27,7 @@
           "preventFullImport": true
         }
       }
-    ]
+    ],
+    "angularjs-annotate"
   ]
 }
