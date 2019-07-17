@@ -7,8 +7,6 @@ const CleanWebpackPlugin = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
-const settings = require('../settings')
-
 module.exports = (env, options) => {
   const isDevMode = options.mode !== 'production'
   const settingsFileLocation = isDevMode
@@ -113,6 +111,10 @@ module.exports = (env, options) => {
             // until they are fixed all errors are treated as warnings
             emitWarning: true
           },
+        },
+        {
+          test: /sigma.*\.js$/,
+          use: 'imports-loader?this=>window',
         },
         {
           test: /\.(js|jsx)$/,

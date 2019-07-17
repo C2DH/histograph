@@ -6,6 +6,12 @@ window.$ = jquery
 window._ = require('lodash')
 window.d3 = require('d3')
 window.sigma = require('sigma')
+
+
+require('sigma/build/plugins/sigma.layout.forceAtlas2.min')
+require('sigma/build/plugins/sigma.plugins.dragNodes.min')
+require('sigma/build/plugins/sigma.exporters.svg.min')
+
 window.Masonry = require('masonry-layout')
 window.moment = require('moment')
 window.L = require('leaflet')

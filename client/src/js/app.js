@@ -145,9 +145,10 @@ module.exports = angular
       appendToBody: true
     })
   })
-  .config(function ($stateProvider, $urlRouterProvider, GRAMMAR) {
+  .config(function ($stateProvider, $urlRouterProvider, GRAMMAR, $locationProvider) {
     $urlRouterProvider
       .otherwise('/');
+    $locationProvider.hashPrefix('')
 
     /*
       set up states and rules to be used as grammar for the filters controller, cfr js/controllers/filters.js
