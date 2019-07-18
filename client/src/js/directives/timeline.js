@@ -43,7 +43,10 @@ angular.module('histograph')
           },
           _width: 0,
           _height: 50,
-          ui: {}
+          ui: {},
+          draghandle: {
+            radius: 10
+          }
         }
 
         // set/get timeline width
@@ -104,6 +107,50 @@ angular.module('histograph')
               [tim.width() - tim.padding.v * 2 + 2, tim.height() - tim.padding.h]
             ]))
 
+          /*
+            Drag handle is visible when selection window is too small to be dragged.
+          */
+          tim.ui.draghandle = tim.gBrush
+            .selectAll('.draghandle')
+            .data([null])
+            .join('circle')
+            .attr('class', 'draghandle')
+            .attr('r', tim.draghandle.radius)
+            .attr('fill', 'crimson')
+            .style('cursor', 'move')
+            .style('transition', 'visibility .5s, opacity .5s')
+            .attr('cy', tim.height() / 2 - tim.draghandle.radius / 2)
+            .call(d3.drag()
+              .on('drag', function () {
+                const { dx } = d3.event
+                const { x: selectorWindowX1, width: selectorWindowWidth } = tim.gBrush.select('.selection').node().getBBox()
+                const selectorWindowX2 = selectorWindowX1 + selectorWindowWidth
+                const sliderSpanWidth = tim.width() - tim.padding.h * 2
+
+                // when drag offset is outside of the draggable limits do nothing.
+                if (selectorWindowX1 + dx < 0 || selectorWindowX2 + dx > sliderSpanWidth + 1) {
+                  return
+                }
+
+                // otherwise move the selection window with handles accordingly.
+                tim.gBrush.selectAll('.selection,.handle')
+                  .attr('x', function () {
+                    const currentValue = parseFloat(d3.select(this).attr('x'))
+                    return dx ? currentValue + dx : currentValue
+                  })
+
+                // update drag handler and date tooltips positions.
+                const { x, width } = tim.gBrush.select('.selection').node().getBBox()
+                const extent = [x, x + width]
+                tim.drawDates(extent.map(tim.fn.x.invert))
+              })
+              .on('end', () => {
+                // when dragging is over notify brush that the actual domain has changed.
+                const { x, width } = tim.gBrush.select('.selection').node().getBBox()
+                const extent = [x, x + width]
+                tim.gBrush.call(tim.brush.move, extent)
+              }))
+
           if (tim.drawDates) tim.drawDates()
 
           tim.initFn()
@@ -159,18 +206,29 @@ angular.module('histograph')
           if (!extent) {
             tim.ui.brushDateLeft.style('visibility', 'hidden')
             tim.ui.brushDateRight.style('visibility', 'hidden')
+            tim.ui.draghandle.style('visibility', 'hidden').style('opacity', 0)
             return
           }
+
+          const extentWidth = tim.fn.x(extent[1]) - tim.fn.x(extent[0])
+          const draghandleOffset = extentWidth / 2
+          const isDraghandleVisible = extentWidth < tim.draghandle.radius * 1.5
+
+          tim.ui.draghandle.style('visibility', 'hidden')
+            .style('visibility', () => (isDraghandleVisible ? 'visible' : 'hidden'))
+            .style('opacity', () => (isDraghandleVisible ? 1 : 0))
+            .attr('cx', tim.fn.x(extent[0]) + draghandleOffset)
+
           if (extent[0] && typeof extent[0] === 'object') {
             // console.log(extent[0])
             tim.ui.brushDateLeft
               .style('visibility', 'visible')
-              .style('transform', `translateX(${tim.fn.x(extent[0]) + 50 - 1}px)`)
+              .style('transform', `translateX(${tim.fn.x(extent[0]) + 45 - 1}px)`)
               .text(tim.fn.asDay(extent[0]))
           } else if (typeof extent[0] === 'number') {
             tim.ui.brushDateLeft
               .style('visibility', 'visible')
-              .style('transform', `translateX(${tim.fn.x(extent[0]) + 50 - 1}px)`)
+              .style('transform', `translateX(${tim.fn.x(extent[0]) + 45 - 1}px)`)
               .text(tim.fn.asDay(new Date(extent[0])))
           } else {
             tim.ui.brushDateLeft.style('visibility', 'hidden')
@@ -179,12 +237,12 @@ angular.module('histograph')
           if (typeof extent[1] === 'object') {
             tim.ui.brushDateRight
               .style('visibility', 'visible')
-              .style('transform', `translateX(${tim.fn.x(extent[1]) + 110 + 51}px)`)
+              .style('transform', `translateX(${tim.fn.x(extent[1]) + 110 + 56}px)`)
               .text(tim.fn.asDay(extent[1]))
           } else if (typeof extent[1] === 'number') {
             tim.ui.brushDateRight
               .style('visibility', 'visible')
-              .style('transform', `translateX(${tim.fn.x(extent[1]) + 110 + 51}px)`)
+              .style('transform', `translateX(${tim.fn.x(extent[1]) + 110 + 56}px)`)
               .text(tim.fn.asDay(new Date(extent[1])))
           } else {
             tim.ui.brushDateRight.style('visibility', 'hidden')
