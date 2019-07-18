@@ -46,9 +46,18 @@
          hi-item-click-handler="itemClickHandler"
          class="topic-modelling-timeline-container">
     </div>
-    <div class="sans-serif scale-legend"
-         ng-if="resourcesCountPerPartition">
-      1 bar = {{resourcesCountPerPartition}} resource{{ resourcesCountPerPartition === 1 ? '' : 's'}}
+    <div class="{{classes.graphFooter}}">
+      <div>
+        <button class="btn btn-default {{classes.zoomInButton}}" 
+                ng-click="zoomIn()"
+                ng-if="itemsPerBin > 0"
+                ng-disabled="itemsPerBin <= 1">
+          <i class="fa fa-search-plus"/>
+        </button>
+      </div>
+      <div class="sans-serif {{classes.barZoomLabel}}" ng-if="itemsPerBin > 0">
+        1 bar = {{itemsPerBin}} resource{{ itemsPerBin === 1 ? '' : 's'}}
+      </div>
     </div>
 
     <div class="selected-resources related-resources-container">

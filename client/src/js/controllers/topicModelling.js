@@ -1,13 +1,32 @@
 /* eslint-env browser */
-/* globals angular, moment, _ */
+import { withStyles } from '../styles'
+
+const styles = {
+  graphFooter: {
+    display: 'flex',
+    justifyContent: 'flex-end'
+  },
+  zoomInButton: {
+    marginRight: '1em',
+    '& .fa': {
+      fontSize: '1em',
+    }
+  },
+  barZoomLabel: {
+    lineHeight: '1em',
+    margin: [['auto', 0]]
+  }
+}
+
 angular.module('histograph')
-  // eslint-disable-next-line prefer-arrow-callback, func-names
   .controller('TopicModellingCtrl', function (
     $scope, $log, $location,
     TopicModellingAspectsService,
     TopicModellingScoresService, EVENTS,
     ResourceFactory
   ) {
+    withStyles($scope, styles)
+
     $scope.aspectFilter = { selectedValues: [] }
     $scope.busyCounter = 0
     $scope.criteria = $location.search()
@@ -34,6 +53,25 @@ angular.module('histograph')
 
     $scope.setBinsCount = val => {
       $scope.binsCount = val
+    }
+
+    $scope.zoomIn = () => {
+      const itemPerBinAtCurrentZoomLevel = _.get($scope, 'topicModellingData.aggregatesMeta.0.totalResources')
+      if (!itemPerBinAtCurrentZoomLevel) return
+
+      const binsToDisplay = $scope.binsCount
+      const binsCountToZoomTo = Math.floor(binsToDisplay / itemPerBinAtCurrentZoomLevel) || 1
+      const binsMeta = _.get($scope, 'topicModellingData.aggregatesMeta', [])
+
+      const firstBinMeta = binsMeta[Math.ceil(binsMeta.length / 2 - binsCountToZoomTo / 2)]
+      const lastBinMeta = binsMeta[Math.floor(binsMeta.length / 2 + binsCountToZoomTo / 2)]
+
+      if (firstBinMeta && lastBinMeta) {
+        $location.search(angular.extend($location.search(), {
+          from: firstBinMeta.minStartDate.replace(/T.*$/, ''),
+          to: lastBinMeta.minStartDate.replace(/T.*$/, '')
+        }))
+      }
     }
 
     $scope.loadMoreResources = () => {
@@ -134,8 +172,6 @@ angular.module('histograph')
         TopicModellingScoresService.get({ bins, from, to }).$promise
           .then(data => {
             $scope.topicModellingData = data
-
-            $scope.resourcesCountPerPartition = _.get(data, 'aggregatesMeta.0.totalResources')
           })
           .catch(e => $log.error(e))
           .finally(() => { $scope.busyCounter -= 1 })
@@ -158,6 +194,10 @@ angular.module('histograph')
       },
       true
     )
+
+    $scope.$watch('topicModellingData.aggregatesMeta', v => {
+      $scope.itemsPerBin = _.get(v, '0.totalResources', 0)
+    }, true)
   })
   // eslint-disable-next-line prefer-arrow-callback
   .factory('TopicModellingAspectsService', function service($resource, HgSettings) {

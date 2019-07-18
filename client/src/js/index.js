@@ -1,4 +1,9 @@
 /* global window */
+
+import { setUpStyles } from './styles'
+
+setUpStyles()
+
 const jquery = require('jquery')
 
 window.jQuery = jquery
@@ -19,6 +24,7 @@ require('leaflet-iiif')
 
 const angular = require('angular')
 const io = require('socket.io-client')
+
 
 require('angular-ui-router')
 require('angular-route')
