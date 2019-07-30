@@ -17,6 +17,9 @@ export default class TopicModellingTimeline {
     if (options.timestepClickHandler) {
       this._timestepClickHandler = options.timestepClickHandler
     }
+    if (options.topicLabelClickHandler) {
+      this._topicLabelClickHandler = options.topicLabelClickHandler
+    }
 
     const { width, height } = this.container.node().getBoundingClientRect()
     if (width === 0) this._warn(`Width of the SVG container is ${width}`)
@@ -114,7 +117,15 @@ export default class TopicModellingTimeline {
       .attr('transform', (d, i) => `translate(0, ${yScale(i)})`)
       .attr('dy', '0.35em')
       .attr('x', xScale(0) + this.labelOffset)
+      .style('cursor', 'pointer')
       .text((d, i) => `Topic ${i + 1}`)
+      .on('click', this._onTopicLabelClick.bind(this))
+      .on('mouseover', function () {
+        d3.select(this).attr('font-weight', 'bold')
+      })
+      .on('mouseout', function () {
+        d3.select(this).attr('font-weight', undefined)
+      })
 
     const timestepContainer = this.svg
       .selectAll('g.timesteps')
@@ -287,6 +298,12 @@ export default class TopicModellingTimeline {
       if (stepIndex !== undefined) {
         this._timestepClickHandler({ stepIndex })
       }
+    }
+  }
+
+  _onTopicLabelClick(d, topicIndex) {
+    if (this._topicLabelClickHandler) {
+      this._topicLabelClickHandler({ topicIndex })
     }
   }
 
