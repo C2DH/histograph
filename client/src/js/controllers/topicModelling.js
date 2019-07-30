@@ -1,4 +1,5 @@
 /* eslint-env browser */
+import { assignIn, get, isEmpty } from 'lodash'
 import { withStyles } from '../styles'
 
 const styles = {
@@ -27,28 +28,72 @@ angular.module('histograph')
   ) {
     withStyles($scope, styles)
 
-    $scope.aspectFilter = { selectedValues: [] }
-    $scope.busyCounter = 0
-    $scope.criteria = $location.search()
+    // state parameters
+    $scope.params = {
+      aspectFilters: {}
+    }
 
+    $scope.aspectFilter = {}
+    $scope.busyCounter = 0
+    $scope.selectedResources = []
     $scope.resourcesPageLimit = 10
 
-    $scope.$on(EVENTS.API_PARAMS_CHANGED, (e, params) => {
-      const { from, to } = params
-      $scope.criteria = { from, to }
-    })
 
-    $scope.addOrRemoveAspectFilterValue = value => {
-      if ($scope.aspectFilter.selectedValues.indexOf(value) >= 0) {
-        $scope.aspectFilter.selectedValues = $scope.aspectFilter
-          .selectedValues.filter(v => v !== value)
-      } else {
-        $scope.aspectFilter.selectedValues.push(value)
+    function parametersFromUrl() {
+      const {
+        step,
+        from,
+        to,
+        aspectFilters
+      } = $location.search()
+      $scope.params = {
+        step: step === undefined ? undefined : parseInt(step, 10),
+        from,
+        to,
+        aspectFilters: isEmpty(aspectFilters) ? {} : JSON.parse(aspectFilters)
       }
     }
 
+    const parametersToUrl = (replace = false) => {
+      const { aspectFilters } = $scope.params
+      const queryParams = assignIn({}, $scope.params, {
+        aspectFilters: isEmpty(aspectFilters) ? undefined : JSON.stringify(aspectFilters)
+      })
+      const l = $location.search(assignIn({}, $location.search(), queryParams))
+      if (replace) l.replace()
+    }
+
+    $scope.$on('$locationChangeSuccess', parametersFromUrl)
+    $scope.$watch('params.aspectFilters', () => parametersToUrl(true), true)
+    $scope.$watch('params.step', () => parametersToUrl())
+    $scope.$watch('params.from', () => parametersToUrl())
+    $scope.$watch('params.to', () => parametersToUrl())
+    parametersFromUrl()
+
+
+    $scope.addOrRemoveAspectFilterValue = value => {
+      const { aspectFilters } = $scope.params
+      const { aspect } = $scope.aspectFilter
+
+      if (aspect === undefined) return
+
+      let values = get(aspectFilters, aspect, [])
+
+      if (values.indexOf(value) >= 0) {
+        values = values.filter(v => v !== value)
+      } else {
+        values.push(value)
+      }
+      aspectFilters[aspect] = values
+    }
+
     $scope.clearAspectFilter = () => {
-      $scope.aspectFilter.selectedValues = []
+      const { aspectFilters } = $scope.params
+      const { aspect } = $scope.aspectFilter
+
+      if (aspect === undefined) return
+
+      aspectFilters[aspect] = []
     }
 
     $scope.setBinsCount = val => {
@@ -56,12 +101,12 @@ angular.module('histograph')
     }
 
     $scope.zoomIn = () => {
-      const itemPerBinAtCurrentZoomLevel = _.get($scope, 'topicModellingData.aggregatesMeta.0.totalResources')
+      const itemPerBinAtCurrentZoomLevel = get($scope, 'topicModellingData.aggregatesMeta.0.totalResources')
       if (!itemPerBinAtCurrentZoomLevel) return
 
       const binsToDisplay = $scope.binsCount
       const binsCountToZoomTo = Math.floor(binsToDisplay / itemPerBinAtCurrentZoomLevel) || 1
-      const binsMeta = _.get($scope, 'topicModellingData.aggregatesMeta', [])
+      const binsMeta = get($scope, 'topicModellingData.aggregatesMeta', [])
 
       const firstBinMeta = binsMeta[Math.ceil(binsMeta.length / 2 - binsCountToZoomTo / 2)]
       const lastBinMeta = binsMeta[Math.floor(binsMeta.length / 2 + binsCountToZoomTo / 2)]
@@ -103,34 +148,7 @@ angular.module('histograph')
       $scope.selectedResources = []
       $scope.totalItems = 0
 
-      const requestParams = meta.totalResources === 1
-        ? {
-          id: meta.firstResourceUuid,
-        }
-        : {
-          limit: $scope.resourcesPageLimit,
-          offset: $scope.selectedResources.length,
-          from_uuid: meta.firstResourceUuid,
-          to_uuid: meta.lastResourceUuid,
-          from: meta.minStartDate.replace(/T.*$/, ''),
-          to: moment(meta.maxEndDate).add(1, 'days').toISOString().replace(/T.*$/, ''),
-        }
-
-      $scope.busyCounter += 1
-      ResourceFactory
-        .get(requestParams).$promise
-        .then(results => {
-          $log.info('Selection results', results)
-          const items = results.result.items || [results.result.item]
-          $scope.selectedResources = items
-          $scope.totalItems = results.info.total_items || 1
-        })
-        .catch(e => {
-          $log.error('Could not get resources from the API', e.message)
-        })
-        .finally(() => {
-          $scope.busyCounter -= 1
-        })
+      $scope.params.step = stepIndex
     }
 
     $scope.$watch('optionalFeatures.topicModellingTimeline', val => {
@@ -144,7 +162,6 @@ angular.module('histograph')
           .get({ aspect, extra: 'filter-values' }).$promise
           .then(data => {
             $scope.aspectFilter = {
-              selectedValues: $scope.aspectFilter.selectedValues,
               values: data.values,
               label: data.filterLabel,
               filterKey: data.filterKey,
@@ -159,14 +176,18 @@ angular.module('histograph')
     $scope.$watch(
       () => ({
         bins: $scope.binsCount,
-        criteria: $scope.criteria,
-        filterValues: $scope.aspectFilter.selectedValues,
+        from: get($scope.params, 'from'),
+        to: get($scope.params, 'to'),
+        aspectFilters: get($scope.params, 'aspectFilters', {}),
         aspect: $scope.aspectFilter.aspect
       }),
       ({
-        bins, criteria: { from, to }, filterValues, aspect
+        bins, from, to, aspectFilters, aspect
       }) => {
         if (!bins) return
+        if (aspect === undefined) return
+
+        const filterValues = get(aspectFilters, aspect, [])
 
         $scope.busyCounter += 1
         TopicModellingScoresService.get({ bins, from, to }).$promise
@@ -196,7 +217,43 @@ angular.module('histograph')
     )
 
     $scope.$watch('topicModellingData.aggregatesMeta', v => {
-      $scope.itemsPerBin = _.get(v, '0.totalResources', 0)
+      $scope.itemsPerBin = get(v, '0.totalResources', 0)
+      if (v !== undefined && $scope.params.step !== undefined) {
+        $scope.selectedItemMeta = v[$scope.params.step]
+      }
+    }, true)
+
+    $scope.$watch('selectedItemMeta', selectedMeta => {
+      if (selectedMeta === undefined) return
+
+      const requestParams = selectedMeta.totalResources === 1
+        ? {
+          id: selectedMeta.firstResourceUuid,
+        }
+        : {
+          limit: $scope.resourcesPageLimit,
+          offset: $scope.selectedResources.length,
+          from_uuid: selectedMeta.firstResourceUuid,
+          to_uuid: selectedMeta.lastResourceUuid,
+          from: selectedMeta.minStartDate.replace(/T.*$/, ''),
+          to: moment(selectedMeta.maxEndDate).add(1, 'days').toISOString().replace(/T.*$/, ''),
+        }
+
+      $scope.busyCounter += 1
+      ResourceFactory
+        .get(requestParams).$promise
+        .then(results => {
+          $log.info('Selection results', results)
+          const items = results.result.items || [results.result.item]
+          $scope.selectedResources = items
+          $scope.totalItems = get(results, 'info.total_items', 1)
+        })
+        .catch(e => {
+          $log.error('Could not get resources from the API', e.message)
+        })
+        .finally(() => {
+          $scope.busyCounter -= 1
+        })
     }, true)
   })
   // eslint-disable-next-line prefer-arrow-callback

@@ -12,7 +12,8 @@ angular.module('histograph')
         topicModellingData: '=hiTopicModellingData',
         extraFrequenciesData: '=hiExtraFrequenciesData',
         setBinsCount: '=hiSetBinsCount',
-        itemClickHandler: '=hiItemClickHandler'
+        itemClickHandler: '=hiItemClickHandler',
+        stepIndex: '=hiStepIndex'
       },
       template: `
         <div class="svg-container"></div>
@@ -28,9 +29,14 @@ angular.module('histograph')
           },
           itemClickHandler: e => {
             if (scope.itemClickHandler) {
-              scope.itemClickHandler(e)
+              scope.$apply(() => scope.itemClickHandler(e))
             }
-          }
+          },
+          timestepClickHandler: e => {
+            if (scope.itemClickHandler) {
+              scope.$apply(() => scope.itemClickHandler(e))
+            }
+          },
         })
 
         if (scope.setBinsCount) {
@@ -70,6 +76,10 @@ angular.module('histograph')
           }, {
             extraFrequenciesLabel: data.label
           })
+        })
+
+        scope.$watch('stepIndex', index => {
+          timeline.setSelectedStep(index)
         })
       }
     }
