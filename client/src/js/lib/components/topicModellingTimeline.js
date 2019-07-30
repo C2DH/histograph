@@ -14,6 +14,9 @@ export default class TopicModellingTimeline {
     if (options.itemClickHandler) {
       this._itemClickHandler = options.itemClickHandler
     }
+    if (options.timestepClickHandler) {
+      this._timestepClickHandler = options.timestepClickHandler
+    }
 
     const { width, height } = this.container.node().getBoundingClientRect()
     if (width === 0) this._warn(`Width of the SVG container is ${width}`)
@@ -133,6 +136,25 @@ export default class TopicModellingTimeline {
       .attr('y1', yScale(0))
       .attr('y2', height)
 
+    timestepContainer
+      .selectAll('rect.highlight')
+      .data((d, stepIndex) => [{ stepIndex }])
+      .join('rect')
+      .attr('class', d => (d.stepIndex === this.selectedStep ? 'highlight selected' : 'highlight'))
+      .style('fill', d => (d.stepIndex === this.selectedStep ? '#ffff0033' : '#ffffff00'))
+      .attr('x', -maxCircleRadius)
+      .attr('width', maxCircleRadius * 2)
+      .attr('height', height)
+      .on('mouseover', (d, idx, rects) => {
+        const rect = rects[idx]
+        d3.select(rect).filter(this._filterOutSelectedHighlight).style('fill', '#dddddd22')
+      })
+      .on('mouseout', (d, idx, rects) => {
+        const rect = rects[idx]
+        d3.select(rect).filter(this._filterOutSelectedHighlight).style('fill', '#ffffff00')
+      })
+      .on('click', this._onTimestepClick.bind(this))
+
     // value circle
     timestepContainer
       .selectAll('g.values')
@@ -160,8 +182,8 @@ export default class TopicModellingTimeline {
       .data((d, stepIndex) => d.map(value => ({ value, stepIndex })))
       .join('circle')
       .attr('cy', (d, i) => yScale(i))
-      .attr('fill', () => '#33333300')
-      .attr('r', () => maxCircleRadius)
+      .attr('fill', '#33333300')
+      .attr('r', maxCircleRadius)
       .on('mouseover', this._onCircleOver.bind(this))
       .on('mouseout', this._onCircleOut.bind(this))
       .on('click', this._onCicleClick.bind(this))
@@ -179,11 +201,12 @@ export default class TopicModellingTimeline {
       .attr('display', containsExtraFrequencies ? undefined : 'none')
 
     if (!this._extraFrequenciesContainer) {
-      this._extraFrequenciesContainer = this.svg.append('g')
+      this._extraFrequenciesContainer = this.svg
+        .append('g')
     }
 
     // extra frequencies
-    const extraFrequenciesMargin = 2
+    const extraFrequenciesMargin = 6
     let barWidth = maxCircleRadius * 2 - extraFrequenciesMargin
     if (barWidth < 0) barWidth = 0
 
@@ -233,12 +256,20 @@ export default class TopicModellingTimeline {
   _onCircleOver(d, topicIndex, circles) {
     const circle = circles[topicIndex]
     d3.select(circle).style('fill', '#3333330f')
+    d3.select(circle.parentNode.parentNode)
+      .select('.highlight')
+      .filter(this._filterOutSelectedHighlight)
+      .style('fill', '#dddddd22')
   }
 
   // eslint-disable-next-line class-methods-use-this
   _onCircleOut(d, topicIndex, circles) {
     const circle = circles[topicIndex]
     d3.select(circle).style('fill', undefined)
+    d3.select(circle.parentNode.parentNode)
+      .select('.highlight')
+      .filter(this._filterOutSelectedHighlight)
+      .style('fill', '#ffffff00')
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -248,6 +279,22 @@ export default class TopicModellingTimeline {
       this._itemClickHandler({ stepIndex, topicIndex })
     }
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  _onTimestepClick(d) {
+    if (this._timestepClickHandler) {
+      const { stepIndex } = d
+      if (stepIndex !== undefined) {
+        this._timestepClickHandler({ stepIndex })
+      }
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  _filterOutSelectedHighlight() {
+    return !this.classList.contains('selected')
+  }
+
 
   /**
    * Example:
@@ -274,6 +321,11 @@ export default class TopicModellingTimeline {
       this.extraFrequenciesLabel = options.extraFrequenciesLabel
     }
 
+    this.render()
+  }
+
+  setSelectedStep(index) {
+    this.selectedStep = index
     this.render()
   }
 }

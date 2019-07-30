@@ -90,7 +90,6 @@ module.exports = (env, options) => {
     watchOptions: {
       ignored: [
         /node_modules/,
-        /src\/js\/lib/
       ],
       aggregateTimeout: 300,
       poll: 1500
