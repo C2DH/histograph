@@ -192,7 +192,7 @@ angular.module('histograph')
         */
         $scope.discardvote = function () {
           if ($scope.isLocked) return;
-          $log.info(':: reporter  -~> discardVote() entity:', $scope.entity.id, '- resource:', $scope.resource.id);
+          $log.log(':: reporter  -~> discardVote() entity:', $scope.entity.id, '- resource:', $scope.resource.id);
           if (!($scope.entity.id) || !($scope.resource.id)) {
             $log.error(':: reporter  -~> discardVote() failed, entity or resource not valid');
             return;
@@ -295,7 +295,7 @@ angular.module('histograph')
         $scope.typeaheadSelected = function ($item) {
           // $scope.entities.push($item);
           // $log.log('ContributeModalCtrl -> typeaheadSelected()', $item);
-          $log.info(':: reporter -> typeaheadSelected()', arguments);
+          $log.log(':: reporter -> typeaheadSelected()', arguments);
           if (!$item.id) return;
           $scope.entity.alias = $item;
           $scope.askQuestion('contribute-confirm');
@@ -305,18 +305,18 @@ angular.module('histograph')
           Enable socket listeners
         */
         socket.on('entity:upvote:done', function (result) {
-          $log.info(':: reporter socket@entity:upvote:done - by:', result.user);
+          $log.log(':: reporter socket@entity:upvote:done - by:', result.user);
           if ($scope.entity && result.data.id == $scope.entity.id) $scope.entity.props.upvote = result.data.props.upvote;
           if ($scope.entity && result.user == $scope.user.username) $scope.isUpvotedByUser = true;
         })
         socket.on('entity:downvote:done', function (result) {
-          $log.info(':: reporter socket@entity:downvote:done - by:', result.user);
+          $log.log(':: reporter socket@entity:downvote:done - by:', result.user);
           if ($scope.entity && result.data.id == $scope.entity.id) $scope.entity.props.upvote = result.data.props.upvote;
           if ($scope.entity && result.user == $scope.user.username) $scope.isUpvotedByUser = false;
         })
 
         socket.on('entity:create-related-issue:done', function (result) {
-          $log.info(':: reporter socket@entity:create-related-issue:done - by:', result.user, '- result:', result);
+          $log.log(':: reporter socket@entity:create-related-issue:done - by:', result.user, '- result:', result);
           if ($scope.entity && result.data.id == $scope.entity.id) {
             $scope.entity.props = result.data.props;
             $scope.setIssues(result.data.issues, result.data);
@@ -324,7 +324,7 @@ angular.module('histograph')
         });
 
         socket.on('entity:remove-related-issue:done', function (result) {
-          $log.info(':: reporter socket@entity:remove-related-issue:done - by:', result.user, '- result:', result);
+          $log.log(':: reporter socket@entity:remove-related-issue:done - by:', result.user, '- result:', result);
           if ($scope.entity && result.data.id == $scope.entity.id) {
             $scope.entity.props = result.data.props;
             $scope.setIssues(result.data.issues, result.data);
@@ -333,7 +333,7 @@ angular.module('histograph')
 
         socket.on('entity:downvote-related-resource:done', function (result) {
           if ($scope.entity && $scope.resource && $scope.resource.id && result.resource.id == $scope.resource.id && result.data.id == $scope.entity.id) {
-            $log.info(':: reporter socket@entity:downvote-related-resource:done - by:', result.user, '- result:', result);
+            $log.log(':: reporter socket@entity:downvote-related-resource:done - by:', result.user, '- result:', result);
             $scope.entity.upvotes = result.data.rel.upvote || [];
             $scope.entity.downvotes = result.data.rel.downvote || [];
           }
@@ -341,7 +341,7 @@ angular.module('histograph')
 
         socket.on('entity:upvote-related-resource:done', function (result) {
           if ($scope.entity && $scope.resource && $scope.resource.id && result.resource.id == $scope.resource.id && result.data.id == $scope.entity.id) {
-            $log.info(':: reporter socket@entity:upvote-related-resource:done - by:', result.user, '- result:', result);
+            $log.log(':: reporter socket@entity:upvote-related-resource:done - by:', result.user, '- result:', result);
             $scope.entity.upvotes = result.data.rel.upvote || [];
             $scope.entity.downvotes = result.data.rel.downvote || [];
           }
@@ -349,7 +349,7 @@ angular.module('histograph')
 
         socket.on('entity:merge-entity:done', function (result) {
           if ($scope.entity && $scope.resource && $scope.resource.id && result.resource.id == $scope.resource.id && result.data.id == $scope.entity.id) {
-            $log.info(':: reporter entity:merge-entity:done - by:', result.user, '- result:', result);
+            $log.log(':: reporter entity:merge-entity:done - by:', result.user, '- result:', result);
             $scope.entity.upvotes = result.data.rel.upvote || [];
             $scope.entity.downvotes = result.data.rel.downvote || [];
           }

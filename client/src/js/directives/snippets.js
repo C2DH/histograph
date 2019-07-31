@@ -97,7 +97,7 @@ angular.module('histograph')
               center: scope.target.center ? scope.target.center.id : undefined
             }), scope._fillSharedItems);
           } else {
-            $log.error('::snippets -> sync() without params')
+            $log.log('::snippets -> sync() without params')
           }
         };
 
@@ -156,7 +156,7 @@ angular.module('histograph')
               scope.sharedItemsModel = 'resource';
               scope.sync();
             } else {
-              $log.error('::snippets -> show() ! check nodes type, unable to find shared items')
+              $log.log('::snippets -> show() ! check nodes type, unable to find shared items')
             }
           }
 

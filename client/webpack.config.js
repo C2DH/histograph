@@ -91,8 +91,8 @@ module.exports = (env, options) => {
       ignored: [
         /node_modules/,
       ],
-      aggregateTimeout: 300,
-      poll: 1500
+      // aggregateTimeout: 300,
+      // poll: 1500
     },
     plugins,
     module: {

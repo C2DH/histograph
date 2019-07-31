@@ -96,7 +96,7 @@ angular.module('histograph')
           //   scope.$apply();
           // }
 
-          $log.info(':: popit -> toggle() for type:', type, el)
+          $log.log(':: popit -> toggle() for type:', type, el)
 
           // validate id
           if (!id && isNaN(id)) {
@@ -114,7 +114,7 @@ angular.module('histograph')
             return;
           }
 
-          $log.info(':: popit -> toggle() reload')
+          $log.log(':: popit -> toggle() reload')
 
           scope.isReady = false;
 
@@ -236,7 +236,7 @@ angular.module('histograph')
           Enable parent scope action (do not require a proper '&' in scope)
         */
         scope.downvote = function ($event) {
-          $log.info(':: gasp -> downvote()', scope.entity);
+          $log.log(':: gasp -> downvote()', scope.entity);
           $event.stopPropagation();
           scope.$parent.downvote(scope.entity, scope.parent, function (result) {
             scope.entity.upvotes = result.item.rel.upvote;
@@ -245,7 +245,7 @@ angular.module('histograph')
         }
 
         scope.upvote = function ($event) {
-          $log.info(':: gasp -> upvote()', scope.entity);
+          $log.log(':: gasp -> upvote()', scope.entity);
           $event.stopPropagation();
           scope.$parent.upvote(scope.entity, scope.parent, function (result) {
             scope.entity.upvotes = result.item.rel.upvote;
@@ -272,31 +272,31 @@ angular.module('histograph')
         }
 
         scope.queue = function () {
-          $log.info(':: gasp -> queue()', scope.entity)
+          $log.log(':: gasp -> queue()', scope.entity)
           scope.close();
           scope.$parent.queue(scope.entity.id, true);
         }
 
         scope.addFilter = function () {
-          $log.info(':: gasp -> addFilter()', scope.entity)
+          $log.log(':: gasp -> addFilter()', scope.entity)
           scope.$parent.addFilter('with', scope.entity.id);
         }
 
         scope.inspect = function () {
-          $log.info(':: gasp -> inspect()', scope.entity)
+          $log.log(':: gasp -> inspect()', scope.entity)
           scope.close();
           scope.$parent.inspect(scope.entity.id);
         }
 
         scope.remove = function () {
-          $log.info(':: gasp -> remove()', scope.entity);
+          $log.log(':: gasp -> remove()', scope.entity);
           scope.$parent.discardvote(scope.entity, scope.parent);
 
           hide();
         }
 
         scope.merge = function () {
-          $log.info(':: gasp -> merge()', scope.entity)
+          $log.log(':: gasp -> merge()', scope.entity)
           // merge two entities: add (or upvote the entity) and downvote the current entity
           scope.$parent.mergeEntities(scope.entity, scope.entity.alias, scope.parent, function (err, result) {
             scope.feedback();
@@ -304,7 +304,7 @@ angular.module('histograph')
         }
 
         scope.signale = function ($event) {
-          $log.info(':: gasp -> signale()', scope.entity);
+          $log.log(':: gasp -> signale()', scope.entity);
           scope.$parent.signale(scope.entity, scope.feedback);
         }
 
@@ -313,7 +313,7 @@ angular.module('histograph')
         }
 
         scope.typeaheadSelected = function ($item, $model, $label, $question) {
-          $log.info(':: gasp -> typeaheadSelected()', arguments);
+          $log.log(':: gasp -> typeaheadSelected()', arguments);
           if (!$item.id) return;
           scope.entity.alias = $item;
           scope.question = $question || 'contribute-confirm';

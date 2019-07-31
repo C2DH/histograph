@@ -780,6 +780,23 @@ module.exports = function(io){
       const result = await filterValuesRetrievers[aspect]()
       res.json(result)
     }, false),
+
+    getTopicDetails: asyncHandler(async (req, res) => {
+      const { id } = req.params
+      res.json({
+        id,
+        label: `Test Topic ${id}`,
+        keywords: [
+          'foo',
+          'bar',
+          'lorem',
+          'ipsum',
+          'dolor',
+          'sit',
+          'amet'
+        ]
+      })
+    }, false),
     /* eslint-disable */
 
     /*

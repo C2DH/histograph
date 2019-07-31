@@ -98,6 +98,10 @@ require('./directives/lazy-text.js')
 require('./directives/iiifImage.js')
 require('./directives/topicModellingTimeline.js')
 
+
+require('./components/topic-details.js')
+require('./components/snackbar.js')
+
 function importTemplates() {
   const ctx = require.context('../templates', true, /.*\.html$/)
 
@@ -123,7 +127,7 @@ require('leaflet/dist/leaflet.css')
 require('../css/base.css')
 
 app.run(function ($log) {
-  $log.info('hg running...')
+  $log.log('hg running...')
 })
 
 export default {}

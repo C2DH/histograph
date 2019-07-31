@@ -1,0 +1,29 @@
+<div class="{{classes.container}}">
+
+  <div class="{{classes.panelTop}}">
+    <div class="{{classes.label}}"
+         ng-click="startEditLabel()"
+         ng-hide="editingLabel">
+      <span class="fa fa-edit"></span> {{topic.label}}
+    </div>
+    <div ng-show="editingLabel" class="{{classes.labelEditPanel}}">
+      <input ng-model="newTopicLabel" class="label-input"/>
+      <button class="{{classes.editButton}}" ng-click="confirmEditLabel()">
+        <span class="fa fa-check-circle"></span>
+      </button>
+      <button class="{{classes.editButton}}" ng-click="cancelEditLabel()">
+        <span class="fa fa-ban"></span>
+      </button>  
+    </div>
+    <button class="{{classes.closeButton}}" ng-click="onCloseClicked()">
+      <span class="fa fa-times-circle"></span>
+    </button>
+  </div>
+
+  <div class="{{classes.keywordsLabel}}">
+    Keywords
+  </div>
+  <div class="{{classes.keywordCloud}}">
+    <span ng-repeat="keyword in topic.keywords">{{keyword}}</span>
+  </div>
+</div>

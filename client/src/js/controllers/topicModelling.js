@@ -1,6 +1,6 @@
 /* eslint-env browser */
 import { assignIn, get, isEmpty } from 'lodash'
-import { withStyles } from '../styles'
+import { withStyles, theme } from '../styles'
 
 const styles = {
   graphFooter: {
@@ -16,6 +16,31 @@ const styles = {
   barZoomLabel: {
     lineHeight: '1em',
     margin: [['auto', 0]]
+  },
+  container: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignContent: 'stretch',
+    alignItems: 'stretch',
+    width: '100% !important',
+    position: 'absolute',
+    bottom: 0,
+    top: 40,
+  },
+  containerChild: {
+    flex: 1,
+  },
+  topicDetails: {
+    flexGrow: 1,
+    flexBasis: '30%',
+    backgroundColor: theme.colours.background.dark.primary,
+    color: theme.colours.text.light.primary
+  },
+  mainPanel: {
+    flex: '1 1 100%',
+    flexGrow: 3,
+    overflowY: 'scroll',
+    margin: '0 1em',
   }
 }
 
@@ -44,13 +69,15 @@ angular.module('histograph')
         step,
         from,
         to,
-        aspectFilters
+        aspectFilters,
+        topicId
       } = $location.search()
       $scope.params = {
         step: step === undefined ? undefined : parseInt(step, 10),
         from,
         to,
-        aspectFilters: isEmpty(aspectFilters) ? {} : JSON.parse(aspectFilters)
+        aspectFilters: isEmpty(aspectFilters) ? {} : JSON.parse(aspectFilters),
+        topicId
       }
     }
 
@@ -68,6 +95,7 @@ angular.module('histograph')
     $scope.$watch('params.step', () => parametersToUrl())
     $scope.$watch('params.from', () => parametersToUrl())
     $scope.$watch('params.to', () => parametersToUrl())
+    $scope.$watch('params.topicId', () => parametersToUrl())
     parametersFromUrl()
 
 
@@ -142,8 +170,9 @@ angular.module('histograph')
     }
 
     $scope.itemClickHandler = ({ stepIndex, topicIndex }) => {
+      if ($scope.params.step === stepIndex) return
       const meta = $scope.topicModellingData.aggregatesMeta[stepIndex]
-      $log.info('Topic item selected', stepIndex, topicIndex, meta)
+      $log.log('Topic item selected', stepIndex, topicIndex, meta)
       $scope.selectedItemMeta = meta
       $scope.selectedResources = []
       $scope.totalItems = 0
@@ -243,7 +272,7 @@ angular.module('histograph')
       ResourceFactory
         .get(requestParams).$promise
         .then(results => {
-          $log.info('Selection results', results)
+          $log.log('Selection results', results)
           const items = results.result.items || [results.result.item]
           $scope.selectedResources = items
           $scope.totalItems = get(results, 'info.total_items', 1)
@@ -255,6 +284,13 @@ angular.module('histograph')
           $scope.busyCounter -= 1
         })
     }, true)
+
+    $scope.topicLabelClickHandler = ({ topicIndex }) => {
+      $scope.params.topicId = topicIndex
+    }
+    $scope.unselectCurrentTopic = () => {
+      $scope.params.topicId = undefined
+    }
   })
   // eslint-disable-next-line prefer-arrow-callback
   .factory('TopicModellingAspectsService', function service($resource, HgSettings) {
