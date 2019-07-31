@@ -50,9 +50,18 @@ angular.module('histograph')
             if (zeros.length === scores.length) return scores.map(() => 0.5)
             return scores
           })
+
+          scope.topicLabelsByIndex = data.topics.reduce((acc, topic) => {
+            // eslint-disable-next-line no-param-reassign
+            acc[topic.index] = topic.label
+            return acc
+          }, {})
+
           timeline.setData({
             topicsScores: scope.topicsScores,
             extraFrequencies: scope.extraFrequencies
+          }, {
+            topicLabelsByIndex: scope.topicLabelsByIndex
           })
         })
 
@@ -65,7 +74,8 @@ angular.module('histograph')
             topicsScores: scope.topicsScores,
             extraFrequencies: scope.extraFrequencies
           }, {
-            extraFrequenciesLabel: data.label
+            extraFrequenciesLabel: data.label,
+            topicLabelsByIndex: scope.topicLabelsByIndex
           })
         })
 

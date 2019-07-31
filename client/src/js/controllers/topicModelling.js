@@ -202,48 +202,52 @@ angular.module('histograph')
       }
     })
 
-    $scope.$watch(
-      () => ({
-        bins: $scope.binsCount,
-        from: get($scope.params, 'from'),
-        to: get($scope.params, 'to'),
-        aspectFilters: get($scope.params, 'aspectFilters', {}),
-        aspect: $scope.aspectFilter.aspect
-      }),
-      ({
-        bins, from, to, aspectFilters, aspect
-      }) => {
-        if (!bins) return
-        if (aspect === undefined) return
+    const getRequiredDataForTopicModellingUpdate = () => ({
+      bins: $scope.binsCount,
+      from: get($scope.params, 'from'),
+      to: get($scope.params, 'to'),
+      aspectFilters: get($scope.params, 'aspectFilters', {}),
+      aspect: $scope.aspectFilter.aspect
+    })
 
-        const filterValues = get(aspectFilters, aspect, [])
+    function updateTopicModelling({ bins, from, to, aspectFilters, aspect }) {
+      if (!bins) return
+      if (aspect === undefined) return
+
+      const filterValues = get(aspectFilters, aspect, [])
+
+      $scope.busyCounter += 1
+      TopicModellingScoresService.get({ bins, from, to }).$promise
+        .then(data => {
+          $scope.topicModellingData = data
+        })
+        .catch(e => $log.error(e))
+        .finally(() => { $scope.busyCounter -= 1 })
+
+      if (aspect) {
+        const params = {
+          aspect, bins, from, to
+        }
+        if ($scope.aspectFilter.filterKey && filterValues) {
+          // eslint-disable-next-line prefer-destructuring
+          params[$scope.aspectFilter.filterKey] = JSON.stringify(filterValues)
+        }
 
         $scope.busyCounter += 1
-        TopicModellingScoresService.get({ bins, from, to }).$promise
-          .then(data => {
-            $scope.topicModellingData = data
-          })
+        TopicModellingAspectsService.get(params).$promise
+          .then(data => { $scope.extraFrequenciesData = data })
           .catch(e => $log.error(e))
           .finally(() => { $scope.busyCounter -= 1 })
+      }
+    }
 
-        if (aspect) {
-          const params = {
-            aspect, bins, from, to
-          }
-          if ($scope.aspectFilter.filterKey && filterValues) {
-            // eslint-disable-next-line prefer-destructuring
-            params[$scope.aspectFilter.filterKey] = JSON.stringify(filterValues)
-          }
-
-          $scope.busyCounter += 1
-          TopicModellingAspectsService.get(params).$promise
-            .then(data => { $scope.extraFrequenciesData = data })
-            .catch(e => $log.error(e))
-            .finally(() => { $scope.busyCounter -= 1 })
-        }
-      },
+    $scope.$watch(
+      getRequiredDataForTopicModellingUpdate,
+      updateTopicModelling,
       true
     )
+
+    $scope.reloadData = () => updateTopicModelling(getRequiredDataForTopicModellingUpdate())
 
     $scope.$watch('topicModellingData.aggregatesMeta', v => {
       $scope.itemsPerBin = get(v, '0.totalResources', 0)

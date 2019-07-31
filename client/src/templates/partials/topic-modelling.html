@@ -29,6 +29,7 @@
 
     <div hi-topic-details="params.topicId"
          on-close="unselectCurrentTopic()"
+         on-topic-updated="reloadData()"
          ng-show="params.topicId !== undefined"
          class="{{classes.containerChild}} {{classes.topicDetails}}">
     </div>

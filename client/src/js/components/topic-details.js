@@ -83,12 +83,21 @@ const styles = {
 function controller($scope, $log, TopicsService) {
   withStyles($scope, styles)
 
-  $scope.$watch('topicId', id => {
-    if (id === undefined) return
-    TopicsService.get({ id }).$promise
+  $scope.$watch('topicId', index => {
+    if (index === undefined) return
+    $scope.topic = undefined
+    TopicsService.get({ index, set: 'default' }).$promise
       .then(topic => { $scope.topic = topic })
       .catch(e => {
-        $log.error('Could not get topic', e.status, e.message)
+        if (e.status === 404) {
+          $scope.topic = {
+            index,
+            label: `Topic ${index}`,
+            keywords: []
+          }
+        } else {
+          $log.error('Could not get topic', e.status, e.message)
+        }
       })
   })
 
@@ -101,13 +110,16 @@ function controller($scope, $log, TopicsService) {
     if ($scope.newTopicLabel !== $scope.topic.label) {
       $log.log(`New Label: ${$scope.newTopicLabel}`)
 
-      const { id } = $scope.topic
+      const { index } = $scope.topic
       const topic = assignIn(cloneDeep($scope.topic), { label: $scope.newTopicLabel })
       const originalTopic = $scope.topic
       $scope.topic = topic
 
-      TopicsService.update({ id }, topic).$promise
-        .then(updatedTopic => { $scope.topic = updatedTopic })
+      TopicsService.update({ index, set: 'default' }, topic).$promise
+        .then(updatedTopic => {
+          $scope.topic = updatedTopic
+          $scope.onTopicUpdated()
+        })
         .catch(e => {
           $log.error('Could not update topic', e.status, e.message)
           $scope.topic = originalTopic
@@ -118,7 +130,7 @@ function controller($scope, $log, TopicsService) {
 }
 
 function service($resource, HgSettings) {
-  const url = `${HgSettings.apiBaseUrl}/api/resource/topics/:id`
+  const url = `${HgSettings.apiBaseUrl}/api/resource/topics/:set/:index`
   return $resource(url, null, {
     update: { method: 'PUT' }
   })
@@ -128,7 +140,8 @@ const directive = {
   restrict: 'A',
   scope: {
     topicId: '=hiTopicDetails',
-    onCloseClicked: '&onClose'
+    onCloseClicked: '&onClose',
+    onTopicUpdated: '&onTopicUpdated'
   },
   templateUrl: 'templates/partials/topic-details.html',
   controller: 'TopicDetailsCtrl',

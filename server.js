@@ -145,7 +145,7 @@ if ('production' == env) {
     res.header('Access-Control-Allow-Origin', req.get('origin'))
     res.header('Access-Control-Allow-Methods', 'OPTIONS, POST, PUT, DELETE, GET')
     res.header('Access-Control-Allow-Headers',
-      'X-Requested-With, Content-Type, Cookie, Set-Cookie')
+      'X-Requested-With, Content-Type, Cookie, Set-Cookie, Authorization')
     res.header('Access-Control-Allow-Credentials', 'true')
     next()
   })
@@ -153,6 +153,9 @@ if ('production' == env) {
 // serve docco documentation
 // app.use('/docs', express.static('./docs'));
 
+app.options('/*', (req, res) => {
+  res.ok()
+})
 
 // configure static files and jade templates
 
@@ -647,8 +650,9 @@ apiRouter.route('/resource/topic-modelling/aspects/:aspect')
   .get(ctrl.resource.topicModellingExtraAspect)
 apiRouter.route('/resource/topic-modelling/aspects/:aspect/filter-values')
   .get(ctrl.resource.topicModellingAspectFilterValues)
-apiRouter.route('/resource/topics/:id')
+apiRouter.route('/resource/topics/:set/:index')
   .get(ctrl.resource.getTopicDetails)
+  .put(ctrl.resource.updateTopicDetails)
 
 apiRouter.route('/resource/:id([\\d,a-zA-Z\\-_]+)')
   .get(ctrl.resource.getItem)

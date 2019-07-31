@@ -1,3 +1,5 @@
+import { get } from 'lodash'
+
 /* globals d3, window */
 
 // eslint-disable-next-line no-unused-vars
@@ -37,7 +39,7 @@ export default class TopicModellingTimeline {
       }
     })
 
-    this.labelOffset = 30
+    this.labelOffset = 50
     this.labelMargin = 5
   }
 
@@ -118,7 +120,7 @@ export default class TopicModellingTimeline {
       .attr('dy', '0.35em')
       .attr('x', xScale(0) + this.labelOffset)
       .style('cursor', 'pointer')
-      .text((d, i) => `Topic ${i + 1}`)
+      .text((d, i) => get(this.topicLabelsByIndex, i, `Topic ${i + 1}`))
       .on('click', this._onTopicLabelClick.bind(this))
       .on('mouseover', function () {
         d3.select(this).attr('font-weight', 'bold')
@@ -336,6 +338,10 @@ export default class TopicModellingTimeline {
 
     if (options.extraFrequenciesLabel) {
       this.extraFrequenciesLabel = options.extraFrequenciesLabel
+    }
+
+    if (options.topicLabelsByIndex) {
+      this.topicLabelsByIndex = options.topicLabelsByIndex
     }
 
     this.render()
