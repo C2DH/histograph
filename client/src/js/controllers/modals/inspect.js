@@ -112,18 +112,18 @@ angular.module('histograph')
 
     */
     socket.on('entity:upvote:done', function (result) {
-      $log.info('InspectModalCtrl socket@entity:upvote:done - by:', result.user);
+      $log.log('InspectModalCtrl socket@entity:upvote:done - by:', result.user);
       if (result.data.id == $scope.entity.id) { $scope.entity.props.upvote = result.data.props.upvote; }
       if (result.user == core.user.username) { $scope.isUpvotedByUser = true; }
     })
     socket.on('entity:downvote:done', function (result) {
-      $log.info('InspectModalCtrl socket@entity:downvote:done - by:', result.user);
+      $log.log('InspectModalCtrl socket@entity:downvote:done - by:', result.user);
       if (result.data.id == $scope.entity.id) { $scope.entity.props.upvote = result.data.props.upvote; }
       if (result.user == core.user.username) { $scope.isUpvotedByUser = false; }
     })
 
     socket.on('entity:create-related-issue:done', function (result) {
-      $log.info('InspectModalCtrl socket@entity:create-related-issue:done - by:', result.user, '- result:', result);
+      $log.log('InspectModalCtrl socket@entity:create-related-issue:done - by:', result.user, '- result:', result);
 
       if (result.data.id == $scope.entity.id) {
         $scope.entity.props = result.data.props;
@@ -132,7 +132,7 @@ angular.module('histograph')
     });
 
     socket.on('entity:remove-related-issue:done', function (result) {
-      $log.info('InspectModalCtrl socket@entity:remove-related-issue:done - by:', result.user, '- result:', result);
+      $log.log('InspectModalCtrl socket@entity:remove-related-issue:done - by:', result.user, '- result:', result);
       if (result.data.id == $scope.entity.id) {
         $scope.entity.props = result.data.props;
         $scope.setIssues(result.data.props);

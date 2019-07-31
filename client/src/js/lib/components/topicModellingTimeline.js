@@ -1,3 +1,5 @@
+import { get } from 'lodash'
+
 /* globals d3, window */
 
 // eslint-disable-next-line no-unused-vars
@@ -17,6 +19,9 @@ export default class TopicModellingTimeline {
     if (options.timestepClickHandler) {
       this._timestepClickHandler = options.timestepClickHandler
     }
+    if (options.topicLabelClickHandler) {
+      this._topicLabelClickHandler = options.topicLabelClickHandler
+    }
 
     const { width, height } = this.container.node().getBoundingClientRect()
     if (width === 0) this._warn(`Width of the SVG container is ${width}`)
@@ -34,7 +39,7 @@ export default class TopicModellingTimeline {
       }
     })
 
-    this.labelOffset = 30
+    this.labelOffset = 50
     this.labelMargin = 5
   }
 
@@ -114,7 +119,15 @@ export default class TopicModellingTimeline {
       .attr('transform', (d, i) => `translate(0, ${yScale(i)})`)
       .attr('dy', '0.35em')
       .attr('x', xScale(0) + this.labelOffset)
-      .text((d, i) => `Topic ${i + 1}`)
+      .style('cursor', 'pointer')
+      .text((d, i) => get(this.topicLabelsByIndex, i, `Topic ${i + 1}`))
+      .on('click', this._onTopicLabelClick.bind(this))
+      .on('mouseover', function () {
+        d3.select(this).attr('font-weight', 'bold')
+      })
+      .on('mouseout', function () {
+        d3.select(this).attr('font-weight', undefined)
+      })
 
     const timestepContainer = this.svg
       .selectAll('g.timesteps')
@@ -290,6 +303,12 @@ export default class TopicModellingTimeline {
     }
   }
 
+  _onTopicLabelClick(d, topicIndex) {
+    if (this._topicLabelClickHandler) {
+      this._topicLabelClickHandler({ topicIndex })
+    }
+  }
+
   // eslint-disable-next-line class-methods-use-this
   _filterOutSelectedHighlight() {
     return !this.classList.contains('selected')
@@ -319,6 +338,10 @@ export default class TopicModellingTimeline {
 
     if (options.extraFrequenciesLabel) {
       this.extraFrequenciesLabel = options.extraFrequenciesLabel
+    }
+
+    if (options.topicLabelsByIndex) {
+      this.topicLabelsByIndex = options.topicLabelsByIndex
     }
 
     this.render()

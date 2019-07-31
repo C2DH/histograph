@@ -1271,3 +1271,30 @@ module.exports = angular
       };
     });
   })
+  .config(function ($provide) {
+    $provide.decorator('$log', function ($delegate, $injector) {
+      function emittingLoggerWrapper(delegate) {
+        return {
+          log: (...args) => delegate.log(...args),
+          debug: (...args) => delegate.debug(...args),
+          info: (...args) => {
+            const rootScope = $injector.get('$rootScope')
+            delegate.info(...args)
+            rootScope.$emit('log:info', ...args)
+          },
+          warn: (...args) => {
+            const rootScope = $injector.get('$rootScope')
+            delegate.warn(...args)
+            rootScope.$emit('log:warn', ...args)
+          },
+          error: (...args) => {
+            const rootScope = $injector.get('$rootScope')
+            delegate.error(...args)
+            rootScope.$emit('log:error', ...args)
+          },
+        }
+      }
+
+      return emittingLoggerWrapper($delegate)
+    })
+  })

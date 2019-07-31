@@ -20,7 +20,7 @@ angular.module('histograph')
     HgSettings) {
     $scope.apiBaseUrl = HgSettings.apiBaseUrl
 
-    $log.info('CoreCtrl ready', $location);
+    $log.log('CoreCtrl ready', $location);
     $scope.absoluteLocationUrl = $location.absUrl()
     $scope.locationPath = $location.path();
     $scope.locationJson = JSON.stringify($location.search());
@@ -213,7 +213,7 @@ angular.module('histograph')
 
     $scope.setSorting = function (sorting) {
       if (!sorting) {
-        $log.info('CoreCtrl -> setSorting() ignore undefined sorting')
+        $log.log('CoreCtrl -> setSorting() ignore undefined sorting')
         return;
       }
       if (typeof sorting === 'string') {
@@ -234,7 +234,7 @@ angular.module('histograph')
      handle redirection from directive
      */
     $scope.redirect = function (path) {
-      $log.info('CoreCtrl redirect to', path)
+      $log.log('CoreCtrl redirect to', path)
       $location.path(path);
       $scope.$apply();
     };
@@ -252,7 +252,7 @@ angular.module('histograph')
           edges: []
         };
       }
-      $log.info('CoreCtrl -> setGraph', graph.nodes.length, 'nodes', graph.edges.length, 'edges')
+      $log.log('CoreCtrl -> setGraph', graph.nodes.length, 'nodes', graph.edges.length, 'edges')
       if (options && options.centers) graph.centers = options.centers;
       $scope.graph = graph;
     };
@@ -268,7 +268,7 @@ angular.module('histograph')
 
     $scope.suggest = function (query) {
       if (query.trim().length < 2) return;
-      // $log.info('CoreCtrl -> suggest', query);
+      // $log.log('CoreCtrl -> suggest', query);
       $scope.query = `${query}`
       $scope.freeze = 'sigma'
       return $http.get(`${HgSettings.apiBaseUrl}/api/suggest`, {
@@ -296,7 +296,7 @@ angular.module('histograph')
       @param hashtag  - istead of using target, a hashtag
     */
     $scope.toggleMenu = function (e, item, tag, hashtag) {
-      $log.info('CoreCtrl -> toggleMenu()', e, item, tag)
+      $log.log('CoreCtrl -> toggleMenu()', e, item, tag)
       $scope.target = {
         event: e,
         item: item,
@@ -332,7 +332,7 @@ angular.module('histograph')
       } else {
         $scope.comment.text = 'something';
       }
-      $log.info('ResourceCtrl -> startCommenting()');
+      $log.log('ResourceCtrl -> startCommenting()');
 
       socket.emit('start:commenting', item.props, function (result) {
 
@@ -579,7 +579,7 @@ angular.module('histograph')
       // if the itemId is in the $scope.playlistIds, which is its index?
       // this will contain the list of ids in case the controller needs redirection
 
-      $log.info('CoreCtrl -> queue', itemId, inprog ? 'do not force update scope' : 'force scope update', $scope.playlistIds, itemId)
+      $log.log('CoreCtrl -> queue', itemId, inprog ? 'do not force update scope' : 'force scope update', $scope.playlistIds, itemId)
       $log.log('   ', itemId, isAlreadyInQueue ? 'is already presend in readlist, skipping ...' : 'adding', $scope.playlistIds.indexOf(itemId))
 
       if (isAlreadyInQueue) {
@@ -1124,7 +1124,7 @@ angular.module('histograph')
     $scope.isAnnotating = false;
 
     $scope.$on(EVENTS.ANNOTATOR_SHOWN, function () {
-      $log.info('CoreCtrl @EVENTS.ANNOTATOR_SHOWN')
+      $log.log('CoreCtrl @EVENTS.ANNOTATOR_SHOWN')
     })
 
     $scope.$on(EVENTS.ANNOTATOR_HIDDEN, function () {
@@ -1136,7 +1136,7 @@ angular.module('histograph')
       .get({ method: 'session' }).$promise
       .then(function (response) {
         $scope.user = _.get(response, 'result.item', {});
-        $log.info('Auth successful', $scope.user)
+        $log.log('Auth successful', $scope.user)
         $scope.unlock('auth');
       })
       .catch(function (error) {
@@ -1158,7 +1158,7 @@ angular.module('histograph')
 
 
       VisualizationFactory.resource(VIZ.TIMELINE).then(function (res) {
-        $log.info('CoreCtrl @EVENTS.USE_USER VisualizationFactory', res);
+        $log.log('CoreCtrl @EVENTS.USE_USER VisualizationFactory', res);
         $scope.contextualTimeline = res.data.result.timeline;
         // $scope.initialTimeline
       });

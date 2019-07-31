@@ -38,7 +38,7 @@ angular.module('histograph')
         trails: '='
       },
       link(scope, element, attrs) {
-        $log.info('::history ready', scope.trails);
+        $log.log('::history ready', scope.trails);
         return;
         const svg = d3.select(element[0])
           .append('svg');
@@ -148,7 +148,7 @@ angular.module('histograph')
         scope.$watch('trails', function (trails) {
           if (!trails) return;
 
-          $log.info('::history @trails changed', trails);
+          $log.log('::history @trails changed', trails);
           draw(trails);
         }, true);
       }

@@ -615,7 +615,7 @@ angular.module('histograph')
             // eslint-disable-next-line no-param-reassign
             nodeId = $(this).attr('data-id');
           }
-          $log.info('::sigma --> focus()', nodeId);// , _.map(si.graph.nodes(), 'id'))
+          $log.log('::sigma --> focus()', nodeId);// , _.map(si.graph.nodes(), 'id'))
           const node = si.graph.nodes(nodeId);
           if (!node) return;
           try {

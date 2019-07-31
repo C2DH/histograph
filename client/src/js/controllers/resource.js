@@ -28,7 +28,7 @@ angular.module('histograph')
       and enlighten it on the network
     */
     $scope.sigmaFocus = function (id) {
-      $log.info('ResourceCtrl .sigmaFocus', id);
+      $log.log('ResourceCtrl .sigmaFocus', id);
       $scope.focusId = id;
       $scope.$broadcast('focuson', { id });
     }
@@ -56,7 +56,7 @@ angular.module('histograph')
       Load notes attached to the current id
     */
     $scope.loadAnnotations = function (options, next) {
-      $log.info('ResourceCtrl > loadAnnotations', options)
+      $log.log('ResourceCtrl > loadAnnotations', options)
 
       const annotations = $scope.notes.filter(function (d) {
         if (d.context) return d.context == options.context && d.language == $scope.language;
@@ -102,7 +102,7 @@ angular.module('histograph')
     */
     socket.on('resource:create-related-user:done', function (result) {
       if (result.id == $stateParams.id) { // update user notificaation
-        $log.info('ResourceCtrl socket@resource:create-related-user:done - by:', result.user);
+        $log.log('ResourceCtrl socket@resource:create-related-user:done - by:', result.user);
         if (result.user.id == $scope.user.id) {
           $scope.isFavItem = true;
         }
@@ -112,7 +112,7 @@ angular.module('histograph')
 
     socket.on('resource:remove-related-user:done', function (result) {
       if (result.id == $stateParams.id) { // update user notificaation
-        $log.info('ResourceCtrl socket@resource:remove-related-user:done - by:', result.user);
+        $log.log('ResourceCtrl socket@resource:remove-related-user:done - by:', result.user);
         if (result.user.id == $scope.user.id) {
           $scope.isFavItem = false;
         }
@@ -123,7 +123,7 @@ angular.module('histograph')
     socket.on('entity:create-related-resource:done', function (result) {
       console.log(result)
       if (result.resource.id == $stateParams.id) { // update user notificaation)
-        $log.info('ResourceCtrl socket@entity:create-related-resource:done - by:', result.user);
+        $log.log('ResourceCtrl socket@entity:create-related-resource:done - by:', result.user);
         // change the tags...
         $scope.item = result.data.related.resource;
 
@@ -158,7 +158,7 @@ angular.module('histograph')
     socket.on('entity:upvote-related-resource:done', function (result) {
       console.log(result)
       if (result.resource.id == $stateParams.id) {
-        $log.info('ResourceCtrl socket@entity:upvote-related-resource:done - by:', result.user);
+        $log.log('ResourceCtrl socket@entity:upvote-related-resource:done - by:', result.user);
         $scope.item = result.data.related.resource;
 
         // update annotations
@@ -171,7 +171,7 @@ angular.module('histograph')
     socket.on('entity:downvote-related-resource:done', function (result) {
       console.log(result)
       if (result.resource.id == $stateParams.id) { // update user notificaation
-        $log.info('ResourceCtrl socket@entity:downvote-related-resource:done - by:', result.user);
+        $log.log('ResourceCtrl socket@entity:downvote-related-resource:done - by:', result.user);
         $scope.item = result.data.related.resource;
       }
     })
@@ -179,7 +179,7 @@ angular.module('histograph')
     socket.on('entity:merge-entity:done', function (result) {
       console.log(result)
       if (result.resource.id == $stateParams.id) { // update user notificaation
-        $log.info('ResourceCtrl socket@entity:merge-entity:done - by:', result.user);
+        $log.log('ResourceCtrl socket@entity:merge-entity:done - by:', result.user);
         $scope.item = result.data.related.resource;
       }
     });
@@ -187,7 +187,7 @@ angular.module('histograph')
     socket.on('entity:remove-related-resource:done', function (result) {
       console.log(result)
       if (result.resource.id == $stateParams.id) { // update user notificaation
-        $log.info('ResourceCtrl socket@entity:remove-related-resource:done - by:', result.user, '- result:', result);
+        $log.log('ResourceCtrl socket@entity:remove-related-resource:done - by:', result.user, '- result:', result);
         $scope.item = result.data.related.resource;
       }
     })
@@ -203,7 +203,7 @@ angular.module('histograph')
     })
 
     $scope.switchVersion = function (version) {
-      $log.info('resourceCtrl.switchVersion', version)
+      $log.log('resourceCtrl.switchVersion', version)
       $scope.currentVersion = version;
     };
 
@@ -224,7 +224,7 @@ angular.module('histograph')
     // }).length
     $scope.isFavItem = resource.result.item.loved_by_user;
 
-    $log.info('ResourceCtrl', resource);
+    $log.log('ResourceCtrl', resource);
 
     if (resource) {
       $scope.setCurrentResourceRange([

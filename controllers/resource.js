@@ -22,9 +22,10 @@ var settings   = require('../settings'),
     Entity     = require('../models/entity');
     Resource   = require('../models/resource');
  
+const createError = require('http-errors')
 const assert = require('assert')
 const { promisify } = require('util')
-const { isString, isNaN } = require('lodash')
+const { isString, isNaN, isEmpty, assignIn } = require('lodash')
 const { asyncHandler } = require('../lib/util/express')
 const { toUnixSeconds } = require('../lib/util/date')
 const {
@@ -36,6 +37,9 @@ const {
   aspectRetrievers, filterValuesRetrievers
 } = require('../lib/logic/resource/topicModelling/aspects')
 
+const { executeQuery } = require('../lib/util/neo4j')
+const topicQueries  = require('decypher')('./queries/topic.cyp')
+
 const findTopicModellingScores = promisify(Resource.findTopicModellingScores.bind(Resource))
 
 /* eslint-enable */
@@ -43,7 +47,8 @@ function getTopicModellingRequestDetails(req) {
   const {
     from,
     to,
-    bins
+    bins,
+    set = 'default'
   } = req.query
 
   const fromTime = isString(from) ? toUnixSeconds(from) : undefined
@@ -52,7 +57,9 @@ function getTopicModellingRequestDetails(req) {
 
   assert(!isNaN(binsCount), `Invalid bins value: "${bins}"`)
 
-  return { fromTime, toTime, binsCount }
+  return {
+    fromTime, toTime, binsCount, set
+  }
 }
 /* eslint-disable */
 
@@ -743,7 +750,8 @@ module.exports = function(io){
       const {
         fromTime,
         toTime,
-        binsCount
+        binsCount,
+        set
       } = getTopicModellingRequestDetails(req)
 
       const results = await findTopicModellingScores(fromTime, toTime)
@@ -753,9 +761,12 @@ module.exports = function(io){
         getAggregatedTopicModellingScoreFromResourcesBin
       )
 
+      const topics = await executeQuery(topicQueries.get_all_for_set, { set })
+
       res.json({
         aggregates: fillEmptyScoresWithZeros(aggregatedResults.aggregates),
-        aggregatesMeta: aggregatedResults.aggregatesMeta
+        aggregatesMeta: aggregatedResults.aggregatesMeta,
+        topics
       })
     }, false),
 
@@ -780,6 +791,24 @@ module.exports = function(io){
       const result = await filterValuesRetrievers[aspect]()
       res.json(result)
     }, false),
+
+    getTopicDetails: asyncHandler(async (req, res) => {
+      const { set, index } = req.params
+      const result = await executeQuery(topicQueries.get, { index, set })
+      if (isEmpty(result)) throw createError(404, 'No such topic found')
+
+      res.json(result[0])
+    }, false),
+
+    updateTopicDetails: asyncHandler(async (req, res) => {
+      const { set, index } = req.params
+      const topic = req.body
+      const topicPayload = assignIn({}, topic, { index, set })
+      const result = await executeQuery(topicQueries.create_or_update, topicPayload)
+
+      res.json(result[0])
+    }, false),
+
     /* eslint-disable */
 
     /*

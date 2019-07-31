@@ -16,3 +16,29 @@ export function withStyles(angularScope, styles) {
     angularScope._stylesheet.detach()
   })
 }
+
+export const theme = {
+  colours: {
+    background: {
+      dark: {
+        primary: '#383838'
+      }
+    },
+    text: {
+      light: {
+        primary: '#f0f0f0',
+        secondary: '#A9A2A2'
+      }
+    },
+    action: {
+      error: '#FF5742',
+      warn: '#b3b02d',
+      info: '#8b76f3',
+    }
+  },
+  text: {
+    h3: {
+      fontSize: '1.2em'
+    }
+  }
+}
