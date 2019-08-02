@@ -7,6 +7,8 @@ const styles = {
     flexDirection: 'column',
     alignContent: 'stretch',
     fontFamily: '"proxima-nova",sans-serif',
+    height: '100%',
+    width: '100%'
   },
   panelTop: {
     display: 'flex',
@@ -54,6 +56,7 @@ const styles = {
     flexDirection: 'row',
     flexWrap: 'wrap',
     margin: [['0.9em', '1.2em']],
+    overflowY: 'scroll',
     '& span': {
       marginRight: '.3em',
       marginBottom: '.3em',

@@ -70,14 +70,16 @@ angular.module('histograph')
         from,
         to,
         aspectFilters,
-        topicId
+        topicId,
+        aggregationMethod
       } = $location.search()
       $scope.params = {
         step: step === undefined ? undefined : parseInt(step, 10),
         from,
         to,
         aspectFilters: isEmpty(aspectFilters) ? {} : JSON.parse(aspectFilters),
-        topicId
+        topicId,
+        aggregationMethod
       }
     }
 
@@ -96,6 +98,7 @@ angular.module('histograph')
     $scope.$watch('params.from', () => parametersToUrl())
     $scope.$watch('params.to', () => parametersToUrl())
     $scope.$watch('params.topicId', () => parametersToUrl())
+    $scope.$watch('params.aggregationMethod', () => parametersToUrl())
     parametersFromUrl()
 
 
@@ -207,17 +210,22 @@ angular.module('histograph')
       from: get($scope.params, 'from'),
       to: get($scope.params, 'to'),
       aspectFilters: get($scope.params, 'aspectFilters', {}),
-      aspect: $scope.aspectFilter.aspect
+      aspect: $scope.aspectFilter.aspect,
+      aggregationMethod: get($scope.params, 'aggregationMethod')
     })
 
-    function updateTopicModelling({ bins, from, to, aspectFilters, aspect }) {
+    function updateTopicModelling({
+      bins, from, to, aspectFilters, aspect, aggregationMethod
+    }) {
       if (!bins) return
       if (aspect === undefined) return
 
       const filterValues = get(aspectFilters, aspect, [])
 
       $scope.busyCounter += 1
-      TopicModellingScoresService.get({ bins, from, to }).$promise
+      TopicModellingScoresService.get({
+        bins, from, to, aggregationMethod
+      }).$promise
         .then(data => {
           $scope.topicModellingData = data
         })

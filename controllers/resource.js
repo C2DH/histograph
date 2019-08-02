@@ -25,7 +25,7 @@ var settings   = require('../settings'),
 const createError = require('http-errors')
 const assert = require('assert')
 const { promisify } = require('util')
-const { isString, isNaN, isEmpty, assignIn } = require('lodash')
+const { isString, isNaN, isEmpty, assignIn, max, mean, get } = require('lodash')
 const { asyncHandler } = require('../lib/util/express')
 const { toUnixSeconds } = require('../lib/util/date')
 const {
@@ -747,18 +747,25 @@ module.exports = function(io){
 
     /* eslint-enable */
     topicModellingScores: asyncHandler(async (req, res) => {
+      const aggregationMethods = {
+        mean,
+        max,
+      }
       const {
         fromTime,
         toTime,
         binsCount,
-        set
+        set,
+        aggregationMethod
       } = getTopicModellingRequestDetails(req)
+
+      const aggregationFn = get(aggregationMethods, aggregationMethod, mean)
 
       const results = await findTopicModellingScores(fromTime, toTime)
       const aggregatedResults = aggregateResourcesInBinsByCount(
         results,
         binsCount,
-        getAggregatedTopicModellingScoreFromResourcesBin
+        items => getAggregatedTopicModellingScoreFromResourcesBin(items, aggregationFn)
       )
 
       const topics = await executeQuery(topicQueries.get_all_for_set, { set })
