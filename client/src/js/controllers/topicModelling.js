@@ -169,10 +169,10 @@ angular.module('histograph')
         })
     }
 
-    $scope.itemClickHandler = ({ stepIndex, topicIndex }) => {
+    $scope.itemClickHandler = ({ stepIndex }) => {
       if ($scope.params.step === stepIndex) return
       const meta = $scope.topicModellingData.aggregatesMeta[stepIndex]
-      $log.log('Topic item selected', stepIndex, topicIndex, meta)
+      $log.log('Topic step selected', stepIndex, meta)
       $scope.selectedItemMeta = meta
       $scope.selectedResources = []
       $scope.totalItems = 0

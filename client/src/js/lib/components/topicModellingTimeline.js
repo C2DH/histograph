@@ -129,16 +129,28 @@ export default class TopicModellingTimeline {
         d3.select(this).attr('font-weight', undefined)
       })
 
+    function _filterOutSelectedHighlight() {
+      return !this.classList.contains('selected')
+    }
+
     const timestepContainer = this.svg
       .selectAll('g.timesteps')
       .data([this.data.topicsScores])
       .join('g')
       .attr('class', 'timesteps')
+      .style('pointer-events', 'all')
       .selectAll('g.step')
       .data(d => d)
       .join('g')
       .attr('class', 'step')
       .attr('transform', (d, i) => `translate(${xScale(i) + this.labelOffset + this.labelMargin + maxCircleRadius}, 0)`)
+      .on('mouseover', function () {
+        d3.select(this).select('.highlight').filter(_filterOutSelectedHighlight).style('fill', '#dddddd22')
+      })
+      .on('mouseout', function () {
+        d3.select(this).select('.highlight').filter(_filterOutSelectedHighlight).style('fill', '#ffffff00')
+      })
+      .on('click', this._onTimestepClick.bind(this))
 
     timestepContainer
       .selectAll('line')
@@ -158,15 +170,6 @@ export default class TopicModellingTimeline {
       .attr('x', -maxCircleRadius)
       .attr('width', maxCircleRadius * 2)
       .attr('height', height)
-      .on('mouseover', (d, idx, rects) => {
-        const rect = rects[idx]
-        d3.select(rect).filter(this._filterOutSelectedHighlight).style('fill', '#dddddd22')
-      })
-      .on('mouseout', (d, idx, rects) => {
-        const rect = rects[idx]
-        d3.select(rect).filter(this._filterOutSelectedHighlight).style('fill', '#ffffff00')
-      })
-      .on('click', this._onTimestepClick.bind(this))
 
     // value circle
     timestepContainer
@@ -269,20 +272,12 @@ export default class TopicModellingTimeline {
   _onCircleOver(d, topicIndex, circles) {
     const circle = circles[topicIndex]
     d3.select(circle).style('fill', '#3333330f')
-    d3.select(circle.parentNode.parentNode)
-      .select('.highlight')
-      .filter(this._filterOutSelectedHighlight)
-      .style('fill', '#dddddd22')
   }
 
   // eslint-disable-next-line class-methods-use-this
   _onCircleOut(d, topicIndex, circles) {
     const circle = circles[topicIndex]
     d3.select(circle).style('fill', undefined)
-    d3.select(circle.parentNode.parentNode)
-      .select('.highlight')
-      .filter(this._filterOutSelectedHighlight)
-      .style('fill', '#ffffff00')
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -294,9 +289,8 @@ export default class TopicModellingTimeline {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  _onTimestepClick(d) {
+  _onTimestepClick(d, stepIndex) {
     if (this._timestepClickHandler) {
-      const { stepIndex } = d
       if (stepIndex !== undefined) {
         this._timestepClickHandler({ stepIndex })
       }
@@ -308,12 +302,6 @@ export default class TopicModellingTimeline {
       this._topicLabelClickHandler({ topicIndex })
     }
   }
-
-  // eslint-disable-next-line class-methods-use-this
-  _filterOutSelectedHighlight() {
-    return !this.classList.contains('selected')
-  }
-
 
   /**
    * Example:

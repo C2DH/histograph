@@ -25,7 +25,6 @@ angular.module('histograph')
 
         const timeline = new TopicModellingTimeline(root, {
           onDesiredNumberOfTimestepsChange: forwardEventHandler(scope, 'setBinsCount'),
-          itemClickHandler: forwardEventHandler(scope, 'itemClickHandler'),
           timestepClickHandler: forwardEventHandler(scope, 'itemClickHandler'),
           topicLabelClickHandler: forwardEventHandler(scope, 'topicLabelClickHandler')
         })
