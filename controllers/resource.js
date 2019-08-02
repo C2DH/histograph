@@ -48,7 +48,8 @@ function getTopicModellingRequestDetails(req) {
     from,
     to,
     bins,
-    set = 'default'
+    set = 'default',
+    aggregationMethod
   } = req.query
 
   const fromTime = isString(from) ? toUnixSeconds(from) : undefined
@@ -58,7 +59,7 @@ function getTopicModellingRequestDetails(req) {
   assert(!isNaN(binsCount), `Invalid bins value: "${bins}"`)
 
   return {
-    fromTime, toTime, binsCount, set
+    fromTime, toTime, binsCount, set, aggregationMethod
   }
 }
 /* eslint-disable */
