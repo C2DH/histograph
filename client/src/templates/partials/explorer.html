@@ -1,0 +1,74 @@
+<div class="topic-modelling-page">
+  <!-- Menu bar -->
+  <div id='perspective-menu' class="tk-proxima-nova header-menu">
+    <ul>
+      <li class="menu-item" ng-include src="'templates/partials/helpers/grammar.html'"></li>
+    </ul>
+  </div>
+
+  <!-- Page container -->
+  <div class="{{classes.container}}"
+      ng-if="optionalFeatures.topicModellingTimeline.enabled">
+
+    <!-- Topic details side panel  -->
+    <div hi-topic-details="params.topicId"
+         on-close="unselectCurrentTopic()"
+         on-topic-updated="reloadData()"
+         ng-show="params.topicId !== undefined"
+         class="{{classes.containerChild}} {{classes.topicDetails}}">
+    </div>
+
+    <!-- Explorer pane -->
+    <div class="{{classes.containerChild}} {{classes.mainPanel}}">
+
+      <!-- Explorer graph -->
+      <div hi-explorer="explorerConfig"
+           hi-explorer-data="explorerData"
+           hi-set-bins-count="setBinsCount"
+           hi-on-bin-selected="onBinSelected",
+           hi-step-index="params.step"
+           class="{{classes.explorerGraph}}">
+      </div>
+  
+      <!-- Graph footer -->
+      <div class="{{classes.graphFooter}}">
+        <div class="{{classes.graphFooterSection}}">
+            <div ng-repeat="(id, filters) in explorerFiltersConfig">
+              <div hi-explorer-filter="filter"
+                   hi-explorer-plot-id="{{id}}"
+                   hi-initial-value="params.filters[id][filter.key]"
+                   hi-on-changed="onFilterValueChanged"
+                   ng-repeat="filter in filters">
+              </div>
+            </div>      
+        </div>
+        
+        <div class="{{classes.graphFooterSection}}">
+          <div>
+            <button class="btn btn-default {{classes.zoomInButton}}" 
+                    ng-click="zoomIn()"
+                    ng-if="itemsPerBin > 0"
+                    ng-disabled="itemsPerBin <= 1">
+              <i class="fa fa-search-plus"/>
+            </button>
+          </div>
+          <div class="sans-serif {{classes.barZoomLabel}}" ng-if="itemsPerBin > 0">
+            1 bin = {{itemsPerBin}} resource{{ itemsPerBin === 1 ? '' : 's'}}
+          </div>
+        </div>
+      </div>
+  
+      <!-- Resources list -->
+      <div class="selected-resources related-resources-container">
+        <div ng-repeat="relatedItem in selectedResources" 
+             ng-include='"templates/partials/resource-lite.html"'
+             class="masonry-brick">
+        </div>
+        <div class="more" ng-if="selectedResources.length < totalItems">
+          <button class="btn" ng-click="loadMoreResources()">load more items</button>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+</div>

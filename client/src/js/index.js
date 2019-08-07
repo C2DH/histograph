@@ -77,7 +77,7 @@ require('./controllers/pulse.js')
 require('./controllers/resource.js')
 require('./controllers/search.js')
 require('./controllers/user.js')
-require('./controllers/topicModelling.js')
+require('./controllers/explorer.js')
 
 // modal controllers. templates in templates/modal
 require('./controllers/modals/contribute.js')
@@ -96,12 +96,12 @@ require('./directives/reporter.js')
 require('./directives/popit.js')
 require('./directives/lazy-text.js')
 require('./directives/iiifImage.js')
-require('./directives/topicModellingTimeline.js')
 
 
 require('./components/topic-details.js')
 require('./components/snackbar.js')
 require('./components/explorer.js')
+require('./components/explorerFilter.js')
 
 function importTemplates() {
   const ctx = require.context('../templates', true, /.*\.html$/)

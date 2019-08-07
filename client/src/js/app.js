@@ -295,10 +295,10 @@ module.exports = angular
           },
         }
       })
-      .state('topic-modelling', {
-        url: '/topic-modelling',
-        templateUrl: 'templates/partials/topic-modelling.html',
-        controller: 'TopicModellingCtrl'
+      .state('explorer', {
+        url: '/explorer',
+        templateUrl: 'templates/partials/explorer.html',
+        controller: 'ExplorerCtrl'
       })
       .state('explore.issues', {
         url: 'issues',

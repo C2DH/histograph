@@ -17,13 +17,13 @@ const TypeToUnits = {
  *  '<plot-id>': {
  *    'label': '...',
  *    'type': '...', // one of: 'bubble', 'bar'
- *    'labels': [...]
+ *    'labels': [...] // optional
  *  }
  * }
  *
  * Data:
  * {
- *   '<plot-id>': [...]
+ *   '<plot-id>': { data: [...], labels: [...] }
  * }
  */
 const directive = {
@@ -35,6 +35,7 @@ const directive = {
     onBinSelected: '=hiOnBinSelected',
     stepIndex: '=hiStepIndex'
   },
+  /* html */
   template: `
     <div class="svg-container"></div>
   `,
