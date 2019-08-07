@@ -38,7 +38,8 @@
                    hi-explorer-plot-id="{{id}}"
                    hi-initial-value="params.filters[id][filter.key]"
                    hi-on-changed="onFilterValueChanged"
-                   ng-repeat="filter in filters">
+                   ng-repeat="filter in filters"
+                   class="{{ classes.explorerFilter }}">
               </div>
             </div>      
         </div>
@@ -49,7 +50,7 @@
                     ng-click="zoomIn()"
                     ng-if="itemsPerBin > 0"
                     ng-disabled="itemsPerBin <= 1">
-              <i class="fa fa-search-plus"/>
+              <i class="fa fa-search-plus"></i>
             </button>
           </div>
           <div class="sans-serif {{classes.barZoomLabel}}" ng-if="itemsPerBin > 0">

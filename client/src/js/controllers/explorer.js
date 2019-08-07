@@ -10,7 +10,7 @@ const styles = {
     display: 'flex',
     flex: 1,
     width: '100%',
-    height: '200px',
+    height: '300px',
     alignContent: 'stretch',
     '& .svg-container': {
       width: '100%'
@@ -22,6 +22,9 @@ const styles = {
   },
   graphFooterSection: {
     display: 'flex',
+  },
+  explorerFilter: {
+    marginRight: '2em',
   },
   zoomInButton: {
     marginRight: '1em',
@@ -143,13 +146,15 @@ angular.module('histograph')
       $scope.binsCount = val
     }
 
+    // Pick first data object that has non-empty metadata.
     function getReferenceData() {
-      const plotsIds = Object.keys($scope.explorerData || {})
-      if (plotsIds.length === 0) return undefined
-
-      const firstPlotId = plotsIds[0]
-      const data = $scope.explorerData[firstPlotId]
-      return data
+      return Object.keys($scope.explorerData || {}).reduce((acc, key) => {
+        const data = get($scope.explorerData, key)
+        if (get(data, 'meta', []).length > 0) {
+          return data
+        }
+        return acc
+      }, undefined)
     }
 
     $scope.zoomIn = () => {

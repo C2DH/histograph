@@ -4,7 +4,16 @@ import { withStyles } from '../styles'
 const styles = {
   container: {
     border: '1px solid red'
-  }
+  },
+  textInput: {
+    display: 'inline-flex',
+    width: 'auto',
+  },
+  searchButton: {
+    '& .fa': {
+      fontSize: '1.15em',
+    }
+  },
 }
 
 const directive = {
@@ -12,7 +21,7 @@ const directive = {
   scope: {
     config: '=hiExplorerFilter',
     onChanged: '=hiOnChanged',
-    initalValue: '=hiInitialValue',
+    initialValue: '=hiInitialValue',
     plotId: '@hiExplorerPlotId'
   },
   /* html */
@@ -36,6 +45,17 @@ const directive = {
           <i class="fa fa-times-circle"></i>
         </span>
       </div>
+
+      <!-- Text input -->
+      <div ng-if="config.type === 'value'">
+        <input type="text"
+               ng-model="textInputValue.value"
+               placeholder="{{config.label}}"
+               class="form-control {{ classes.textInput }}"/>
+        <button ng-click="submitTextInputValue()" class="btn btn-default {{ classes.searchButton }}">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
     </div>
   `,
   // link: function link($scope, element) {
@@ -43,8 +63,11 @@ const directive = {
   controller: function controller($scope) {
     withStyles($scope, styles)
 
-    if ($scope.value === undefined && $scope.initalValue) {
-      $scope.value = $scope.initalValue
+    $scope.textInputValue = {}
+
+    if ($scope.value === undefined && $scope.initialValue) {
+      $scope.value = $scope.initialValue
+      $scope.textInputValue.value = $scope.initialValue
     }
 
     $scope.$watch('config', config => {
@@ -70,6 +93,10 @@ const directive = {
       } else {
         $scope.value = ''
       }
+    }
+
+    $scope.submitTextInputValue = () => {
+      $scope.value = $scope.textInputValue.value
     }
 
     $scope.$watch('value', v => {
