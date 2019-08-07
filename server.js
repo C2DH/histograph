@@ -516,7 +516,7 @@ apiRouter.route('/skybiometry/face-detect')
 
 let dataApiRouter = express.Router()
 dataApiRouter.use(auth.apiKeyAuthMiddleware)
-dataApiRouter = require('./lib/endpoints/api')(dataApiRouter)
+dataApiRouter = require('./lib/endpoints/management')(dataApiRouter)
 
 /*
 
@@ -808,6 +808,8 @@ apiRouter.route('/suggest/viaf')
 apiRouter.route('/suggest/dbpedia')
   .get(ctrl.suggest.dbpedia)
 
+const explorerRoutes = require('./lib/endpoints/public/explorer')
+apiRouter.use('/explorer/', explorerRoutes)
 
 /*
   

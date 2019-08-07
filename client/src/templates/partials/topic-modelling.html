@@ -55,6 +55,16 @@
            hi-topic-label-click-handler="topicLabelClickHandler"
            class="topic-modelling-timeline-container">
       </div>
+
+      <div hi-explorer="explorerConfig"
+           hi-explorer-data="explorerData"
+           hi-set-bins-count="setBinsCount"
+           hi-on-bin-selected="onBinSelected",
+           hi-step-index="params.step"
+           class="{{classes.explorerGraph}}">
+      </div>
+  
+  
       <div class="{{classes.graphFooter}}">
         <div>
           <button class="btn btn-default {{classes.zoomInButton}}" 

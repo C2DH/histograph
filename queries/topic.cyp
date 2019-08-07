@@ -17,3 +17,10 @@ RETURN t
 // name: get
 MATCH (t:Topic {index:{index}, set:{set}})
 RETURN t
+
+// name: get_labels_and_indices_for_set
+MATCH (t:Topic {set:{set}})
+RETURN {
+  label: t.label,
+  index: t.index
+}

@@ -3,6 +3,16 @@ import { assignIn, get, isEmpty } from 'lodash'
 import { withStyles, theme } from '../styles'
 
 const styles = {
+  explorerGraph: {
+    display: 'flex',
+    flex: 1,
+    width: '100%',
+    height: '200px',
+    alignContent: 'stretch',
+    '& .svg-container': {
+      width: '100%'
+    }
+  },
   graphFooter: {
     display: 'flex',
     justifyContent: 'flex-end'
@@ -49,7 +59,8 @@ angular.module('histograph')
     $scope, $log, $location,
     TopicModellingAspectsService,
     TopicModellingScoresService, EVENTS,
-    ResourceFactory
+    ResourceFactory,
+    ExplorerService
   ) {
     withStyles($scope, styles)
 
@@ -63,6 +74,21 @@ angular.module('histograph')
     $scope.selectedResources = []
     $scope.resourcesPageLimit = 10
 
+    $scope.explorerData = {}
+
+    ExplorerService.getConfiguration()
+      .then(config => {
+        $log.log('Explorer configuration', Object.keys(config))
+        $scope.explorerConfig = config
+
+        const ids = Object.keys(config)
+        ids.forEach(id => {
+          ExplorerService.getAspectFilters(id)
+            .then(filtersConfig => $log.log('** Filters', filtersConfig))
+            .catch(e => $log.error('Filters configuration:', _.get(e, 'data.message', 'Error getting filters configuration')))    
+        })
+      })
+      .catch(e => $log.error('Explorer configuration:', _.get(e, 'data.message', 'Error getting explorer configuration')))
 
     function parametersFromUrl() {
       const {
@@ -172,6 +198,10 @@ angular.module('histograph')
         })
     }
 
+    $scope.onBinSelected = stepIndex => {
+      $scope.itemClickHandler({ stepIndex })
+    }
+
     $scope.itemClickHandler = ({ stepIndex }) => {
       if ($scope.params.step === stepIndex) return
       const meta = $scope.topicModellingData.aggregatesMeta[stepIndex]
@@ -204,6 +234,32 @@ angular.module('histograph')
           .finally(() => { $scope.busyCounter -= 1 })
       }
     })
+
+    const getRequiredDataForExplorerUpdate = () => ({
+      bins: $scope.binsCount,
+      from: get($scope.params, 'from'),
+      to: get($scope.params, 'to')
+    })
+
+    function updateExplorerData({ bins, from, to }) {
+      if ($scope.explorerConfig === undefined) return
+      const ids = Object.keys($scope.explorerConfig)
+
+      ids.forEach(id => {
+        ExplorerService.getAspectData(id, { bins, from, to })
+          .then(data => {
+            $log.log(`*** ${id} Data`, data)
+            $scope.explorerData[id] = data
+          })
+          .catch(e => $log.error(`Getting data ${id}:`, _.get(e, 'data.message', 'Error getting data')))
+      })
+    }
+
+    $scope.$watch(
+      getRequiredDataForExplorerUpdate,
+      updateExplorerData,
+      true
+    )
 
     const getRequiredDataForTopicModellingUpdate = () => ({
       bins: $scope.binsCount,

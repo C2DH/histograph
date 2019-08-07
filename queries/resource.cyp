@@ -1234,8 +1234,8 @@ WHERE
 OPTIONAL MATCH (r)-[]-(e:entity:person)
 WITH { 
 	uuid: r.uuid, 
-    startDate: r.start_date, 
-    nationalities: collect(e.metadata__nationality) 
+  startDate: r.start_date, 
+  nationalities: collect(e.metadata__nationality) 
 } AS result
 RETURN result
 ORDER BY result.startDate

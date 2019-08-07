@@ -23,6 +23,7 @@
     "angular-ui-bootstrap": "0.14.3",
     "angular-ui-router": "0.2.15",
     "d3": "5.9.7",
+    "d3-explorer": "git+https://github.com/theorm/d3-explorer.git",
     "imagesloaded": "4.1.4",
     "jquery": "^2.1.3",
     "jss": "^9.8.7",

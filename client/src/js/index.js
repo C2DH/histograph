@@ -101,6 +101,7 @@ require('./directives/topicModellingTimeline.js')
 
 require('./components/topic-details.js')
 require('./components/snackbar.js')
+require('./components/explorer.js')
 
 function importTemplates() {
   const ctx = require.context('../templates', true, /.*\.html$/)
