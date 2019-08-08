@@ -1,4 +1,6 @@
-import { get, cloneDeep, assignIn } from 'lodash'
+import {
+  get, cloneDeep, assignIn, noop
+} from 'lodash'
 import { withStyles, theme } from '../styles'
 
 const styles = {
@@ -161,6 +163,11 @@ const directive = {
         event.preventDefault();
       }
     })
+
+    $scope.onClose = () => {
+      const fn = $scope.onCloseClicked || noop
+      $scope.$applyAsync(fn())
+    }
   }
 }
 

@@ -33,6 +33,7 @@ const directive = {
     data: '=hiExplorerData',
     setBinsCount: '=hiSetBinsCount',
     onBinSelected: '=hiOnBinSelected',
+    onLabelClicked: '=hiOnLabelClicked',
     stepIndex: '=hiStepIndex'
   },
   /* html */
@@ -44,7 +45,8 @@ const directive = {
     $scope.explorer = new Explorer(root, {
       parameters: {
         handlers: {
-          onBinSelected: (...args) => $scope.$apply($scope.onBinSelected(...args))
+          onBinSelected: (...args) => $scope.$apply($scope.onBinSelected(...args)),
+          onLabelClicked: (...args) => $scope.$apply($scope.onLabelClicked(...args))
         },
         labels: {
           offset: 100,
@@ -99,6 +101,8 @@ const directive = {
     $scope.$watch('stepIndex', index => {
       $scope.explorer.setSelectedBin(index)
     })
+
+    $scope.$watch(() => $scope.explorer._getWH(), () => $scope.explorer.render(), true)
   }
 }
 

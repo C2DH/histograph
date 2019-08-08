@@ -305,7 +305,7 @@ angular.module('histograph')
         })
     }, true)
 
-    $scope.topicLabelClickHandler = ({ topicIndex }) => {
+    $scope.topicLabelClickHandler = (plotId, topicIndex) => {
       $scope.params.topicId = topicIndex
     }
     $scope.unselectCurrentTopic = () => {
