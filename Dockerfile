@@ -5,6 +5,7 @@ RUN apk add --no-cache git
 
 WORKDIR /webapp
 COPY client/package.json /webapp
+COPY client/package-lock.json /webapp
 RUN npm install
 
 COPY client /webapp

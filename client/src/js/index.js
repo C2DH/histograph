@@ -58,6 +58,25 @@ require('./services.js')
 
 // require('./templates.js')
 
+
+window.Annotator = require('./lib/annotator.min').Annotator
+require('./lib/annotator.unsupported.min')
+
+require('./directives/annotator.js')
+require('./directives/annotorious.js')
+require('./directives/sigma.js')
+require('./directives/snippets.js')
+require('./directives/timeline.js')
+require('./directives/reporter.js')
+require('./directives/popit.js')
+require('./directives/lazy-text.js')
+require('./directives/iiifImage.js')
+
+require('./components/topic-details.js')
+require('./components/snackbar.js')
+require('./components/explorer.js')
+require('./components/explorerFilter.js')
+
 require('./controllers/core.js')
 require('./controllers/filters.js')
 
@@ -83,25 +102,6 @@ require('./controllers/explorer.js')
 require('./controllers/modals/contribute.js')
 require('./controllers/modals/create-entity.js')
 require('./controllers/modals/inspect.js')
-
-window.Annotator = require('./lib/annotator.min').Annotator
-require('./lib/annotator.unsupported.min')
-
-require('./directives/annotator.js')
-require('./directives/annotorious.js')
-require('./directives/sigma.js')
-require('./directives/snippets.js')
-require('./directives/timeline.js')
-require('./directives/reporter.js')
-require('./directives/popit.js')
-require('./directives/lazy-text.js')
-require('./directives/iiifImage.js')
-
-
-require('./components/topic-details.js')
-require('./components/snackbar.js')
-require('./components/explorer.js')
-require('./components/explorerFilter.js')
 
 function importTemplates() {
   const ctx = require.context('../templates', true, /.*\.html$/)

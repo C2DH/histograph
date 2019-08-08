@@ -60,51 +60,54 @@ const directive = {
   `,
   // link: function link($scope, element) {
   // },
-  controller: function controller($scope) {
-    withStyles($scope, styles)
+  controller: 'ExplorerFilterCtrl'
+}
 
-    $scope.textInputValue = {}
+function controller($scope) {
+  withStyles($scope, styles)
 
-    if ($scope.value === undefined && $scope.initialValue) {
-      $scope.value = $scope.initialValue
-      $scope.textInputValue.value = $scope.initialValue
-    }
+  $scope.textInputValue = {}
 
-    $scope.$watch('config', config => {
-      if (!config) return
-
-      if ($scope.value === undefined) {
-        $scope.value = config.type === 'multi-selection'
-          ? [] : ''
-      }
-    }, true)
-
-    $scope.addOrRemoveMultiSelectionItem = item => {
-      if ($scope.value.indexOf(item) >= 0) {
-        $scope.value = $scope.value.filter(v => v !== item)
-      } else {
-        $scope.value.push(item)
-      }
-    }
-
-    $scope.clearValue = () => {
-      if (get($scope.config, 'type') === 'multi-selection') {
-        $scope.value = []
-      } else {
-        $scope.value = ''
-      }
-    }
-
-    $scope.submitTextInputValue = () => {
-      $scope.value = $scope.textInputValue.value
-    }
-
-    $scope.$watch('value', v => {
-      const fn = isFunction($scope.onChanged) ? $scope.onChanged : noop
-      fn($scope.plotId, get($scope.config, 'key'), v)
-    }, true)
+  if ($scope.value === undefined && $scope.initialValue) {
+    $scope.value = $scope.initialValue
+    $scope.textInputValue.value = $scope.initialValue
   }
+
+  $scope.$watch('config', config => {
+    if (!config) return
+
+    if ($scope.value === undefined) {
+      $scope.value = config.type === 'multi-selection'
+        ? [] : ''
+    }
+  }, true)
+
+  $scope.addOrRemoveMultiSelectionItem = item => {
+    if ($scope.value.indexOf(item) >= 0) {
+      $scope.value = $scope.value.filter(v => v !== item)
+    } else {
+      $scope.value.push(item)
+    }
+  }
+
+  $scope.clearValue = () => {
+    if (get($scope.config, 'type') === 'multi-selection') {
+      $scope.value = []
+    } else {
+      $scope.value = ''
+    }
+  }
+
+  $scope.submitTextInputValue = () => {
+    $scope.value = $scope.textInputValue.value
+  }
+
+  $scope.$watch('value', v => {
+    const fn = isFunction($scope.onChanged) ? $scope.onChanged : noop
+    fn($scope.plotId, get($scope.config, 'key'), v)
+  }, true)
 }
 
 angular.module('histograph')
   .directive('hiExplorerFilter', () => directive)
+  .controller('ExplorerFilterCtrl', controller)
