@@ -1,11 +1,30 @@
 /* eslint-env browser */
-import { assignIn, get, isEmpty } from 'lodash'
+import {
+  assignIn, get, isEmpty, isEqual,
+  isArray
+} from 'lodash'
 import { withStyles, theme } from '../styles'
 
 const styles = {
+  explorerGraph: {
+    display: 'flex',
+    flex: 1,
+    width: '100%',
+    height: '300px',
+    alignContent: 'stretch',
+    '& .svg-container': {
+      width: '100%'
+    }
+  },
   graphFooter: {
     display: 'flex',
-    justifyContent: 'flex-end'
+    justifyContent: 'space-between'
+  },
+  graphFooterSection: {
+    display: 'flex',
+  },
+  explorerFilter: {
+    marginRight: '2em',
   },
   zoomInButton: {
     marginRight: '1em',
@@ -40,104 +59,114 @@ const styles = {
     flex: '1 1 100%',
     flexGrow: 3,
     overflowY: 'scroll',
-    margin: '0 1em',
+    margin: '1em 1em 0 1em',
   }
 }
 
+function toQueryParameters(o = {}) {
+  return Object.keys(o).reduce((acc, key) => {
+    const value = o[key]
+    // eslint-disable-next-line no-param-reassign
+    acc[key] = isArray(value) ? JSON.stringify(value) : value
+    return acc
+  }, {})
+}
+
 angular.module('histograph')
-  .controller('TopicModellingCtrl', function (
+  .controller('ExplorerCtrl', function (
     $scope, $log, $location,
-    TopicModellingAspectsService,
-    TopicModellingScoresService, EVENTS,
-    ResourceFactory
+    ResourceFactory,
+    ExplorerService
   ) {
     withStyles($scope, styles)
 
     // state parameters
-    $scope.params = {
-      aspectFilters: {}
-    }
+    $scope.params = {}
 
-    $scope.aspectFilter = {}
-    $scope.busyCounter = 0
     $scope.selectedResources = []
     $scope.resourcesPageLimit = 10
 
+    $scope.explorerData = {}
+    $scope.explorerFiltersConfig = {}
+
+    /* Load explorer configuration */
+    ExplorerService.getConfiguration()
+      .then(config => {
+        $scope.explorerConfig = config
+
+        const ids = Object.keys(config)
+        ids.forEach(id => {
+          ExplorerService.getAspectFilters(id)
+            .then(filtersConfig => {
+              $scope.explorerFiltersConfig[id] = filtersConfig
+            })
+            .catch(e => $log.error('Filters configuration:', _.get(e, 'data.message', 'Error getting filters configuration')))
+        })
+      })
+      .catch(e => $log.error('Explorer configuration:', _.get(e, 'data.message', 'Error getting explorer configuration')))
 
     function parametersFromUrl() {
       const {
         step,
         from,
         to,
-        aspectFilters,
         topicId,
-        aggregationMethod
+        filters
       } = $location.search()
+      const parsedFilters = isEmpty(filters) ? undefined : JSON.parse(atob(filters))
+      // const b = JSON.parse(filters || '{}')
+
       $scope.params = {
         step: step === undefined ? undefined : parseInt(step, 10),
         from,
         to,
-        aspectFilters: isEmpty(aspectFilters) ? {} : JSON.parse(aspectFilters),
         topicId,
-        aggregationMethod
+        filters: parsedFilters
       }
     }
 
     const parametersToUrl = (replace = false) => {
-      const { aspectFilters } = $scope.params
+      const { filters } = $scope.params
       const queryParams = assignIn({}, $scope.params, {
-        aspectFilters: isEmpty(aspectFilters) ? undefined : JSON.stringify(aspectFilters)
+        filters: isEmpty(filters) ? undefined : btoa(JSON.stringify(filters)),
       })
       const l = $location.search(assignIn({}, $location.search(), queryParams))
       if (replace) l.replace()
     }
 
     $scope.$on('$locationChangeSuccess', parametersFromUrl)
-    $scope.$watch('params.aspectFilters', () => parametersToUrl(true), true)
     $scope.$watch('params.step', () => parametersToUrl())
     $scope.$watch('params.from', () => parametersToUrl())
     $scope.$watch('params.to', () => parametersToUrl())
     $scope.$watch('params.topicId', () => parametersToUrl())
-    $scope.$watch('params.aggregationMethod', () => parametersToUrl())
+    $scope.$watch('params.filters', () => parametersToUrl(true), true)
     parametersFromUrl()
-
-
-    $scope.addOrRemoveAspectFilterValue = value => {
-      const { aspectFilters } = $scope.params
-      const { aspect } = $scope.aspectFilter
-
-      if (aspect === undefined) return
-
-      let values = get(aspectFilters, aspect, [])
-
-      if (values.indexOf(value) >= 0) {
-        values = values.filter(v => v !== value)
-      } else {
-        values.push(value)
-      }
-      aspectFilters[aspect] = values
-    }
-
-    $scope.clearAspectFilter = () => {
-      const { aspectFilters } = $scope.params
-      const { aspect } = $scope.aspectFilter
-
-      if (aspect === undefined) return
-
-      aspectFilters[aspect] = []
-    }
 
     $scope.setBinsCount = val => {
       $scope.binsCount = val
     }
 
+    // Pick first data object that has non-empty metadata.
+    function getReferenceData() {
+      return Object.keys($scope.explorerData || {}).reduce((acc, key) => {
+        const data = get($scope.explorerData, key)
+        if (get(data, 'meta', []).length > 0) {
+          return data
+        }
+        return acc
+      }, undefined)
+    }
+
     $scope.zoomIn = () => {
-      const itemPerBinAtCurrentZoomLevel = get($scope, 'topicModellingData.aggregatesMeta.0.totalResources')
+      const data = getReferenceData()
+      if (data === undefined) return
+
+      const itemPerBinAtCurrentZoomLevel = get(data, 'meta.0.totalResources')
       if (!itemPerBinAtCurrentZoomLevel) return
 
       const binsToDisplay = $scope.binsCount
       const binsCountToZoomTo = Math.floor(binsToDisplay / itemPerBinAtCurrentZoomLevel) || 1
-      const binsMeta = get($scope, 'topicModellingData.aggregatesMeta', [])
+      const binsMeta = get(data, 'meta', [])
 
       const firstBinMeta = binsMeta[Math.ceil(binsMeta.length / 2 - binsCountToZoomTo / 2)]
       const lastBinMeta = binsMeta[Math.floor(binsMeta.length / 2 + binsCountToZoomTo / 2)]
@@ -172,9 +201,16 @@ angular.module('histograph')
         })
     }
 
+    $scope.onBinSelected = stepIndex => {
+      $scope.itemClickHandler({ stepIndex })
+    }
+
     $scope.itemClickHandler = ({ stepIndex }) => {
       if ($scope.params.step === stepIndex) return
-      const meta = $scope.topicModellingData.aggregatesMeta[stepIndex]
+      const data = getReferenceData()
+      if (!data) return
+
+      const meta = get(data.meta, stepIndex)
       $log.log('Topic step selected', stepIndex, meta)
       $scope.selectedItemMeta = meta
       $scope.selectedResources = []
@@ -183,84 +219,56 @@ angular.module('histograph')
       $scope.params.step = stepIndex
     }
 
-    $scope.$watch('optionalFeatures.topicModellingTimeline', val => {
-      if (!val) return
-
-      const { aspectFilteringEnabled, aspect } = val
-
-      if (aspectFilteringEnabled && !$scope.aspectFilter.filterKey) {
-        $scope.busyCounter += 1
-        TopicModellingAspectsService
-          .get({ aspect, extra: 'filter-values' }).$promise
-          .then(data => {
-            $scope.aspectFilter = {
-              values: data.values,
-              label: data.filterLabel,
-              filterKey: data.filterKey,
-              aspect
-            }
-          })
-          .catch(e => $log.error(e))
-          .finally(() => { $scope.busyCounter -= 1 })
-      }
-    })
-
-    const getRequiredDataForTopicModellingUpdate = () => ({
+    const getRequiredDataForExplorerUpdate = () => ({
       bins: $scope.binsCount,
       from: get($scope.params, 'from'),
       to: get($scope.params, 'to'),
-      aspectFilters: get($scope.params, 'aspectFilters', {}),
-      aspect: $scope.aspectFilter.aspect,
-      aggregationMethod: get($scope.params, 'aggregationMethod')
+      filters: get($scope.params, 'filters', {})
     })
 
-    function updateTopicModelling({
-      bins, from, to, aspectFilters, aspect, aggregationMethod
-    }) {
-      if (!bins) return
-      if (aspect === undefined) return
+    function updateExplorerData(params, oldParams = {}) {
+      if ($scope.explorerConfig === undefined) return
+      const allPlotsIds = Object.keys($scope.explorerConfig)
 
-      const filterValues = get(aspectFilters, aspect, [])
+      const {
+        bins, from, to, filters
+      } = params
+      const {
+        bins: oldBins, from: oldFrom, to: oldTo, filters: oldFilters
+      } = oldParams
 
-      $scope.busyCounter += 1
-      TopicModellingScoresService.get({
-        bins, from, to, aggregationMethod
-      }).$promise
-        .then(data => {
-          $scope.topicModellingData = data
-        })
-        .catch(e => $log.error(e))
-        .finally(() => { $scope.busyCounter -= 1 })
+      const commonParamsAreNotUpdated = isEqual(
+        [bins, from, to], [oldBins, oldFrom, oldTo]
+      )
 
-      if (aspect) {
-        const params = {
-          aspect, bins, from, to
-        }
-        if ($scope.aspectFilter.filterKey && filterValues) {
-          // eslint-disable-next-line prefer-destructuring
-          params[$scope.aspectFilter.filterKey] = JSON.stringify(filterValues)
-        }
+      let ids = allPlotsIds
 
-        $scope.busyCounter += 1
-        TopicModellingAspectsService.get(params).$promise
-          .then(data => { $scope.extraFrequenciesData = data })
-          .catch(e => $log.error(e))
-          .finally(() => { $scope.busyCounter -= 1 })
+      if (commonParamsAreNotUpdated && (!isEmpty(filters) || !isEmpty(oldFilters))) {
+        ids = allPlotsIds.filter(id => !isEqual(filters[id], oldFilters[id]))
       }
+
+      ids.forEach(id => {
+        const queryParams = assignIn({ bins, from, to }, toQueryParameters(filters[id]))
+        ExplorerService.getAspectData(id, queryParams)
+          .then(data => {
+            $scope.explorerData[id] = data
+          })
+          .catch(e => $log.error(`Getting data ${id}:`, _.get(e, 'data.message', 'Error getting data')))
+      })
     }
 
     $scope.$watch(
-      getRequiredDataForTopicModellingUpdate,
-      updateTopicModelling,
+      getRequiredDataForExplorerUpdate,
+      updateExplorerData,
       true
     )
 
-    $scope.reloadData = () => updateTopicModelling(getRequiredDataForTopicModellingUpdate())
+    $scope.reloadData = () => updateExplorerData(getRequiredDataForExplorerUpdate())
 
-    $scope.$watch('topicModellingData.aggregatesMeta', v => {
-      $scope.itemsPerBin = get(v, '0.totalResources', 0)
+    $scope.$watch(getReferenceData, v => {
+      $scope.itemsPerBin = get(v, 'meta.0.totalResources', 0)
       if (v !== undefined && $scope.params.step !== undefined) {
-        $scope.selectedItemMeta = v[$scope.params.step]
+        $scope.selectedItemMeta = v.meta[$scope.params.step]
       }
     }, true)
 
@@ -297,18 +305,26 @@ angular.module('histograph')
         })
     }, true)
 
-    $scope.topicLabelClickHandler = ({ topicIndex }) => {
+    $scope.topicLabelClickHandler = (plotId, topicIndex) => {
       $scope.params.topicId = topicIndex
     }
     $scope.unselectCurrentTopic = () => {
       $scope.params.topicId = undefined
     }
-  })
-  // eslint-disable-next-line prefer-arrow-callback
-  .factory('TopicModellingAspectsService', function service($resource, HgSettings) {
-    return $resource(`${HgSettings.apiBaseUrl}/api/resource/topic-modelling/aspects/:aspect/:extra`, {}, {})
-  })
-  // eslint-disable-next-line prefer-arrow-callback
-  .factory('TopicModellingScoresService', function service($resource, HgSettings) {
-    return $resource(`${HgSettings.apiBaseUrl}/api/resource/topic-modelling/scores`, {}, {})
+
+    $scope.onFilterValueChanged = (plotId, key, value) => {
+      const filters = get($scope.params, 'filters', {})
+      const plotFilters = get(filters, plotId, {})
+      if (isEmpty(value)) {
+        delete plotFilters[key]
+      } else {
+        plotFilters[key] = value
+      }
+      if (isEmpty(plotFilters)) {
+        delete filters[plotId]
+      } else {
+        filters[plotId] = plotFilters
+      }
+      $scope.params.filters = filters
+    }
   })

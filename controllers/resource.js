@@ -11,7 +11,6 @@ var settings   = require('../settings'),
     parser     = require('../parser'),
     helpers    = require('../helpers'),
     validator  = require('../validator'),
-    YAML       = require('yamljs'),
     async      = require('async'),
 
     _          = require('lodash'),
@@ -23,47 +22,11 @@ var settings   = require('../settings'),
     Resource   = require('../models/resource');
  
 const createError = require('http-errors')
-const assert = require('assert')
-const { promisify } = require('util')
-const { isString, isNaN, isEmpty, assignIn, max, mean, get } = require('lodash')
+const { isEmpty, assignIn } = require('lodash')
 const { asyncHandler } = require('../lib/util/express')
-const { toUnixSeconds } = require('../lib/util/date')
-const {
-  aggregateResourcesInBinsByCount,
-  getAggregatedTopicModellingScoreFromResourcesBin,
-  fillEmptyScoresWithZeros
-} = require('../lib/logic/resource/topicModelling')
-const {
-  aspectRetrievers, filterValuesRetrievers
-} = require('../lib/logic/resource/topicModelling/aspects')
 
 const { executeQuery } = require('../lib/util/neo4j')
 const topicQueries  = require('decypher')('./queries/topic.cyp')
-
-const findTopicModellingScores = promisify(Resource.findTopicModellingScores.bind(Resource))
-
-/* eslint-enable */
-function getTopicModellingRequestDetails(req) {
-  const {
-    from,
-    to,
-    bins,
-    set = 'default',
-    aggregationMethod
-  } = req.query
-
-  const fromTime = isString(from) ? toUnixSeconds(from) : undefined
-  const toTime = isString(to) ? toUnixSeconds(to) : undefined
-  const binsCount = isString(bins) ? parseInt(bins, 10) : undefined
-
-  assert(!isNaN(binsCount), `Invalid bins value: "${bins}"`)
-
-  return {
-    fromTime, toTime, binsCount, set, aggregationMethod
-  }
-}
-/* eslint-disable */
-
 
 module.exports = function(io){
   // io socket event listener
@@ -747,59 +710,6 @@ module.exports = function(io){
     },
 
     /* eslint-enable */
-    topicModellingScores: asyncHandler(async (req, res) => {
-      const aggregationMethods = {
-        mean,
-        max,
-      }
-      const {
-        fromTime,
-        toTime,
-        binsCount,
-        set,
-        aggregationMethod
-      } = getTopicModellingRequestDetails(req)
-
-      const aggregationFn = get(aggregationMethods, aggregationMethod, mean)
-
-      const results = await findTopicModellingScores(fromTime, toTime)
-      const aggregatedResults = aggregateResourcesInBinsByCount(
-        results,
-        binsCount,
-        items => getAggregatedTopicModellingScoreFromResourcesBin(items, aggregationFn)
-      )
-
-      const topics = await executeQuery(topicQueries.get_all_for_set, { set })
-
-      res.json({
-        aggregates: fillEmptyScoresWithZeros(aggregatedResults.aggregates),
-        aggregatesMeta: aggregatedResults.aggregatesMeta,
-        topics
-      })
-    }, false),
-
-    topicModellingExtraAspect: asyncHandler(async (req, res) => {
-      const { aspect } = req.params
-      assert(aspect in aspectRetrievers, `Unknown aspect ${aspect}`)
-      const {
-        fromTime,
-        toTime,
-        binsCount
-      } = getTopicModellingRequestDetails(req)
-
-      const result = await aspectRetrievers[aspect](fromTime, toTime, binsCount, req.query)
-
-      res.json(result)
-    }, false),
-
-    topicModellingAspectFilterValues: asyncHandler(async (req, res) => {
-      const { aspect } = req.params
-      assert(aspect in filterValuesRetrievers, `Unknown aspect ${aspect}`)
-
-      const result = await filterValuesRetrievers[aspect]()
-      res.json(result)
-    }, false),
-
     getTopicDetails: asyncHandler(async (req, res) => {
       const { set, index } = req.params
       const result = await executeQuery(topicQueries.get, { index, set })
@@ -816,7 +726,6 @@ module.exports = function(io){
 
       res.json(result[0])
     }, false),
-
     /* eslint-disable */
 
     /*

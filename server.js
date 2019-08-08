@@ -516,7 +516,7 @@ apiRouter.route('/skybiometry/face-detect')
 
 let dataApiRouter = express.Router()
 dataApiRouter.use(auth.apiKeyAuthMiddleware)
-dataApiRouter = require('./lib/endpoints/api')(dataApiRouter)
+dataApiRouter = require('./lib/endpoints/management')(dataApiRouter)
 
 /*
 
@@ -644,12 +644,6 @@ apiRouter.route('/resource')
 apiRouter.route('/resource/timeline')
   .get(ctrl.resource.getTimeline)
 
-apiRouter.route('/resource/topic-modelling/scores')
-  .get(ctrl.resource.topicModellingScores)
-apiRouter.route('/resource/topic-modelling/aspects/:aspect')
-  .get(ctrl.resource.topicModellingExtraAspect)
-apiRouter.route('/resource/topic-modelling/aspects/:aspect/filter-values')
-  .get(ctrl.resource.topicModellingAspectFilterValues)
 apiRouter.route('/resource/topics/:set/:index')
   .get(ctrl.resource.getTopicDetails)
   .put(ctrl.resource.updateTopicDetails)
@@ -808,6 +802,8 @@ apiRouter.route('/suggest/viaf')
 apiRouter.route('/suggest/dbpedia')
   .get(ctrl.suggest.dbpedia)
 
+const explorerRoutes = require('./lib/endpoints/public/explorer')
+apiRouter.use('/explorer/', explorerRoutes)
 
 /*
   

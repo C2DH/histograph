@@ -1234,8 +1234,44 @@ WHERE
 OPTIONAL MATCH (r)-[]-(e:entity:person)
 WITH { 
 	uuid: r.uuid, 
-    startDate: r.start_date, 
-    nationalities: collect(e.metadata__nationality) 
+  startDate: r.start_date, 
+  nationalities: collect(e.metadata__nationality) 
 } AS result
 RETURN result
 ORDER BY result.startDate
+
+// name: find_keyword_frequency_aspect
+CALL db.index.fulltext.queryNodes("resource_text_index_en", {keyword})
+YIELD node as r
+WITH r
+WHERE
+  {if:start_time}
+    r.start_time > {start_time} AND
+  {/if}
+  {if:end_time}
+    r.start_time < {end_time} AND
+  {/if}
+
+  true
+RETURN {
+  uuid: r.uuid, 
+  startDate: r.start_date,
+  mentions: 1
+} as res
+UNION
+MATCH (r:resource)
+WHERE
+  {if:start_time}
+    r.start_time > {start_time} AND
+  {/if}
+  {if:end_time}
+    r.start_time < {end_time} AND
+  {/if}
+
+  true
+WITH r
+RETURN {
+  uuid: r.uuid, 
+  startDate: r.start_date,
+  mentions: 0
+} as res
