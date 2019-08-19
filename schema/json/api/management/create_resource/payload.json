@@ -36,6 +36,9 @@
         },
         "iiif_url": {
           "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/iiif_url"
+        },
+        "previous_resource_uuid": {
+          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/previous_resource_uuid"
         }
       },
       "required": [

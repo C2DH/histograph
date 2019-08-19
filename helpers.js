@@ -912,7 +912,7 @@ module.exports = {
     var d = moment.utc(date, format),
         result = {
           date: d.format(),
-          time: d.format('X')
+          time: +d.format('X')
         };
     if(next)
       next(null, result);
