@@ -67,7 +67,7 @@ module.exports = {
           services: properties.services,
           languages: properties.languages,
           frequency: properties.frequency || 1,
-          resource_id: properties.resource.uuid || properties.resource.id || properties.resource.props.uuid,
+          resource_uuid: properties.resource.uuid || properties.resource.id || properties.resource.props.uuid,
           username: properties.username,
           name_search: properties.name_search || properties.name.toLowerCase()
         }),

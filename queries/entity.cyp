@@ -88,7 +88,9 @@ LIMIT {limit}
 
 // name: merge_entity
 // create or merge entity, by name or links_wiki.
-MATCH (res:resource {uuid:{resource_id}})
+// NOTE: name_en, name_fr, name_de are deprecated. They are not used anywhere.
+// NOTE: name_search is deprecated. Search is done on 'name' instead.
+MATCH (res:resource {uuid:{resource_uuid}})
 WITH res
 {if:links_wiki}
   MERGE (ent:entity:{:type} {links_wiki: {links_wiki}})
@@ -100,11 +102,14 @@ ON CREATE SET
   ent.uuid          = {uuid},
   ent.name          = {name},
   ent.slug          = {slug},
-  ent.name_search   = {name_search},
   ent.celebrity     = 0,
   ent.score         = 0,
   ent.status        = 1,
   ent.df            = 1,
+
+  {if:name_search}
+    ent.name_search   = {name_search},
+  {/if}
 
   {if:description}
     ent.description = {description},
@@ -259,7 +264,7 @@ ON MATCH SET
   ent.last_modification_time = {exec_time}
 WITH ent
 LIMIT 1
-MATCH (res:resource {uuid:{resource_id}})
+MATCH (res:resource {uuid:{resource_uuid}})
 WITH ent, res
   MERGE (ent)-[r:appears_in]->(res)
   ON CREATE SET

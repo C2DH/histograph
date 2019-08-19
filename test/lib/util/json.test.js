@@ -20,6 +20,28 @@ const validateTestsValid = {
     },
     schemaUri: 'mutations/merge_resource.json',
   },
+  'mutations.merge_entity': {
+    testJson: {
+      resource_uuid: 'resabc123',
+      slug: 'chicago',
+      type: 'location',
+      uuid: 'abc123',
+      name: 'Chicago',
+      exec_date: new Date().toISOString(),
+      exec_time: Date.now(),
+      entity: {
+        ned_model: 'test',
+        ned_id: 'chicago-id'
+      },
+      links: {
+        wikidata_id: '123'
+      },
+      frequency: 1,
+      languages: ['en'],
+      username: 'moo'
+    },
+    schemaUri: 'mutations/merge_entity.json'
+  }
 }
 
 const validateTestsInvalid = {
@@ -51,6 +73,37 @@ const validateTestsInvalid = {
       ['creation_time', 'should be integer']
     ]
   },
+  'mutations.merge_entity': {
+    testJson: {
+      resource_uuid: 'resabc 123',
+      slug: 'chica go',
+      type: 'location',
+      uuid: 'abc123',
+      name: 'Chicago',
+      entity: {
+        asdf: 'test',
+        ned_id: 'chicago-id'
+      },
+      links: {
+        wikipedia_uri: '123'
+      },
+      frequency: 'asdf',
+      languages: ['en'],
+      username: 'moo',
+      unknownfield: 'test'
+    },
+    schemaUri: 'mutations/merge_entity.json',
+    expectedErrors: [
+      ['unknownfield', 'unexpected additional property'],
+      ['resource_uuid', 'should match pattern "^[^\\s]+$"'],
+      ['slug', 'should match pattern "^[^\\s]+$"'],
+      ['entity.asdf', 'unexpected additional property'],
+      ['links.wikipedia_uri', 'should match format "uri"'],
+      ['exec_date', 'missing required property'],
+      ['exec_time', 'missing required property'],
+      ['frequency', 'should be integer']
+    ]
+  }
 }
 
 describe('validate', () => {
