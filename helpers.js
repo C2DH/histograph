@@ -289,7 +289,7 @@ module.exports = {
 
       // find fields and complete the properties dict
       _.forIn(props, function (v, k, o) {
-        o[k] = _.flattenDeep(_.compact(_.pluck(wiki, v)))
+        o[k] = _.flattenDeep(_.compact(_.map(wiki, v)))
         if(k != 'abstracts' && k != 'sameas')
           o[k] =_.first(o[k]);
       });

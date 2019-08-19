@@ -256,7 +256,7 @@ module.exports = {
       }
       
       // console.log(params, items.length)
-      var itemsAsDict = _.indexBy(module.exports.normalize(items, params),'id');
+      var itemsAsDict = _.keyBy(module.exports.normalize(items, params),'id');
       // console.log(itemsAsDict)
       next(null, params.ids.map(function (id) {
         return itemsAsDict[''+id]

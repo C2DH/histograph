@@ -448,6 +448,11 @@ RETURN col
 
 // name: merge_resource
 // also assign a default curator for the resource
+//
+// NOTE  fields that are obsolete:
+//  * "name_search" - was used by lucene. Now "name_<lang>" is indexed
+//  * "full_search" - was used by lucene. Now "caption_<lang>" is indexed
+//  * "url" - "url_<lang>" is now used
 {if:slug}
   MERGE (res:resource {slug:{slug}})
 {/if}
@@ -647,8 +652,10 @@ RETURN col
     res.last_modification_date = {creation_date},
     res.last_modification_time = {creation_time}
 WITH res
-MATCH (u:user {username: {username}})
+{if:username}
+OPTIONAL MATCH (u:user {username: {username}})
   MERGE (u)-[r:curates]->(res)
+{/if}
 {if:previous_resource_uuid}
 WITH res, u
 OPTIONAL MATCH (prev:resource { uuid: {previous_resource_uuid} })

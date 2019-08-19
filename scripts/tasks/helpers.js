@@ -138,7 +138,7 @@ module.exports = {
                 return d.CHANGE
               });
               
-              var nodes = _.indexBy(_.map(tuples, 'node'), 'id');
+              var nodes = _.keyBy(_.map(tuples, 'node'), 'id');
               
              
               
