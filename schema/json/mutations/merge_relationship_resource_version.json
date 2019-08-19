@@ -21,7 +21,7 @@
     },
     "yaml": {
       "type": "string",
-      "description": "YAML describing location of entities in resource (entity ID, left position, right position)"
+      "description": "YAML describing location of entities in resource (entity ID, left position, right position). Positions are offsets from the beginning of '<resource_title>. <resource_caption>. <resource_content>' string (joined by '. ')."
     },
     "creation_date": {
       "description": "Resource creation/modification ISO timestamp",

@@ -130,8 +130,8 @@
       "description": "Type of the resource. E.g. 'external-text', 'video'. List is configurable",
       "type": "string"
     },
-    "iif_url": {
-      "description": "URL of the IIF document image info.json",
+    "iiif_url": {
+      "description": "URL of the IIIF document image info.json",
       "type": "string",
       "format": "uri-reference"
     },

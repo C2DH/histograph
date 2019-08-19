@@ -16,7 +16,7 @@ const validateTestsValid = {
       url: {
         en: '/foo/bar.txt'
       },
-      iif_url: './foo/bar/info.json'
+      iiif_url: './foo/bar/info.json'
     },
     schemaUri: 'mutations/merge_resource.json',
   },
@@ -52,6 +52,39 @@ const validateTestsValid = {
       creation_time: Date.now(),
     },
     schemaUri: 'mutations/merge_relationship_resource_version.json'
+  },
+  'api.management.create_resource.payload': {
+    testJson: {
+      resource: {
+        start_date: '2019-01-01T00:00:00Z',
+        end_date: '2019-12-31T00:00:00Z',
+        title: {
+          en: 'Test resource'
+        },
+        caption: {
+          en: 'This is a test resource'
+        },
+        content: {
+          en: 'Content of the test resource'
+        }
+      },
+      skipNER: true,
+      entities: [
+        {
+          type: 'location',
+          name: 'Test'
+        }
+      ],
+      entitiesLocations: [
+        {
+          entityIndex: 0,
+          languageCode: 'en',
+          leftOffset: 5,
+          rightOffset: 10
+        }
+      ]
+    },
+    schemaUri: 'api/management/create_resource/payload.json'
   }
 }
 
@@ -130,6 +163,46 @@ const validateTestsInvalid = {
       ['yaml', 'missing required property'],
       ['creation_date', 'missing required property'],
       ['creation_time', 'missing required property']
+    ]
+  },
+  'api.management.create_resource.payload': {
+    testJson: {
+      resource: {
+        start_date: '2019-01-01T00:00:00Z',
+        end_date: '2019-12-31T00:00:00Z',
+        title: {
+          en: 'Test resource'
+        },
+        caption: {
+          en: 'This is a test resource'
+        },
+        content: 'Content of the test resource',
+        unk: 1
+      },
+      skipNER: 1,
+      entities: [
+        {
+          name: 'Test'
+        }
+      ],
+      entitiesLocations: [
+        {
+          entityIndex: 0,
+          languageCode: 'en',
+          leftOffset: 5,
+          foo: 'bar'
+        },
+        1
+      ]
+    },
+    schemaUri: 'api/management/create_resource/payload.json',
+    expectedErrors: [
+      ['resource.unk', 'unexpected additional property'],
+      ['resource.content', 'should be object'],
+      ['skipNER', 'should be boolean'],
+      ['entities[0].type', 'missing required property'],
+      ['entitiesLocations[0].rightOffset', 'missing required property'],
+      ['entitiesLocations[1]', 'should be object']
     ]
   }
 }
