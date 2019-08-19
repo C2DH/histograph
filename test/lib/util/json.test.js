@@ -41,6 +41,17 @@ const validateTestsValid = {
       username: 'moo'
     },
     schemaUri: 'mutations/merge_entity.json'
+  },
+  'mutations.merge_relationship_resource_version': {
+    testJson: {
+      resource_id: 123,
+      service: 'test-ned',
+      language: 'en',
+      yaml: '...',
+      creation_date: new Date().toISOString(),
+      creation_time: Date.now(),
+    },
+    schemaUri: 'mutations/merge_relationship_resource_version.json'
   }
 }
 
@@ -102,6 +113,23 @@ const validateTestsInvalid = {
       ['exec_date', 'missing required property'],
       ['exec_time', 'missing required property'],
       ['frequency', 'should be integer']
+    ]
+  },
+  'mutations.merge_relationship_resource_version': {
+    testJson: {
+      resource_id: '123',
+      language: ['en'],
+      foo: 'bar'
+    },
+    schemaUri: 'mutations/merge_relationship_resource_version.json',
+    expectedErrors: [
+      ['foo', 'unexpected additional property'],
+      ['resource_id', 'should be integer'],
+      ['service', 'missing required property'],
+      ['language', 'should be string'],
+      ['yaml', 'missing required property'],
+      ['creation_date', 'missing required property'],
+      ['creation_time', 'missing required property']
     ]
   }
 }

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://c2dh.uni.lu/histograph/mutations/merge_relationship_resource_version.json",
+  "title": "Merge relationship resource version",
+  "description": "Merge relationship resource version",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "resource_id": {
+      "type": "integer",
+      "description": "Neo4j ID of the resource. NOTE: it's not the UUID"
+    },
+    "service": {
+      "description": "Name of service used to extract this entity from resource",
+      "type": "string"
+    },
+    "language": {
+      "description": "ISO 639-1 code of language entity appears in the linked resource",
+      "type": "string",
+      "pattern": "^[a-z]{2}$"
+    },
+    "yaml": {
+      "type": "string",
+      "description": "YAML describing location of entities in resource (entity ID, left position, right position)"
+    },
+    "creation_date": {
+      "description": "Resource creation/modification ISO timestamp",
+      "type": "string",
+      "format": "date-time"
+    },
+    "creation_time": {
+      "description": "Resource creation/modification UNIX time in milliseconds",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "resource_id",
+    "service",
+    "language",
+    "yaml",
+    "creation_date",
+    "creation_time"
+  ]
+}
