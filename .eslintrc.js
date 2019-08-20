@@ -11,6 +11,7 @@ module.exports = {
         "no-underscore-dangle": "off",
         "arrow-parens": "off",
         "comma-dangle": "off",
-        "mocha/no-mocha-arrows": "off"
+        "mocha/no-mocha-arrows": "off",
+        "mocha/max-top-level-suites": "off"
     }
 };
