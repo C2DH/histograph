@@ -40,7 +40,7 @@
       "type": "string"
     },
     "name_search": {
-      "description": "Used by full text search. Usually a lowercase name",
+      "description": "Used by full text search. Usually a lowercase name. Deprecated.",
       "type": "string"
     },
     "description": {
