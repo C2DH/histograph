@@ -21,6 +21,7 @@ var settings  = require('../settings'),
     YAML      = require('yamljs'),
     _         = require('lodash');
 
+const { get } = require('lodash')
 
 var Resource = function() {
   this.id; 
@@ -164,7 +165,7 @@ module.exports = {
             availableAnnotationFields.push(field);
           return c;
         });
-        
+
         if(params && params.with && _.last(settings.disambiguation.fields) == 'url')   {
           // for the NON URL fields, just do the same as before
           // console.log('content', resource.title_en, annotation.language)
@@ -634,6 +635,14 @@ module.exports = {
 
     return _.compact(options.fields.map(function (d) {
       if(d == 'url') {
+        /* 
+          NOTE: Since July 2019 we store content in `content_<xx>` fields
+          in the database. Therefore we first try to get content from one of
+          these fields and if it is not there, resort to reading from a file.
+        */
+        const contentFromResource = get(resource, `content_${options.language}`)
+        if (contentFromResource !== undefined) return contentFromResource
+
         if(!_.isEmpty(resource[d + '_' + options.language])) {
           try{
             var stats = fs.statSync(settings.paths.txt + '/' + resource[d + '_' + options.language]);

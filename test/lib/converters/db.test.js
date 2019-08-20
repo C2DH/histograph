@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 const assert = require('assert')
-const { toNeo4jJson } = require('../../../lib/converters/db')
+const { toNeo4jJson, fromNeo4jJson } = require('../../../lib/converters/db')
 
-describe('toNeo4jJson', () => {
+describe('toNeo4jJson and fromNeo4jJson', () => {
   it('converts with default rules', () => {
     const testJson = {
       foo: {
@@ -21,6 +21,8 @@ describe('toNeo4jJson', () => {
 
     const neo4jJson = toNeo4jJson(testJson)
     assert.deepEqual(neo4jJson, expectedNeo4jObject)
+
+    assert.deepEqual(fromNeo4jJson(neo4jJson), testJson)
   })
 
   it('converts with override rules', () => {
@@ -41,7 +43,11 @@ describe('toNeo4jJson', () => {
       something: ['else']
     }
 
-    const neo4jJson = toNeo4jJson(testJson, { separators: { content: '_' } })
+    const options = { separators: { content: '_' } }
+
+    const neo4jJson = toNeo4jJson(testJson, options)
     assert.deepEqual(neo4jJson, expectedNeo4jObject)
+
+    assert.deepEqual(fromNeo4jJson(neo4jJson, options), testJson)
   })
 })
