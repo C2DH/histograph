@@ -662,7 +662,7 @@ OPTIONAL MATCH (prev:resource { uuid: {previous_resource_uuid} })
   MERGE (res)-[ca:comes_after]->(prev)
 {/if}
 RETURN {
-  id: res.uuid,
+  id: id(res),
   props: res,
   curated_by: u.username
 }

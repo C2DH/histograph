@@ -14,7 +14,7 @@ var settings  = require('../settings'),
     neo4j     = require('seraph')(settings.neo4j.host),
     _         = require('lodash');
 
-const queryNeo4j = require('../lib/util/neo4j').getQueryMethod()
+const { executeQuery } = require('../lib/util/neo4j')
 
 const { generateApiKey } = require('../lib/util/crypto')
 
@@ -234,7 +234,7 @@ module.exports = {
 
   getCuratedResources: async user => {
     const { username } = user
-    return queryNeo4j(
+    return executeQuery(
       queries.get_curated_resources,
       { username }
     )
