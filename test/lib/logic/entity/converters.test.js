@@ -134,7 +134,6 @@ describe('createResourcePayloadToMergeResource', () => {
 
 describe('createResourcePayloadToMergeRelationshipResourceVersionList', () => {
   it('converts valid payload', () => {
-    const testResourceId = 123
     const testResourceUuid = 'test123'
 
     const mergeEntitiesList = createResourcePayloadToMergeEntityList(
@@ -144,7 +143,7 @@ describe('createResourcePayloadToMergeRelationshipResourceVersionList', () => {
     const expectedMergeVersionsList = [
       {
         language: 'en',
-        resource_id: testResourceId,
+        resource_uuid: testResourceUuid,
         service: 'unknown',
         yaml: YAML.stringify([
           { id: mergeEntitiesList[0].uuid, context: { left: 0, right: 10 } },
@@ -155,7 +154,7 @@ describe('createResourcePayloadToMergeRelationshipResourceVersionList', () => {
     ]
 
     const mergeVersionsList = createResourcePayloadToMergeRelationshipResourceVersionList(
-      validCreateResourcePayload, mergeEntitiesList, testResourceId
+      validCreateResourcePayload, mergeEntitiesList, testResourceUuid
     )
 
     const variableFields = ['creation_date', 'creation_time']

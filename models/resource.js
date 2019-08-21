@@ -109,7 +109,6 @@ module.exports = {
           d.yaml = YAML.parse(d.yaml);
         return d;
       });
-      
       item.positionings = _.filter(versions, {type:'positioning'});
       item.annotations = _.filter(versions, {type:'annotation'});
       item.collections = _.values(item.collections);
@@ -372,7 +371,7 @@ module.exports = {
   createRelatedVersion: function(resource, version, next) {
     var now   = helpers.now(),
         props = { 
-          resource_id: resource.id,
+          resource_id: resource.props.uuid,
           yaml: version.yaml,
           service: version.service,
           language: version.language,

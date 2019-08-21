@@ -44,7 +44,7 @@ const validateTestsValid = {
   },
   'mutations.merge_relationship_resource_version': {
     testJson: {
-      resource_id: 123,
+      resource_uuid: '123',
       service: 'test-ned',
       language: 'en',
       yaml: '...',
@@ -150,14 +150,14 @@ const validateTestsInvalid = {
   },
   'mutations.merge_relationship_resource_version': {
     testJson: {
-      resource_id: '123',
+      resource_uuid: 123,
       language: ['en'],
       foo: 'bar'
     },
     schemaUri: 'mutations/merge_relationship_resource_version.json',
     expectedErrors: [
       ['foo', 'unexpected additional property'],
-      ['resource_id', 'should be integer'],
+      ['resource_uuid', 'should be string'],
       ['service', 'missing required property'],
       ['language', 'should be string'],
       ['yaml', 'missing required property'],

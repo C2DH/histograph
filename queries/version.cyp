@@ -24,10 +24,9 @@ RETURN ver, res, r
 
 // name: merge_relationship_resource_version
 // merge at the same thie the version object
-MATCH (res:resource)
-WHERE id(res)={resource_id}
+MATCH (res:resource {uuid: {resource_uuid}})
 WITH res
-MERGE (ver:version:annotation { resource: {resource_id}, service: {service}, language:{language} })
+MERGE (ver:version:annotation { resource: id(res), service: {service}, language:{language} })
   ON CREATE SET
     ver.creation_date = {creation_date},
     ver.creation_time = {creation_time},
