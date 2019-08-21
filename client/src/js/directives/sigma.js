@@ -147,7 +147,7 @@ angular.module('histograph')
 
 
           // the overall node indexes
-          const ns = _.indexBy(g.nodes, 'id');
+          const ns = _.keyBy(g.nodes, 'id');
           const an = {};
           // console.log('rererererere', ns,g.nodes)
           const a = g.edges || [];

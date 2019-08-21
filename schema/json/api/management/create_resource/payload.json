@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://c2dh.uni.lu/histograph/api/management/create_resource/payload.json",
+  "title": "Create resource and entities",
+  "description": "Create or update resource with provided entities. No NER/NED is performed",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mimetype": {
+          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/mimetype"
+        },
+        "type": {
+          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/type"
+        },
+        "slug": {
+          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/slug"
+        },
+        "start_date": {
+          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/start_date"
+        },
+        "end_date": {
+          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/end_date"
+        },
+        "title": {
+          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/title"
+        },
+        "caption": {
+          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/caption"
+        },
+        "content": {
+          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/content"
+        },
+        "iiif_url": {
+          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/iiif_url"
+        },
+        "previous_resource_uuid": {
+          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/previous_resource_uuid"
+        }
+      },
+      "required": [
+        "title",
+        "caption",
+        "content",
+        "start_date",
+        "end_date"
+      ]
+    },
+    "skipNER": {
+      "type": "boolean",
+      "description": "If present, signals that named entity recognition should be skipped and entities from payload used"
+    },
+    "entities": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "A list of entities to be used. Order is important.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "slug": {
+            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/slug"
+          },
+          "type": {
+            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/type"
+          },
+          "name": {
+            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/name"
+          },
+          "entity": {
+            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/entity"
+          },
+          "metadata": {
+            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/metadata"
+          },
+          "links": {
+            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/links"            
+          }
+        },
+        "required": [
+          "type",
+          "name"
+        ]
+      }
+    },
+    "entitiesLocations": {
+      "type": "array",
+      "description": "Locations of entities in text.",
+      "additionalProperties": false,
+      "items": {
+        "type": "object",
+        "description": "Location of the entity in resource's '<resource_title>. <resource_caption>. <resource_content>' string (joined by '. ').",
+        "properties": {
+          "entityIndex": {
+            "type": "integer",
+            "description": "Zero based index of the entity in the `entities` list located at this position in resource."
+          },
+          "languageCode": {
+            "type": "string",
+            "description": "ISO 639-1 code of language of resource where entity was found",
+            "pattern": "^[a-z]{2}$"
+          },
+          "leftOffset": {
+            "type": "integer",
+            "description": "Left offset"
+          },
+          "rightOffset": {
+            "type": "integer",
+            "description": "Right offset"
+          }
+        },
+        "required": [
+          "entityIndex",
+          "languageCode",
+          "leftOffset",
+          "rightOffset"
+        ]
+      }
+    }
+  },
+  "required": [
+    "resource"
+  ]
+}

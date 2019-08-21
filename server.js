@@ -14,7 +14,7 @@ const { compose: composeMiddleware } = require('compose-middleware')
 var settings      = require('./settings');
 
 var app           = exports.app = express(),                 // define our app using express
-    port          = settings.port || process.env.PORT || 8000,
+    port          = process.env.PORT || settings.port || 8000,
     env           = settings.env || process.env.NODE_ENV || 'development',
     server        = app.listen(port),
     io            = require('socket.io')
@@ -164,8 +164,8 @@ app.set('view engine', 'pug');
 
 
 // configure app to use bodyParser(), this will let us get the data from a POST
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+app.use(bodyParser.json({ limit: '10mb' }));
 
 // configure app to use sessions
 app.use(cookieParser());
