@@ -47,7 +47,7 @@
     "moment": "^2.9.0",
     "morgan": "^1.5.1",
     "multer": "^0.1.8",
-    "neo4j-driver": "^1.7.5",
+    "neo4j-driver": "^2.0.0-alpha03",
     "passport": "^0.2.1",
     "passport-google-oauth": "^0.2.0",
     "passport-local": "^1.0.0",
