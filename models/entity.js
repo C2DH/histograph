@@ -62,8 +62,6 @@ module.exports = {
           slug: slug,
           links_wiki: _.isEmpty(properties.links_wiki)? undefined: properties.links_wiki,
           links_viaf: _.isEmpty(properties.links_viaf)? undefined: properties.links_viaf,
-          exec_date: now.date,
-          exec_time: now.time,
           services: properties.services,
           languages: properties.languages,
           frequency: properties.frequency || 1,

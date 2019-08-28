@@ -6,9 +6,9 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "resource_id": {
-      "type": "integer",
-      "description": "Neo4j ID of the resource. NOTE: it's not the UUID"
+    "resource_uuid": {
+      "type": "string",
+      "description": "Neo4j UUID of the resource"
     },
     "service": {
       "description": "Name of service used to extract this entity from resource",
@@ -34,11 +34,9 @@
     }
   },
   "required": [
-    "resource_id",
+    "resource_uuid",
     "service",
     "language",
-    "yaml",
-    "creation_date",
-    "creation_time"
+    "yaml"
   ]
 }

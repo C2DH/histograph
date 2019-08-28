@@ -109,7 +109,6 @@ module.exports = {
           d.yaml = YAML.parse(d.yaml);
         return d;
       });
-      
       item.positionings = _.filter(versions, {type:'positioning'});
       item.annotations = _.filter(versions, {type:'annotation'});
       item.collections = _.values(item.collections);
@@ -298,8 +297,7 @@ module.exports = {
     @return (err, resource:Resource)
   */
   create: function(properties, next) {
-    var now = helpers.now(),
-        query;
+    var query;
     // create start_time if its not present
     if(!properties.start_time && properties.start_date) {
       properties = _.assign(properties, helpers.reconcileIntervals({
@@ -315,8 +313,6 @@ module.exports = {
     }
     properties = _.assign(properties, {
       uuid: helpers.uuid(),
-      creation_date: now.date,
-      creation_time: now.time,
       username: properties.user.username
     });
     
@@ -372,7 +368,7 @@ module.exports = {
   createRelatedVersion: function(resource, version, next) {
     var now   = helpers.now(),
         props = { 
-          resource_id: resource.id,
+          resource_id: resource.props.uuid,
           yaml: version.yaml,
           service: version.service,
           language: version.language,

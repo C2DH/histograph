@@ -6,6 +6,32 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "slug": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/slug" },
+    "type": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/type" },
+    "uuid": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/uuid" },
+    "name": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/name" },
+    "description": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/description" },
+    "entity": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/entity" },
+    "metadata": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/metadata" },
+    "links": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/links" },
+    "links_viaf": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/links_viaf" },
+    "links_wiki": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/links_wiki" },
+    "first_name": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/first_name" },
+    "last_name": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/last_name" },
+    "lat": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/lat" },
+    "lng": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/lng" },
+    "country": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/country" },
+    "geoname_id": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/geoname_id" },
+    "geoname_fcl": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/geoname_fcl" },
+    "geoname_country": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/geoname_country" },
+    "geocoding_id": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/geocoding_id" },
+    "geocoding_fcl": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/geocoding_fcl" },
+    "geocoding_country": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/geocoding_country" },
+    "creation_date": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/creation_date" },
+    "creation_time": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/creation_time" },
+    "last_modification_date": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/last_modification_date" },
+    "last_modification_time": { "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/last_modification_time" },
+
     "resource_uuid": {
       "description": "UUID of the resource this entity is going to be referenced to via :appears_in relationship",
       "type": "string",
@@ -13,162 +39,6 @@
       "examples": [
         "whE35HfSR4"
       ]
-    },
-    "slug": {
-      "description": "Unique textual identifier of the entity. Must not contain spaces.",
-      "type": "string",
-      "pattern": "^[^\\s]+$",
-      "examples": [
-        "a-tale-of-two-rivers"
-      ]
-    },
-    "type": {
-      "description": "Type of the entity. E.g. 'person', 'location'. List is configurable. This field becomes a label",
-      "pattern": "^[^\\s]+$",
-      "type": "string"
-    },
-    "uuid": {
-      "description": "Unique ID of the entity",
-      "type": "string",
-      "pattern": "^[^\\s]+$",
-      "examples": [
-        "whE35HfSR4"
-      ]
-    },
-    "name": {
-      "description": "Human readable name of the entity",
-      "type": "string"
-    },
-    "name_search": {
-      "description": "Used by full text search. Usually a lowercase name. Deprecated.",
-      "type": "string"
-    },
-    "description": {
-      "description": "Entity description. Most likely not used",
-      "type": "string"
-    },
-    "entity": {
-      "description": "Entity extraction metadata",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "ned_model": {
-          "type": "string",
-          "description": "Name of the NER/NED model used to extract this entity"
-        },
-        "ned_id": {
-          "type": "string",
-          "description": "ID of the entity in the context of the used NER/NED model"
-        }
-      }
-    },
-    "metadata": {
-      "description": "Metadata related to entity",
-      "additionalProperties": false,
-      "properties": {
-        "nationality": {
-          "type": "string",
-          "description": "Nationality if the entity is a person"
-        }
-      }
-    },
-    "links": {
-      "description": "Various links related to the entity",
-      "additionalProperties": false,
-      "properties": {
-        "wikidata_id": {
-          "type": "string",
-          "description": "Wikidata object ID",
-          "examples": [
-          ]
-        },
-        "dbpedia_uri": {
-          "type": "string",
-          "format": "uri",
-          "description": "DBPedia page URI",
-          "examples": [
-          ] 
-        },
-        "google_kg_id": {
-          "type": "string",
-          "description": "Google knowledge graph ID",
-          "examples": [
-            "kg:/m/02m77"
-          ]
-        },
-        "wikipedia_uri": {
-          "type": "string",
-          "format": "uri",
-          "description": "Wikipedia page URI",
-          "examples": [
-            "https://en.wikipedia.org/wiki/John_Charles_Bucknill"
-          ]
-        }
-      }
-    },
-    "links_viaf": {
-      "description": "VIAF link on https://viaf.org/. Should be deprecated and moved into 'links'",
-      "type": "string"
-    },
-    "links_wiki": {
-      "description": "Wikipedia link. Should be deprecated and moved into 'links'",
-      "type": "string"
-    },
-    "first_name": {
-      "description": "First name of a person if 'type' is 'person'",
-      "type": "string"
-    },
-    "last_name": {
-      "description": "Last name of a person if 'type' is 'person'",
-      "type": "string"
-    },
-    "lat": {
-      "description": "Latitude of the location of the entity if 'type' is 'location'",
-      "type": "number"
-    },
-    "lng": {
-      "description": "Longitude of the location of the entity if 'type' is 'location'",
-      "type": "number"
-    },
-    "country": {
-      "description": "ISO 3166-1 alpha 2 code of the country of the entity if 'type' is 'location'",
-      "type": "string",
-      "pattern": "^[A-Z]{2}$"
-    },
-    "geoname_id": {
-      "description": "Geoname ID of the entity if 'type' is 'location'. https://www.geonames.org/",
-      "type": "integer",
-      "pattern": "^[A-Z]{2}$"
-    },
-    "geoname_fcl": {
-      "description": "Geoname facility code of the entity if 'type' is 'location'. https://www.geonames.org/",
-      "type": "string"
-    },
-    "geoname_country": {
-      "description": "ISO 3166-1 alpha 2 code of the country of the entity if 'type' is 'location'",
-      "type": "string",
-      "pattern": "^[A-Z]{2}$"
-    },
-    "geocoding_id": {
-      "description": "Google geocoding ID of the entity if 'type' is 'location'",
-      "type": "string"
-    },
-    "geocoding_fcl": {
-      "description": "Google geocoding facility code of the entity if 'type' is 'location'",
-      "type": "string"
-    },
-    "geocoding_country": {
-      "description": "Google geocoding ISO 3166-1 alpha 2 code of the country of the entity if 'type' is 'location'",
-      "type": "string"
-    },
-    "exec_date": {
-      "description": "Resource creation/modification ISO timestamp",
-      "type": "string",
-      "format": "date-time"
-    },
-    "exec_time": {
-      "description": "Resource creation/modification UNIX time in milliseconds",
-      "type": "integer"
     },
     "frequency": {
       "description": "How many times entity appears in resource",
@@ -203,8 +73,6 @@
     "slug",
     "type",
     "uuid",
-    "name",
-    "exec_date",
-    "exec_time"
+    "name"
   ]
 }

@@ -555,8 +555,8 @@ RETURN col
     {if:iiif_url}
       res.iiif_url = {iiif_url},
     {/if}
-    res.creation_date = {creation_date},
-    res.creation_time = {creation_time}
+    res.creation_date = toString(datetime()),
+    res.creation_time = timestamp() / 1000
   ON MATCH SET
     {if:start_time}
       res.start_time = toInt({start_time}),
@@ -649,8 +649,8 @@ RETURN col
     {if:iiif_url}
       res.iiif_url = {iiif_url},
     {/if}
-    res.last_modification_date = {creation_date},
-    res.last_modification_time = {creation_time}
+    res.last_modification_date = toString(datetime()),
+    res.last_modification_time = timestamp() / 1000
 WITH res
 {if:username}
 OPTIONAL MATCH (u:user {username: {username}})
