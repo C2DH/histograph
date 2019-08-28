@@ -1,0 +1,184 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://c2dh.uni.lu/histograph/db/entity.json",
+  "title": "Entity",
+  "description": "Entity db entity",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "slug": {
+      "description": "Unique textual identifier of the entity. Must not contain spaces.",
+      "type": "string",
+      "pattern": "^[^\\s]+$",
+      "examples": [
+        "a-tale-of-two-rivers"
+      ]
+    },
+    "type": {
+      "description": "Type of the entity. E.g. 'person', 'location'. List is configurable. This field becomes a label",
+      "pattern": "^[^\\s]+$",
+      "type": "string",
+      "examples": [
+        "person",
+        "location"
+      ]
+    },
+    "uuid": {
+      "description": "Unique ID of the entity",
+      "type": "string",
+      "pattern": "^[^\\s]+$",
+      "examples": [
+        "whE35HfSR4"
+      ]
+    },
+    "name": {
+      "description": "Human readable name of the entity",
+      "type": "string",
+      "examples": [
+        "A tale of two rivers"
+      ]
+    },
+    "description": {
+      "description": "Entity description. Most likely not used",
+      "type": "string"
+    },
+    "entity": {
+      "description": "Entity extraction metadata",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ned_model": {
+          "type": "string",
+          "description": "Name of the NER/NED model used to extract this entity"
+        },
+        "ned_id": {
+          "type": "string",
+          "description": "ID of the entity in the context of the used NER/NED model"
+        }
+      }
+    },
+    "metadata": {
+      "description": "Metadata related to entity",
+      "additionalProperties": false,
+      "properties": {
+        "nationality": {
+          "type": "string",
+          "description": "Nationality if the entity is a person"
+        }
+      }
+    },
+    "links": {
+      "description": "Various links related to the entity",
+      "additionalProperties": false,
+      "properties": {
+        "wikidata_id": {
+          "type": "string",
+          "description": "Wikidata object ID",
+          "examples": [
+          ]
+        },
+        "dbpedia_uri": {
+          "type": "string",
+          "format": "uri",
+          "description": "DBPedia page URI",
+          "examples": [
+          ] 
+        },
+        "google_kg_id": {
+          "type": "string",
+          "description": "Google knowledge graph ID",
+          "examples": [
+            "kg:/m/02m77"
+          ]
+        },
+        "wikipedia_uri": {
+          "type": "string",
+          "format": "uri",
+          "description": "Wikipedia page URI",
+          "examples": [
+            "https://en.wikipedia.org/wiki/John_Charles_Bucknill"
+          ]
+        }
+      }
+    },
+    "links_viaf": {
+      "description": "VIAF link on https://viaf.org/. Should be deprecated and moved into 'links'",
+      "type": "string"
+    },
+    "links_wiki": {
+      "description": "Wikipedia link. Should be deprecated and moved into 'links'",
+      "type": "string"
+    },
+    "first_name": {
+      "description": "First name of a person if 'type' is 'person'",
+      "type": "string"
+    },
+    "last_name": {
+      "description": "Last name of a person if 'type' is 'person'",
+      "type": "string"
+    },
+    "lat": {
+      "description": "Latitude of the location of the entity if 'type' is 'location'",
+      "type": "number"
+    },
+    "lng": {
+      "description": "Longitude of the location of the entity if 'type' is 'location'",
+      "type": "number"
+    },
+    "country": {
+      "description": "ISO 3166-1 alpha 2 code of the country of the entity if 'type' is 'location'",
+      "type": "string",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "geoname_id": {
+      "description": "Geoname ID of the entity if 'type' is 'location'. https://www.geonames.org/",
+      "type": "integer",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "geoname_fcl": {
+      "description": "Geoname facility code of the entity if 'type' is 'location'. https://www.geonames.org/",
+      "type": "string"
+    },
+    "geoname_country": {
+      "description": "ISO 3166-1 alpha 2 code of the country of the entity if 'type' is 'location'",
+      "type": "string",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "geocoding_id": {
+      "description": "Google geocoding ID of the entity if 'type' is 'location'",
+      "type": "string"
+    },
+    "geocoding_fcl": {
+      "description": "Google geocoding facility code of the entity if 'type' is 'location'",
+      "type": "string"
+    },
+    "geocoding_country": {
+      "description": "Google geocoding ISO 3166-1 alpha 2 code of the country of the entity if 'type' is 'location'",
+      "type": "string"
+    },
+    "creation_date": {
+      "description": "Resource creation ISO timestamp",
+      "type": "string",
+      "format": "date-time"
+    },
+    "creation_time": {
+      "description": "Resource creation UNIX time in milliseconds",
+      "type": "integer"
+    },
+    "last_modification_date": {
+      "description": "Resource modification ISO timestamp",
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_modification_time": {
+      "description": "Resource modification UNIX time in milliseconds",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "slug",
+    "type",
+    "uuid",
+    "name"
+  ]
+}

@@ -37,8 +37,6 @@
     "resource_uuid",
     "service",
     "language",
-    "yaml",
-    "creation_date",
-    "creation_time"
+    "yaml"
   ]
 }

@@ -11,34 +11,34 @@
       "additionalProperties": false,
       "properties": {
         "mimetype": {
-          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/mimetype"
+          "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/mimetype"
         },
         "type": {
-          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/type"
+          "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/type"
         },
         "slug": {
-          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/slug"
+          "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/slug"
         },
         "start_date": {
-          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/start_date"
+          "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/start_date"
         },
         "end_date": {
-          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/end_date"
+          "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/end_date"
         },
         "title": {
-          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/title"
+          "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/title"
         },
         "caption": {
-          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/caption"
+          "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/caption"
         },
         "content": {
-          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/content"
+          "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/content"
         },
         "iiif_url": {
-          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/iiif_url"
+          "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/iiif_url"
         },
         "previous_resource_uuid": {
-          "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_resource.json#/properties/previous_resource_uuid"
+          "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/previous_resource_uuid"
         }
       },
       "required": [
@@ -62,22 +62,22 @@
         "additionalProperties": false,
         "properties": {
           "slug": {
-            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/slug"
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/slug"
           },
           "type": {
-            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/type"
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/type"
           },
           "name": {
-            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/name"
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/name"
           },
           "entity": {
-            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/entity"
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/entity"
           },
           "metadata": {
-            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/metadata"
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/metadata"
           },
           "links": {
-            "$ref": "http://c2dh.uni.lu/histograph/mutations/merge_entity.json#/properties/links"            
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/links"            
           }
         },
         "required": [

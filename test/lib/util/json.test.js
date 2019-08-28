@@ -27,8 +27,6 @@ const validateTestsValid = {
       type: 'location',
       uuid: 'abc123',
       name: 'Chicago',
-      exec_date: new Date().toISOString(),
-      exec_time: Date.now(),
       entity: {
         ned_model: 'test',
         ned_id: 'chicago-id'
@@ -139,12 +137,10 @@ const validateTestsInvalid = {
     schemaUri: 'mutations/merge_entity.json',
     expectedErrors: [
       ['unknownfield', 'unexpected additional property'],
-      ['resource_uuid', 'should match pattern "^[^\\s]+$"'],
       ['slug', 'should match pattern "^[^\\s]+$"'],
       ['entity.asdf', 'unexpected additional property'],
       ['links.wikipedia_uri', 'should match format "uri"'],
-      ['exec_date', 'missing required property'],
-      ['exec_time', 'missing required property'],
+      ['resource_uuid', 'should match pattern "^[^\\s]+$"'],
       ['frequency', 'should be integer']
     ]
   },
@@ -160,9 +156,7 @@ const validateTestsInvalid = {
       ['resource_uuid', 'should be string'],
       ['service', 'missing required property'],
       ['language', 'should be string'],
-      ['yaml', 'missing required property'],
-      ['creation_date', 'missing required property'],
-      ['creation_time', 'missing required property']
+      ['yaml', 'missing required property']
     ]
   },
   'api.management.create_resource.payload': {

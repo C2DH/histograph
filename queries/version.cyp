@@ -28,8 +28,8 @@ MATCH (res:resource {uuid: {resource_uuid}})
 WITH res
 MERGE (ver:version:annotation { resource: id(res), service: {service}, language:{language} })
   ON CREATE SET
-    ver.creation_date = {creation_date},
-    ver.creation_time = {creation_time},
+    ver.creation_date = toString(datetime()),
+    ver.creation_time = timestamp() / 1000,
     ver.yaml = {yaml}
   ON MATCH SET
     ver.language = {language},
@@ -37,11 +37,11 @@ MERGE (ver:version:annotation { resource: id(res), service: {service}, language:
 WITH ver, res
 MERGE (ver)-[r:describes]->(res)
   ON CREATE SET
-    r.creation_date = {creation_date},
-    r.creation_time = {creation_time}
+    r.creation_date = toString(datetime()),
+    r.creation_time = timestamp() / 1000
   ON MATCH SET
-    r.last_modification_date = {creation_date},
-    r.last_modification_time = {creation_time}
+    r.last_modification_date = toString(datetime()),
+    r.last_modification_time = timestamp() / 1000
 RETURN {
   id: id(ver),
   type: last(labels(ver)),
