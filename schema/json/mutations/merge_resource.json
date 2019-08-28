@@ -6,152 +6,34 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "slug": {
-      "description": "Unique textual identifier of the resource. Must not contain spaces.",
-      "type": "string",
-      "pattern": "^[^\\s]+$",
-      "examples": [
-        "a-tale-of-two-rivers"
-      ]
-    },
-    "uuid": {
-      "description": "Unique ID of the resource",
-      "type": "string",
-      "pattern": "^[^\\s]+$",
-      "examples": [
-        "whE35HfSR4"
-      ]
-    },
-    "name": {
-      "description": "Human readable name of the resource",
-      "type": "string"
-    },
-    "mimetype": {
-      "description": "MIME type of the resource",
-      "type": "string"
-    },
-    "languages": {
-      "description": "ISO 639-1 codes of languages this resource is in",
-      "type": "array",
-      "uniqueItems": true,
-      "minItems": 1,
-      "items": {
-        "type": "string",
-        "pattern": "^[a-z]{2}$"
-      }
-    },
-    "start_time": {
-      "description": "Start UNIX time of the validity of the document in milliseconds",
-      "type": "integer"
-    },
-    "start_date": {
-      "description": "Start ISO timestamp of the validity of the document",
-      "type": "string",
-      "format": "date-time"
-    },
-    "start_month": {
-      "description": "Start Year and month of the validity of the document in 'YYYYMM' format where MM is a 01 based month",
-      "type": "string",
-      "pattern": "^[0-9]{4}[01][0-9]$"
-    },
-    "start_year": {
-      "description": "Start Year of the validity of the document in 'YYYY' format",
-      "type": "string",
-      "pattern": "^[0-9]{4}$"
-    },
-    "end_time": {
-      "description": "End UNIX time of the validity of the document in milliseconds",
-      "type": "integer"
-    },
-    "end_date": {
-      "description": "End ISO timestamp of the validity of the document",
-      "type": "string",
-      "format": "date-time"
-    },
-    "end_month": {
-      "description": "End Year and month of the validity of the document in 'YYYYMM' format where MM is a 01 based month",
-      "type": "string",
-      "pattern": "^[0-9]{4}[01][0-9]$"
-    },
-    "end_year": {
-      "description": "End Year of the validity of the document in 'YYYY' format",
-      "type": "string",
-      "pattern": "^[0-9]{4}$"
-    },
-    "url": {
-      "description": "Location of the content of the resource for every language. Usually this is a full path to the resource file on the filesystem",
-      "type": "object",
-      "propertyNames": {
-        "description": "Every key is a ISO 639-1 code",
-        "pattern": "^[a-z]{2}$"
-      },
-      "patternProperties": {
-        "^.*$": { "type": "string" }
-      },
-      "additionalProperties": false
-    },
-    "title": {
-      "description": "Title the resource for every language.",
-      "type": "object",
-      "propertyNames": {
-        "description": "Every key is a ISO 639-1 code",
-        "pattern": "^[a-z]{2}$"
-      },
-      "patternProperties": {
-        "^.*$": { "type": "string" }
-      },
-      "additionalProperties": false
-    },
-    "caption": {
-      "description": "Title the resource for every language.",
-      "type": "object",
-      "propertyNames": {
-        "description": "Every key is a ISO 639-1 code",
-        "pattern": "^[a-z]{2}$"
-      },
-      "patternProperties": {
-        "^.*$": { "type": "string" }
-      },
-      "additionalProperties": false
-    },
-    "content": {
-      "description": "Title the resource for every language.",
-      "type": "object",
-      "propertyNames": {
-        "description": "Every key is a ISO 639-1 code",
-        "pattern": "^[a-z]{2}$"
-      },
-      "patternProperties": {
-        "^.*$": { "type": "string" }
-      },
-      "additionalProperties": false
-    },
-    "type": {
-      "description": "Type of the resource. E.g. 'external-text', 'video'. List is configurable",
-      "type": "string"
-    },
-    "iiif_url": {
-      "description": "URL of the IIIF document image info.json",
-      "type": "string",
-      "format": "uri-reference"
-    },
-    "creation_date": {
-      "description": "Resource creation ISO timestamp",
-      "type": "string",
-      "format": "date-time"
-    },
-    "creation_time": {
-      "description": "Resource creation UNIX time in milliseconds",
-      "type": "integer"
-    },
+    "slug": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/slug" },
+    "uuid": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/uuid" },
+    "name": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/name" },
+    "mimetype": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/mimetype" },
+    "languages": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/languages" },
+    "start_time": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/start_time" },
+    "start_date": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/start_date" },
+    "start_month": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/start_month" },
+    "start_year": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/start_year" },
+    "end_time": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/end_time" },
+    "end_date": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/end_date" },
+    "end_month": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/end_month" },
+    "end_year": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/end_year" },
+    "url": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/url" },
+    "title": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/title" },
+    "caption": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/caption" },
+    "content": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/content" },
+    "type": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/type" },
+    "iiif_url": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/iiif_url" },
+    "creation_date": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/creation_date" },
+    "creation_time": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/creation_time" },
+    "last_modification_date": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/last_modification_date" },
+    "last_modification_time": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/last_modification_time" },
+    "previous_resource_uuid": { "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/previous_resource_uuid" },
+    
     "username": {
       "description": "Username of the user who created this resource",
       "type": "string"
-    },
-    "previous_resource_uuid": {
-      "description": "UUID of the resource that comes before this resources",
-      "type": "string",
-      "pattern": "^[^\\s]+$"
     }
   },
   "required": [
@@ -160,8 +42,6 @@
     "name",
     "languages",
     "type",
-    "mimetype",
-    "creation_date",
-    "creation_time"
+    "mimetype"
   ]
 }

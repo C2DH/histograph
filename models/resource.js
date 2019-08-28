@@ -297,8 +297,7 @@ module.exports = {
     @return (err, resource:Resource)
   */
   create: function(properties, next) {
-    var now = helpers.now(),
-        query;
+    var query;
     // create start_time if its not present
     if(!properties.start_time && properties.start_date) {
       properties = _.assign(properties, helpers.reconcileIntervals({
@@ -314,8 +313,6 @@ module.exports = {
     }
     properties = _.assign(properties, {
       uuid: helpers.uuid(),
-      creation_date: now.date,
-      creation_time: now.time,
       username: properties.user.username
     });
     

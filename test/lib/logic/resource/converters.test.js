@@ -19,7 +19,7 @@ describe('createResourcePayloadToMergeResource', () => {
           en: 'This is a textual test resource about absolutely nothing. It spans a whole year.'
         },
         start_date: '2018-01-01T00:00:00Z',
-        end_date: '2019-01-01T00:00:00Z',
+        end_date: '2019-01-01T00:00:00Z'
       }
     }
 
@@ -45,7 +45,6 @@ describe('createResourcePayloadToMergeResource', () => {
     const variableFields = ['creation_date', 'creation_time', 'uuid']
 
     const mergeResourceObject = createResourcePayloadToMergeResource(validCreateResourcePayload)
-
     assert.deepEqual(omit(mergeResourceObject, variableFields), expectedMergeResourceObject)
   })
 

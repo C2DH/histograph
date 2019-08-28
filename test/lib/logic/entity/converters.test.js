@@ -77,7 +77,7 @@ describe('createResourcePayloadToMergeResource', () => {
       },
     ]
 
-    const variableFields = ['exec_date', 'exec_time', 'uuid']
+    const variableFields = ['uuid']
 
     const mergeEntitiesList = createResourcePayloadToMergeEntityList(
       validCreateResourcePayload, testResourceUuid

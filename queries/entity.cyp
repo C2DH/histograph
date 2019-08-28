@@ -181,10 +181,10 @@ ON CREATE SET
     ent.geocoding_fcl = {geocoding_fcl},
     ent.geocoding_country = {geocoding_country},
   {/if}
-  ent.creation_date = {exec_date},
-  ent.creation_time = {exec_time},
-  ent.last_modification_date = {exec_date},
-  ent.last_modification_time = {exec_time}
+  ent.creation_date = toString(datetime()),
+  ent.creation_time = timestamp() / 1000,
+  ent.last_modification_date = toString(datetime()),
+  ent.last_modification_time = timestamp() / 1000
 ON MATCH SET
   {if:slug}
     ent.slug          = {slug},
@@ -260,8 +260,8 @@ ON MATCH SET
     ent.geocoding_fcl = {geocoding_fcl},
     ent.geocoding_country = {geocoding_country},
   {/if}
-  ent.last_modification_date = {exec_date},
-  ent.last_modification_time = {exec_time}
+  ent.last_modification_date = toString(datetime()),
+  ent.last_modification_time = timestamp() / 1000
 WITH ent
 LIMIT 1
 MATCH (res:resource {uuid:{resource_uuid}})
@@ -287,10 +287,10 @@ WITH ent, res
       r.celebrity = 0,
       r.score = 0,
     {/unless}
-    r.creation_date = {exec_date},
-    r.creation_time = {exec_time},
-    r.last_modification_date = {exec_date},
-    r.last_modification_time = {exec_time}
+    r.creation_date = toString(datetime()),
+    r.creation_time = timestamp() / 1000,
+    r.last_modification_date = toString(datetime()),
+    r.last_modification_time = timestamp() / 1000
   ON MATCH SET
     {if:frequency}
       r.frequency   = {frequency},
@@ -301,8 +301,8 @@ WITH ent, res
     {if:services}
       r.services   = {services},
     {/if}
-    r.last_modification_date = {exec_date},
-    r.last_modification_time = {exec_time}
+    r.last_modification_date = toString(datetime()),
+    r.last_modification_time = timestamp() / 1000
 RETURN {
   id: ent.uuid,
   props: ent,
