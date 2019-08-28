@@ -50,8 +50,8 @@
             <button class="btn btn-default {{classes.zoomInButton}}" 
                     ng-click="zoomIn()"
                     ng-if="itemsPerBin > 0"
-                    ng-disabled="itemsPerBin <= 1">
-              <i class="fa fa-search-plus"></i>
+                    ng-disabled="selectedItemMeta === undefined">
+              <i class="fa fa-search-plus"></i> Zoom into current bin
             </button>
           </div>
           <div class="sans-serif {{classes.barZoomLabel}}" ng-if="itemsPerBin > 0">

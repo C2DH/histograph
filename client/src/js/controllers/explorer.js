@@ -83,6 +83,8 @@ angular.module('histograph')
     // state parameters
     $scope.params = {}
 
+    $scope.selectedItemMeta = undefined
+
     $scope.selectedResources = []
     $scope.resourcesPageLimit = 10
 
@@ -161,20 +163,30 @@ angular.module('histograph')
       const data = getReferenceData()
       if (data === undefined) return
 
-      const itemPerBinAtCurrentZoomLevel = get(data, 'meta.0.totalResources')
-      if (!itemPerBinAtCurrentZoomLevel) return
-
-      const binsToDisplay = $scope.binsCount
-      const binsCountToZoomTo = Math.floor(binsToDisplay / itemPerBinAtCurrentZoomLevel) || 1
+      const maxBinsToDisplay = $scope.binsCount
       const binsMeta = get(data, 'meta', [])
 
-      const firstBinMeta = binsMeta[Math.ceil(binsMeta.length / 2 - binsCountToZoomTo / 2)]
-      const lastBinMeta = binsMeta[Math.floor(binsMeta.length / 2 + binsCountToZoomTo / 2)]
+      const currentBinIndex = $scope.params.step !== undefined
+        ? $scope.params.step : binsMeta.length / 2
+
+      const itemsInSelectedBin = get(binsMeta, `${currentBinIndex}.totalResources`)
+      if (!itemsInSelectedBin) return
+
+      const binsCountToZoomTo = Math.floor(maxBinsToDisplay / itemsInSelectedBin) || 1
+
+      const firstBinMetaIndex = Math.ceil(currentBinIndex - binsCountToZoomTo / 4)
+      const lastBinMetaIndex = Math.floor(currentBinIndex + binsCountToZoomTo / 4)
+
+      const firstBinMeta = get(binsMeta, firstBinMetaIndex, binsMeta[0])
+      const lastBinMeta = get(binsMeta, lastBinMetaIndex, binsMeta[binsMeta.length - 1])
 
       if (firstBinMeta && lastBinMeta) {
+        const [from, to] = [firstBinMeta.minStartDate, lastBinMeta.maxStartDate].map(v => v.replace(/T.*$/, ''))
+
         $location.search(angular.extend($location.search(), {
-          from: firstBinMeta.minStartDate.replace(/T.*$/, ''),
-          to: lastBinMeta.minStartDate.replace(/T.*$/, '')
+          from,
+          to,
+          step: undefined,
         }))
       }
     }
@@ -207,6 +219,10 @@ angular.module('histograph')
 
     $scope.itemClickHandler = ({ stepIndex }) => {
       if ($scope.params.step === stepIndex) return
+      $scope.params.step = stepIndex
+    }
+
+    $scope.$watch('params.step', stepIndex => {
       const data = getReferenceData()
       if (!data) return
 
@@ -215,9 +231,7 @@ angular.module('histograph')
       $scope.selectedItemMeta = meta
       $scope.selectedResources = []
       $scope.totalItems = 0
-
-      $scope.params.step = stepIndex
-    }
+    })
 
     const getRequiredDataForExplorerUpdate = () => ({
       bins: $scope.binsCount,
