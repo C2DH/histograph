@@ -1212,10 +1212,10 @@ RETURN r
 MATCH(r:resource)
 WHERE
   {if:start_time}
-    r.start_time > {start_time} AND
+    r.start_time >= {start_time} AND
   {/if}
   {if:end_time}
-    r.start_time < {end_time} AND
+    r.start_time <= {end_time} AND
   {/if}
 
   true
@@ -1231,10 +1231,10 @@ ORDER BY r.start_time
 MATCH (r:resource)
 WHERE
   {if:start_time}
-    r.start_time > {start_time} AND
+    r.start_time >= {start_time} AND
   {/if}
   {if:end_time}
-    r.start_time < {end_time} AND
+    r.start_time <= {end_time} AND
   {/if}
 
   true
@@ -1253,10 +1253,10 @@ YIELD node as r
 WITH r
 WHERE
   {if:start_time}
-    r.start_time > {start_time} AND
+    r.start_time >= {start_time} AND
   {/if}
   {if:end_time}
-    r.start_time < {end_time} AND
+    r.start_time <= {end_time} AND
   {/if}
 
   true
