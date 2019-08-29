@@ -3,6 +3,7 @@ import {
   assignIn, get, isEmpty, isEqual,
   isArray
 } from 'lodash'
+import moment from 'moment'
 import { withStyles, theme } from '../styles'
 
 const styles = {
@@ -340,5 +341,17 @@ angular.module('histograph')
         filters[plotId] = plotFilters
       }
       $scope.params.filters = filters
+    }
+
+    $scope.getTooltipContent = stepIndex => {
+      const data = getReferenceData()
+      if (!data) return ''
+
+      const meta = get(data.meta, stepIndex)
+
+      const [fromTime, toTime] = [meta.minStartDate, meta.maxStartDate]
+        .map(v => moment.utc(v).format('DD MMM YYYY'))
+
+      return `${meta.totalResources} <span>items</span><br/> <span>from</span> ${fromTime}<br/> <span>to</span> ${toTime}`
     }
   })
