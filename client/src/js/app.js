@@ -298,7 +298,14 @@ module.exports = angular
       .state('explorer', {
         url: '/explorer',
         templateUrl: 'templates/partials/explorer.html',
-        controller: 'ExplorerCtrl'
+        controller: 'ExplorerCtrl',
+        grammar: undefined
+      })
+      .state('topics-resources', {
+        url: '/topics/:id/resources',
+        templateUrl: 'templates/partials/topic-resources.html',
+        controller: 'TopicResourcesCtrl',
+        grammar: undefined
       })
       .state('explore.issues', {
         url: 'issues',

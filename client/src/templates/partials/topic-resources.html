@@ -1,0 +1,32 @@
+<div class="topic-resources-page">
+  <!-- Menu bar -->
+  <div id='perspective-menu' class="tk-proxima-nova header-menu">
+    <ul>
+      <li class="menu-item" ng-include src="'templates/partials/helpers/grammar.html'"></li>
+    </ul>
+  </div>
+  
+  <div class="{{classes.container}}">
+    <!-- Topic details side panel  -->
+    <div hi-topic-details="topicId"
+        on-close="unselectCurrentTopic()"
+        on-topic-updated="reloadData()"
+        ng-show="topicId !== undefined"
+        show-resources-button='false'
+        class="{{classes.containerChild}} {{classes.topicDetails}}">
+    </div>
+
+    <div class="{{classes.containerChild}} {{classes.mainPanel}}">
+      <!-- Resources list -->
+      <div class="{{classes.resourceItems}}">
+        <div ng-repeat="relatedItem in resources"
+             ng-include='"templates/partials/resource-lite.html"'
+             class="{{classes.resourceItem}}">
+        </div>
+      </div>
+      <div class="more" ng-if="resources.length < totalItems">
+        <button class="btn {{classes.moreButton}}" ng-click="loadMoreResources()">load more items</button>
+      </div>
+    </div>
+  </div>
+</div>

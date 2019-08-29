@@ -20,6 +20,14 @@
     </button>
   </div>
 
+  <div class="{{classes.buttonsPanel}}">
+    <button ng-if="showResourcesButton"
+            class="{{classes.showResourcesButton}}"
+            ng-click="showResources()">
+      <span class="fa fa-th-list"></span> show resources
+    </button>
+  </div>
+
   <div class="{{classes.keywordsLabel}}">
     Keywords
   </div>

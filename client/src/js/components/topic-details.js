@@ -82,10 +82,26 @@ const styles = {
       padding: '.2em .8em 0em',
       marginBottom: '.2em',
     },
+  },
+  buttonsPanel: {
+    display: 'flex',
+    alignContent: 'stretch',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  showResourcesButton: {
+    background: 'none',
+    display: 'inline-flex',
+    padding: [['0.3em', '0.9em']],
+    outline: 'none',
+    '& .fa': {
+      marginRight: '0.5em'
+    }
   }
 }
 
-function controller($scope, $log, TopicsService) {
+function controller($scope, $log, $location, TopicsService) {
   withStyles($scope, styles)
 
   $scope.$watch('topicId', index => {
@@ -132,6 +148,10 @@ function controller($scope, $log, TopicsService) {
     }
   }
   $scope.cancelEditLabel = () => { $scope.editingLabel = false }
+
+  $scope.showResources = () => {
+    $location.path(`/topics/${$scope.topicId}/resources`).search('topicId', undefined)
+  }
 }
 
 function service($resource, HgSettings) {
@@ -146,7 +166,8 @@ const directive = {
   scope: {
     topicId: '=hiTopicDetails',
     onCloseClicked: '&onClose',
-    onTopicUpdated: '&onTopicUpdated'
+    onTopicUpdated: '&onTopicUpdated',
+    showResourcesButton: '=showResourcesButton'
   },
   templateUrl: 'templates/partials/topic-details.html',
   controller: 'TopicDetailsCtrl',

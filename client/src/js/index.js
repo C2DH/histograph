@@ -97,6 +97,7 @@ require('./controllers/resource.js')
 require('./controllers/search.js')
 require('./controllers/user.js')
 require('./controllers/explorer.js')
+require('./controllers/topicResources.js')
 
 // modal controllers. templates in templates/modal
 require('./controllers/modals/contribute.js')
