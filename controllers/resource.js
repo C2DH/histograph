@@ -115,6 +115,13 @@ module.exports = function(io){
           'relevance': 'res.last_modification_time DESC'
         },
         orderby = form.params.orderby = _t[''+form.params.orderby]; 
+      
+      if (form.params.topicModellingIndex) {
+        form.params.topicModellingIndex = parseInt(form.params.topicModellingIndex, 10)
+      }
+      if (form.params.topicModellingScoresLowerThreshold) {
+        form.params.topicModellingScoresLowerThreshold = parseFloat(form.params.topicModellingScoresLowerThreshold)
+      }
 
       Resource.getMany(form.params, function (err, items, info) {
         if(err)

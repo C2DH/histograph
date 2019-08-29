@@ -39,19 +39,27 @@ const styles = {
     width: '100%'
   }
 }
-function controller($scope, $stateParams, $log, ResourceFactory) {
+function controller($scope, $stateParams, $log, $location, ResourceFactory) {
   withStyles($scope, styles)
 
   const { id: topicId } = $stateParams
   $scope.topicId = topicId
 
+  const topicScoreLowerThreshold = 0.0
+
   $scope.resources = []
 
   $scope.loadMoreResources = () => {
+    const { from, to } = $location.search()
+
     $scope.busyCounter += 1
     ResourceFactory.get({
       limit: $scope.resourcesPageLimit,
       offset: $scope.resources.length,
+      topicModellingScoresLowerThreshold: topicScoreLowerThreshold,
+      topicModellingIndex: topicId,
+      from,
+      to
     }).$promise
       .then(results => {
         $scope.resources = $scope.resources.concat(results.result.items)
@@ -65,6 +73,11 @@ function controller($scope, $stateParams, $log, ResourceFactory) {
       })
   }
 
+  $scope.$on('$locationChangeSuccess', () => {
+    $scope.resources = []
+    $scope.totalItems = 0
+    $scope.loadMoreResources()
+  })
   $scope.loadMoreResources()
 }
 

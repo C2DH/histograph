@@ -106,6 +106,7 @@ RETURN {
 // get resources with number of comments, if any
 //
 // NOTE: if `from_uuid` parameter is provided it assumes that `to_uuid` is provided as well.
+
 {if:from_uuid}
 MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
 // UNWIND nodes(p) as r
@@ -139,6 +140,10 @@ WHERE res:resource
 
 {if:from_uuid}
   AND id(res) IN neo4jids
+{/if}
+
+{if:topicModellingScoresLowerThreshold}
+  AND res.topic_modelling__scores[{topicModellingIndex}] >= {topicModellingScoresLowerThreshold}
 {/if}
 
 WITH res
@@ -225,6 +230,7 @@ ORDER BY resource.props.start_time ASC
 
 // name: count_resources
 // count resources having a version, with current filters
+
 {if:from_uuid}
 MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
 // UNWIND nodes(p) as r
@@ -240,12 +246,26 @@ MATCH (res:resource)
   WITH DISTINCT res
 {/if}
 
-{?res:start_time__gt}
-{AND?res:end_time__lt}
-{AND?res:type__in}
+{unless:with}
+WHERE true
+{/unless}
+
+{if:start_time}
+  AND res.start_time >= {start_time}
+{/if}
+{if:end_time}
+  AND res.end_time <= {end_time}
+{/if}
+{if:type}
+  AND res.type IN {type}
+{/if}
 
 {if:from_uuid}
   AND id(res) IN neo4jids
+{/if}
+
+{if:topicModellingScoresLowerThreshold}
+  AND res.topic_modelling__scores[{topicModellingIndex}] >= {topicModellingScoresLowerThreshold}
 {/if}
 
 // {if:from_uuid}
