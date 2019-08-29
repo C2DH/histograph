@@ -1,3 +1,4 @@
+import { assignIn } from 'lodash'
 import { withStyles, theme } from '../styles'
 
 const styles = {
@@ -50,17 +51,16 @@ function controller($scope, $stateParams, $log, $location, ResourceFactory) {
   $scope.resources = []
 
   $scope.loadMoreResources = () => {
-    const { from, to } = $location.search()
-
-    $scope.busyCounter += 1
-    ResourceFactory.get({
+    const searchParams = $location.search()
+    const params = assignIn({}, {
       limit: $scope.resourcesPageLimit,
       offset: $scope.resources.length,
       topicModellingScoresLowerThreshold: topicScoreLowerThreshold,
       topicModellingIndex: topicId,
-      from,
-      to
-    }).$promise
+    }, searchParams)
+
+    $scope.busyCounter += 1
+    ResourceFactory.get(params).$promise
       .then(results => {
         $scope.resources = $scope.resources.concat(results.result.items)
         $scope.totalItems = results.info.total_items

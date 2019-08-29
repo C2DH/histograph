@@ -121,7 +121,7 @@ MATCH (res:resource)
   WHERE ent.uuid IN {with}
   WITH DISTINCT res
 {/if}
-WHERE res:resource
+WHERE true
 {if:ids}
   AND res.uuid IN {ids}
 {/if}
@@ -204,7 +204,7 @@ WITH res, locations, persons, organizations, social_groups, filter(x in collect(
 
 {if:with}
   OPTIONAL MATCH (res)--(ann:annotation) 
-  WITH res, ann, locations, persons, organizations, themes, social_groups
+  WITH res, collect(ann) as annotations, locations, persons, organizations, themes, social_groups
 {/if}
 
 RETURN {
@@ -212,7 +212,7 @@ RETURN {
   type: 'resource',
   props: res,
   {if:with}
-    annotations: collect(ann),
+    annotations: annotations,
   {/if}
   persons:     persons,
   themes:     themes,
@@ -246,9 +246,7 @@ MATCH (res:resource)
   WITH DISTINCT res
 {/if}
 
-{unless:with}
 WHERE true
-{/unless}
 
 {if:start_time}
   AND res.start_time >= {start_time}

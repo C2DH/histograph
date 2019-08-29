@@ -305,7 +305,17 @@ module.exports = angular
         url: '/topics/:id/resources',
         templateUrl: 'templates/partials/topic-resources.html',
         controller: 'TopicResourcesCtrl',
-        grammar: undefined
+        grammar: {
+          connector: {
+            relatedTo: 'which mentions',
+            notRelatedTo: 'related to anyone',
+            from: 'from',
+            to: 'to'
+          },
+          relatedTo: {
+            typeahead: 'entity'
+          }
+        }
       })
       .state('explore.issues', {
         url: 'issues',
