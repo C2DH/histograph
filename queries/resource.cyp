@@ -106,6 +106,12 @@ RETURN {
 // get resources with number of comments, if any
 //
 // NOTE: if `from_uuid` parameter is provided it assumes that `to_uuid` is provided as well.
+{if:from_uuid}
+MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
+// UNWIND nodes(p) as r
+WITH extract(n in nodes(p) | id(n)) as neo4jids
+{/if}
+
 {unless:with}
 MATCH (res:resource)
 {/unless}
@@ -132,11 +138,7 @@ WHERE res:resource
 {/if}
 
 {if:from_uuid}
-WITH res
-MATCH p=(b:resource {uuid: {from_uuid}})<-[:comes_after*]-(a:resource {uuid: {to_uuid}})
-WHERE res.uuid in extract(n IN nodes(p)| n.uuid)
-AND b.end_time <= {end_time}
-AND a.start_time >= {start_time}
+  AND id(res) IN neo4jids
 {/if}
 
 WITH res
@@ -213,19 +215,25 @@ RETURN {
   locations:    locations,
   social_groups:   social_groups
 } as resource
-//{if:orderby}
-//ORDER BY {:orderby}
-//{/if}
-//{unless:orderby}
+{if:orderby}
+ORDER BY {:orderby}
+{/if}
+{unless:orderby}
 ORDER BY resource.props.start_time ASC
-//{/unless}
+{/unless}
 
 
 // name: count_resources
 // count resources having a version, with current filters
+{if:from_uuid}
+MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
+// UNWIND nodes(p) as r
+WITH extract(n in nodes(p) | id(n)) as neo4jids
+{/if}
 {unless:with}
 MATCH (res:resource)
 {/unless}
+
 {if:with}
   MATCH (res:resource)<-[:appears_in]-(ent:entity)
   WHERE ent.uuid IN {with}
@@ -237,12 +245,16 @@ MATCH (res:resource)
 {AND?res:type__in}
 
 {if:from_uuid}
-WITH res
-MATCH p=(b:resource {uuid: {from_uuid}})<-[:comes_after*]-(a:resource {uuid: {to_uuid}})
-WHERE res.uuid in extract(n IN nodes(p)| n.uuid)
-AND b.end_time <= {end_time}
-AND a.start_time >= {start_time}
+  AND id(res) IN neo4jids
 {/if}
+
+// {if:from_uuid}
+// WITH res
+// MATCH p=(b:resource {uuid: {from_uuid}})<-[:comes_after*]-(a:resource {uuid: {to_uuid}})
+// WHERE res.uuid in extract(n IN nodes(p)| n.uuid)
+// AND b.end_time <= {end_time}
+// AND a.start_time >= {start_time}
+// {/if}
 
 WITH collect(res) as resources
 WITH resources, length(resources) as total_items

@@ -108,8 +108,11 @@ module.exports = function(io){
         return helpers.formError(form.errors, res);
 
       var _t = {
-          'date': 'res.last_modification_time DESC',
-          'relevance': undefined // use default value
+          // 'date': 'res.last_modification_time DESC',
+          'date': 'res.start_time ASC',
+          '-date': 'res.start_time DESC',
+          // 'relevance': undefined // use default value
+          'relevance': 'res.last_modification_time DESC'
         },
         orderby = form.params.orderby = _t[''+form.params.orderby]; 
 
