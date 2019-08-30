@@ -7023,13 +7023,22 @@ Copyright (c) 2015 Daniel Eden
 }
 
 .grammar{
-  line-height: 40px;
+  /* line-height: 40px; */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+}
+
+.grammar > div, .grammar > span {
+  display: flex;
+  margin: 0 3px;
 }
 
 .grammar-choice {
-  display: inline-block;
+  /* display: inline-block; */
   font-weight: bold;
-  line-height: 24px;
+  /* line-height: 32px; */
   /*border: 1px solid #b8b8b8;*/
   border-radius: 5px;
   padding: 0 5px;

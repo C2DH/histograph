@@ -113,6 +113,12 @@ MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:re
 WITH extract(n in nodes(p) | id(n)) as neo4jids
 {/if}
 
+{if:fullTextQuery}
+CALL db.index.fulltext.queryNodes('resource_text_index_en', {fullTextQuery})
+YIELD node as res
+WITH collect(id(res)) as fullTextResultIds
+{/if}
+
 {unless:with}
 MATCH (res:resource)
 {/unless}
@@ -140,6 +146,10 @@ WHERE true
 
 {if:from_uuid}
   AND id(res) IN neo4jids
+{/if}
+
+{if:fullTextQuery}
+  AND id(res) IN fullTextResultIds
 {/if}
 
 {if:topicModellingScoresLowerThreshold}
@@ -236,6 +246,13 @@ MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:re
 // UNWIND nodes(p) as r
 WITH extract(n in nodes(p) | id(n)) as neo4jids
 {/if}
+
+{if:fullTextQuery}
+CALL db.index.fulltext.queryNodes('resource_text_index_en', {fullTextQuery})
+YIELD node as res
+WITH collect(id(res)) as fullTextResultIds
+{/if}
+
 {unless:with}
 MATCH (res:resource)
 {/unless}
@@ -260,6 +277,10 @@ WHERE true
 
 {if:from_uuid}
   AND id(res) IN neo4jids
+{/if}
+
+{if:fullTextQuery}
+  AND id(res) IN fullTextResultIds
 {/if}
 
 {if:topicModellingScoresLowerThreshold}

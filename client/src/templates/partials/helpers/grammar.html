@@ -23,7 +23,7 @@
 
 
   
-  <div ng-if='ruler' class='grammar-choice ruler' ng-if='grammar'>
+  <div ng-if='ruler && grammar && !rulerDisabled' class='grammar-choice ruler'>
     <!-- <b ng-if='item' class='grammar-item'>{{item.props|lookup:'name':language:36}}</b> --> 
     {{grammar.label|enrichWithStateParams:stateParams}} <span ng-if='totalItems'>(
         {{totalItems}})
@@ -125,6 +125,11 @@
           </span>
         </span>
         
-        
+        <div ng-if="grammar.connector.keywords"
+             hi-text-items-filter
+             label="{{grammar.connector.keywords}}"
+             ng-model="filters.keywords"
+             style="display: inline-block;">
+        </div>
         
       </div>

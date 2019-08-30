@@ -112,7 +112,10 @@ module.exports = function(io){
           'date': 'res.start_time ASC',
           '-date': 'res.start_time DESC',
           // 'relevance': undefined // use default value
-          'relevance': 'res.last_modification_time DESC'
+          'relevance': 'res.last_modification_time DESC',
+          'topic-modelling-score': form.params.topicModellingIndex
+            ? `res.topic_modelling__scores[${form.params.topicModellingIndex}] DESC`
+            : 'res.start_time ASC'
         },
         orderby = form.params.orderby = _t[''+form.params.orderby]; 
       
@@ -121,6 +124,11 @@ module.exports = function(io){
       }
       if (form.params.topicModellingScoresLowerThreshold) {
         form.params.topicModellingScoresLowerThreshold = parseFloat(form.params.topicModellingScoresLowerThreshold)
+      }
+
+      if (form.params.keywords) {
+        const keywords = form.params.keywords.split(',').map(decodeURIComponent)
+        form.params.fullTextQuery = keywords.map(kw => `"${kw}"`).join(' AND ')
       }
 
       Resource.getMany(form.params, function (err, items, info) {

@@ -299,7 +299,10 @@ module.exports = angular
         url: '/explorer',
         templateUrl: 'templates/partials/explorer.html',
         controller: 'ExplorerCtrl',
-        grammar: undefined
+        grammar: {
+          connector: {},
+          relatedTo: undefined
+        }
       })
       .state('topics-resources', {
         url: '/topics/:id/resources',
@@ -310,7 +313,8 @@ module.exports = angular
             relatedTo: 'which mentions',
             notRelatedTo: 'related to anyone',
             from: 'from',
-            to: 'to'
+            to: 'to',
+            keywords: 'with keywords'
           },
           relatedTo: {
             typeahead: 'entity'

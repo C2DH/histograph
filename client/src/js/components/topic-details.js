@@ -1,5 +1,6 @@
 import {
-  get, cloneDeep, assignIn, noop
+  get, cloneDeep, assignIn, noop,
+  includes, without, uniq, concat
 } from 'lodash'
 import { withStyles, theme } from '../styles'
 
@@ -98,6 +99,13 @@ const styles = {
     '& .fa': {
       marginRight: '0.5em'
     }
+  },
+  selectedKeyword: {
+    color: '#222222 !important',
+    background: `${theme.colours.text.light.secondary} !important`,
+  },
+  keywordSelectable: {
+    cursor: 'pointer'
   }
 }
 
@@ -152,6 +160,17 @@ function controller($scope, $log, $location, TopicsService) {
   $scope.showResources = () => {
     $location.path(`/topics/${$scope.topicId}/resources`).search('topicId', undefined)
   }
+
+  $scope.isKeywordSelected = keyword => includes($scope.selectedKeywords, keyword)
+
+  $scope.selectKeyword = keyword => {
+    if (!$scope.keywordSelectionEnabled) return
+    if ($scope.isKeywordSelected(keyword)) {
+      $scope.selectedKeywords = without($scope.selectedKeywords, keyword)
+    } else {
+      $scope.selectedKeywords = uniq(concat($scope.selectedKeywords, keyword))
+    }
+  }
 }
 
 function service($resource, HgSettings) {
@@ -167,7 +186,9 @@ const directive = {
     topicId: '=hiTopicDetails',
     onCloseClicked: '&onClose',
     onTopicUpdated: '&onTopicUpdated',
-    showResourcesButton: '=showResourcesButton'
+    showResourcesButton: '=showResourcesButton',
+    selectedKeywords: '=selectedKeywords',
+    keywordSelectionEnabled: '=keywordSelectionEnabled'
   },
   templateUrl: 'templates/partials/topic-details.html',
   controller: 'TopicDetailsCtrl',

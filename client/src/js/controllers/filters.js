@@ -1,5 +1,8 @@
 /* eslint-env browser */
 /* globals angular, _ */
+const {
+  assignIn, omitBy, isUndefined, isEmpty
+} = require('lodash')
 /**
  * @ngdoc function
  * @name histograph.controller:FiltersCtrl
@@ -41,16 +44,16 @@ angular.module('histograph')
     $scope.removeFilter = function (key, value) {
       $log.log('FiltersCtrl -> removeFilter() - key:', key, '- value:', value)
       const aliveFilters = _.filter(angular.copy($scope.filters[key]), function (d) {
-        return value && (d != value)
+        return value && (d !== value)
       })
 
-      if (key == 'with') {
+      if (key === 'with') {
         const index = _.map($scope.filterItems.with, 'id').indexOf(value);
         $scope.filterItems.with.splice(index, 1);
       }
 
 
-      if (aliveFilters.length == 0) $location.search(key, null);
+      if (aliveFilters.length === 0) $location.search(key, null);
       else $location.search(key, aliveFilters.join(','));
     }
 
@@ -65,6 +68,7 @@ angular.module('histograph')
       // force string
       if (!value) return;
 
+      // eslint-disable-next-line no-param-reassign
       value = `${value}`;
       if (!$scope.filters[key]) $location.search(key, value);
       else {
@@ -72,7 +76,7 @@ angular.module('histograph')
 
         let list = _.compact(_.map(angular.copy($scope.filters[key]), _.trim));
 
-        (`${value}`).split(',').forEach(function (v) {
+        (`${value}`).split(',').forEach(function () {
           if (list.indexOf(value) === -1) list.push(value);
         })
         // cleanup duplicates
@@ -98,7 +102,7 @@ angular.module('histograph')
         $scope.filterItems.with = [];
       } else {
         _.each(angular.copy($scope.filters), function (d, key) {
-          if (key == 'with') {
+          if (key === 'with') {
             SuggestFactory.getUnknownNodes({
               ids: d
             }, function (res) {
@@ -203,4 +207,11 @@ angular.module('histograph')
 
       if (state.grammar) $scope.grammar = state.grammar
     })
+
+    $scope.$watch('filters.keywords', (keywords, oldKeywords) => {
+      if (isEmpty(keywords) && isEmpty(oldKeywords)) return
+      const kw = !isEmpty(keywords) ? keywords.map(encodeURIComponent).join(',') : undefined
+      const searchParams = omitBy(assignIn({}, $location.search(), { keywords: kw }), isUndefined)
+      $location.search(searchParams)
+    }, true)
   })

@@ -211,22 +211,22 @@ angular.module('histograph')
       $scope.availableSortings = availableSortings;
     };
 
-    $scope.setSorting = function (sorting) {
-      if (!sorting) {
+    $scope.setSorting = value => {
+      if (!value) {
         $log.log('CoreCtrl -> setSorting() ignore undefined sorting')
         return;
       }
-      if (typeof sorting === 'string') {
-        var sorting = _.first(_.filter(ORDER_BY, { value: sorting }));
+      if (typeof value === 'string') {
+        const sorting = _.first(_.filter($scope.availableSortings, { value }));
         if (sorting) {
           $scope.sorting = sorting;
           $location.search('orderby', sorting.value)
         }
         return;
       }
-      $scope.sorting = sorting;
-      if (sorting.value == 'relevance') $location.search('orderby', null);
-      else $location.search('orderby', sorting.value)
+      $scope.sorting = value;
+      if ($scope.sorting.value === 'relevance') $location.search('orderby', null);
+      else $location.search('orderby', $scope.sorting.value)
     }
 
 

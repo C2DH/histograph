@@ -170,9 +170,10 @@ module.exports = {
           'date',
           '-date',
           'relevance',
+          'topic-modelling-score'
         ]
       ],
-      error: 'should be something like picture, press or video'
+      error: 'should be one of: date, -date, relevance, topic-modelling-score'
     },
     issueType: {
       field: 'type',

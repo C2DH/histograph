@@ -32,6 +32,10 @@
     Keywords
   </div>
   <div class="{{classes.keywordCloud}}">
-    <span ng-repeat="keyword in topic.keywords">{{keyword}}</span>
+    <span ng-repeat="keyword in topic.keywords"
+          class="{{isKeywordSelected(keyword) ? classes.selectedKeyword : ''}} {{keywordSelectionEnabled ? classes.keywordSelectable : ''}}"
+          ng-click="selectKeyword(keyword)">
+      {{keyword}}
+    </span>
   </div>
 </div>

@@ -40,17 +40,37 @@ const styles = {
     width: '100%'
   }
 }
+
+const SortingMethods = [
+  { label: 'topic modelling score (higher score first)', value: 'topic-modelling-score' },
+  { label: 'date (newest first)', value: '-date' },
+  { label: 'date (oldest first)', value: 'date' },
+]
+
 function controller($scope, $stateParams, $log, $location, ResourceFactory) {
   withStyles($scope, styles)
 
+  $scope.uid = $scope.$id
+  $scope.busyCounter = 0
+
   const { id: topicId } = $stateParams
   $scope.topicId = topicId
+
+  $scope.setAvailableSortings(SortingMethods)
+
+  if (!$location.search().orderby) {
+    $scope.setSorting(SortingMethods[0])
+  } else {
+    $scope.setSorting($location.search().orderby)
+  }
 
   const topicScoreLowerThreshold = 0.0
 
   $scope.resources = []
 
   $scope.loadMoreResources = () => {
+    if ($scope.busyCounter !== 0) return
+
     const searchParams = $location.search()
     const params = assignIn({}, {
       limit: $scope.resourcesPageLimit,

@@ -81,6 +81,9 @@ angular.module('histograph')
   ) {
     withStyles($scope, styles)
 
+    // NOTE: a workaround to disable ruler (see filters.js). Ugly but saves from refactoring.
+    $scope.rulerDisabled = true
+
     // state parameters
     $scope.params = {}
 
