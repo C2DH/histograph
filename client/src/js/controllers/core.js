@@ -1,3 +1,5 @@
+import { isEmpty } from 'lodash'
+
 /* eslint-env browser */
 /* globals angular */
 /* eslint-disable prefer-arrow-callback, func-names, object-shorthand */
@@ -17,7 +19,7 @@ angular.module('histograph')
     VisualizationFactory, EntityExtraFactory, EntityRelatedExtraFactory,
     localStorageService, EntityRelatedFactory, EVENTS, VIZ, MESSAGES,
     ORDER_BY, SETTINGS, UserFactory, OptionalFeaturesService, $window,
-    HgSettings) {
+    HgSettings, ResourceVizFactory) {
     $scope.apiBaseUrl = HgSettings.apiBaseUrl
 
     $log.log('CoreCtrl ready', $location);
@@ -174,6 +176,20 @@ angular.module('histograph')
     $scope.setTimeline = function (items) {
       $scope.timeline = items;
     }
+
+    /*
+      load the timeline of filtered resources
+      [RK] TODO: This needs to go to a service when everything is refactored
+      and using this method.
+    */
+    $scope.syncTimeline = params => {
+      if (isEmpty(params)) return $scope.setTimeline([])
+      return ResourceVizFactory
+        .get(angular.extend({ viz: 'timeline' }, params)).$promise
+        .then(res => $scope.setTimeline(res.result.timeline))
+        .catch(e => $log.error(`Could not load timeline: ${e.message}`))
+    }
+
 
     $scope.setCurrentResourceRange = v => {
       $scope.currentResourceRange = v

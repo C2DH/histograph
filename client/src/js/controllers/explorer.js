@@ -1,7 +1,7 @@
 /* eslint-env browser */
 import {
   assignIn, get, isEmpty, isEqual,
-  isArray
+  isArray, clone
 } from 'lodash'
 import moment from 'moment'
 import { withStyles, theme } from '../styles'
@@ -73,6 +73,13 @@ function toQueryParameters(o = {}) {
   }, {})
 }
 
+const EmptyResourceResponse = {
+  result: {
+    items: []
+  },
+  info: {}
+}
+
 angular.module('histograph')
   .controller('ExplorerCtrl', function (
     $scope, $log, $location,
@@ -88,9 +95,6 @@ angular.module('histograph')
     $scope.params = {}
 
     $scope.selectedItemMeta = undefined
-
-    $scope.selectedResources = []
-    $scope.resourcesPageLimit = 10
 
     $scope.explorerData = {}
     $scope.explorerFiltersConfig = {}
@@ -195,28 +199,6 @@ angular.module('histograph')
       }
     }
 
-    $scope.loadMoreResources = () => {
-      $scope.busyCounter += 1
-      ResourceFactory.get({
-        limit: $scope.resourcesPageLimit,
-        offset: $scope.selectedResources.length,
-        from_uuid: $scope.selectedItemMeta.firstResourceUuid,
-        to_uuid: $scope.selectedItemMeta.lastResourceUuid,
-        from: $scope.selectedItemMeta.minStartDate.replace(/T.*$/, ''),
-        to: moment($scope.selectedItemMeta.maxEndDate).add(1, 'days').toISOString().replace(/T.*$/, ''),
-      }).$promise
-        .then(results => {
-          $scope.selectedResources = $scope.selectedResources.concat(results.result.items)
-          $scope.totalItems = results.info.total_items
-        })
-        .catch(e => {
-          $log.error('Could not get resources from the API', e.message)
-        })
-        .finally(() => {
-          $scope.busyCounter -= 1
-        })
-    }
-
     $scope.onBinSelected = stepIndex => {
       $scope.itemClickHandler({ stepIndex })
     }
@@ -233,15 +215,14 @@ angular.module('histograph')
       const meta = get(data.meta, stepIndex)
       $log.log('Topic step selected', stepIndex, meta)
       $scope.selectedItemMeta = meta
-      $scope.selectedResources = []
-      $scope.totalItems = 0
     })
 
     const getRequiredDataForExplorerUpdate = () => ({
       bins: $scope.binsCount,
       from: get($scope.params, 'from'),
       to: get($scope.params, 'to'),
-      filters: get($scope.params, 'filters', {})
+      filters: get($scope.params, 'filters', {}),
+      explorerConfig: $scope.explorerConfig,
     })
 
     function updateExplorerData(params, oldParams = {}) {
@@ -254,6 +235,8 @@ angular.module('histograph')
       const {
         bins: oldBins, from: oldFrom, to: oldTo, filters: oldFilters
       } = oldParams
+
+      if (!bins) return
 
       const commonParamsAreNotUpdated = isEqual(
         [bins, from, to], [oldBins, oldFrom, oldTo]
@@ -291,37 +274,26 @@ angular.module('histograph')
     }, true)
 
     $scope.$watch('selectedItemMeta', selectedMeta => {
-      if (selectedMeta === undefined) return
-
-      const requestParams = selectedMeta.totalResources === 1
-        ? {
-          id: selectedMeta.firstResourceUuid,
-        }
-        : {
-          limit: $scope.resourcesPageLimit,
-          offset: $scope.selectedResources.length,
-          from_uuid: selectedMeta.firstResourceUuid,
-          to_uuid: selectedMeta.lastResourceUuid,
-          from: selectedMeta.minStartDate.replace(/T.*$/, ''),
-          to: moment(selectedMeta.maxEndDate).add(1, 'days').toISOString().replace(/T.*$/, ''),
-        }
-
-      $scope.busyCounter += 1
-      ResourceFactory
-        .get(requestParams).$promise
-        .then(results => {
-          $log.log('Selection results', results)
-          const items = results.result.items || [results.result.item]
-          $scope.selectedResources = items
-          $scope.totalItems = get(results, 'info.total_items', 1)
-        })
-        .catch(e => {
-          $log.error('Could not get resources from the API', e.message)
-        })
-        .finally(() => {
-          $scope.busyCounter -= 1
-        })
+      if (selectedMeta === undefined) {
+        $scope.resourcesSearchParams = undefined
+      } else {
+        $scope.resourcesSearchParams = selectedMeta.totalResources === 1
+          ? {
+            id: selectedMeta.firstResourceUuid,
+          }
+          : {
+            from_uuid: selectedMeta.firstResourceUuid,
+            to_uuid: selectedMeta.lastResourceUuid,
+            from: selectedMeta.minStartDate.replace(/T.*$/, ''),
+            to: moment(clone(selectedMeta.maxEndDate)).add(1, 'days').toISOString().replace(/T.*$/, ''),
+          }
+      }
     }, true)
+
+    $scope.loadResources = params => {
+      if (isEqual(Object.keys(params), ['limit', 'offset'])) return Promise.resolve(EmptyResourceResponse)
+      return ResourceFactory.get(params).$promise
+    }
 
     $scope.topicLabelClickHandler = (plotId, topicIndex) => {
       $scope.params.topicId = topicIndex

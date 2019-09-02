@@ -73,49 +73,16 @@ function controller($scope, $stateParams, $log, $location, ResourceFactory, Reso
     ['orderby', 'orderby', 'topic-modelling-score'],
   ])
 
-  const getSearchParams = () => assignIn({}, $scope.params, {
-    topicModellingScoresLowerThreshold: topicScoreLowerThreshold,
-    topicModellingIndex: topicId,
-  })
-
-  $scope.resources = []
-
-  $scope.loadMoreResources = () => {
-    if ($scope.busyCounter !== 0) return
-
-    const params = assignIn(getSearchParams(), {
-      limit: $scope.resourcesPageLimit,
-      offset: $scope.resources.length,
-    })
-
-    $scope.busyCounter += 1
-    ResourceFactory.get(params).$promise
-      .then(results => {
-        $scope.resources = $scope.resources.concat(results.result.items)
-        $scope.totalItems = results.info.total_items
-      })
-      .catch(e => {
-        $log.error('Could not get resources from the API', e.message)
-      })
-      .finally(() => {
-        $scope.busyCounter -= 1
-      })
-  }
-
-  /*
-    load the timeline of filtered resources
-  */
-  $scope.syncTimeline = () => ResourceVizFactory
-    .get(angular.extend({ viz: 'timeline' }, getSearchParams())).$promise
-    .then(res => $scope.setTimeline(res.result.timeline))
-    .catch(e => $log.error(`Could not load timeline: ${e.message}`))
-
   $scope.$watch('params', () => {
-    $scope.resources = []
-    $scope.totalItems = 0
-    $scope.loadMoreResources()
-    $scope.syncTimeline()
+    $scope.searchParams = assignIn({}, $scope.params, {
+      topicModellingScoresLowerThreshold: topicScoreLowerThreshold,
+      topicModellingIndex: topicId,
+    })
   }, true)
+
+  $scope.$watch('searchParams', $scope.syncTimeline, true)
+
+  $scope.loadResources = (...params) => ResourceFactory.get(...params).$promise
 }
 
 angular.module('histograph').controller('TopicResourcesCtrl', controller)

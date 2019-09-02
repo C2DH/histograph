@@ -15,7 +15,7 @@
         <span class="fa fa-ban"></span>
       </button>  
     </div>
-    <button class="{{classes.closeButton}}" ng-click="onClose()">
+    <button class="{{classes.closeButton}}" ng-click="onClose()" ng-if="showCloseButton">
       <span class="fa fa-times-circle"></span>
     </button>
   </div>

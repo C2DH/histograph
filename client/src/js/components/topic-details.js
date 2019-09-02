@@ -188,7 +188,8 @@ const directive = {
     onTopicUpdated: '&onTopicUpdated',
     showResourcesButton: '=showResourcesButton',
     selectedKeywords: '=selectedKeywords',
-    keywordSelectionEnabled: '=keywordSelectionEnabled'
+    keywordSelectionEnabled: '=keywordSelectionEnabled',
+    showCloseButton: '<showCloseButton'
   },
   templateUrl: 'templates/partials/topic-details.html',
   controller: 'TopicDetailsCtrl',

@@ -82,9 +82,15 @@ const directive = {
     })
 
     if ($scope.setBinsCount) {
-      setTimeout(() => {
-        $scope.setBinsCount($scope.explorer.getMaximumOptimalBinsCount())
-      })
+      // eslint-disable-next-line no-inner-declarations
+      function getBinsCount() {
+        setTimeout(() => {
+          const bins = $scope.explorer.getMaximumOptimalBinsCount()
+          if (bins < 2) return getBinsCount()
+          return $scope.setBinsCount(bins)
+        }, 10)
+      }
+      getBinsCount()
     }
 
     $scope.$watch('currentHighlightedBinIndex', index => {

@@ -154,19 +154,10 @@ module.exports = angular
       set up states and rules to be used as grammar for the filters controller, cfr js/controllers/filters.js
     */
     $stateProvider
-      .state('index', {
-        url: '/in',
-
-        templateUrl: 'templates/index.html',
-        controller: 'IndexCtrl',
-        reloadOnSearch: false,
-      })
-
       .state('explore', {
         url: '/',
         abstract: true,
         templateUrl: 'templates/explore.html',
-        controller: 'ExploreCtrl',
         grammar: {
           name: 'resource',
           label: 'show',
@@ -232,7 +223,7 @@ module.exports = angular
       })
       .state('explore.resources', {
         url: '',
-        templateUrl: 'templates/partials/resources-masonry.html',
+        templateUrl: 'templates/partials/resources-list.html',
         controller: 'ExploreResourcesCtrl',
         grammar: {
           label: 'gallery',

@@ -77,6 +77,7 @@ require('./components/snackbar.js')
 require('./components/explorer.js')
 require('./components/explorerFilter.js')
 require('./components/textItemsFilter.js')
+require('./components/resources-panel.js')
 
 require('./controllers/core.js')
 require('./controllers/filters.js')
