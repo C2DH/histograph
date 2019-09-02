@@ -1147,25 +1147,13 @@ angular.module('histograph')
       });
 
     /*
-      Load timeline, after some ms
+      Loading background (contextual) timeline.
+      This is a timeline without filters showing the density of
+      resources.
     */
-    $timeout(function () {
-      /*
-          First load only,
-          or to be updated whenever a
-          CHANGES in resource set occurs
-        */
-
-
-      VisualizationFactory.resource(VIZ.TIMELINE).then(function (res) {
-        $log.log('CoreCtrl @EVENTS.USE_USER VisualizationFactory', res);
-        $scope.contextualTimeline = res.data.result.timeline;
-        // $scope.initialTimeline
-      });
-
-
-      // $scope.inspect({id: 17190});
-    }, 236);
+    VisualizationFactory.resource(VIZ.TIMELINE).then(function (res) {
+      $scope.contextualTimeline = res.data.result.timeline;
+    });
 
     $scope.hasImage = function (relatedItem) {
       const isImageType = relatedItem.props.mimetype == 'image' && relatedItem.props.url;

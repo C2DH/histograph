@@ -1,5 +1,10 @@
 import { assignIn } from 'lodash'
 import { withStyles, theme } from '../styles'
+import {
+  bindStateChangeToObject,
+  serializeStringList,
+  deserializeStringList
+} from '../utils'
 
 const styles = {
   container: {
@@ -47,37 +52,41 @@ const SortingMethods = [
   { label: 'date (oldest first)', value: 'date' },
 ]
 
-function controller($scope, $stateParams, $log, $location, ResourceFactory) {
+function controller($scope, $stateParams, $log, $location, ResourceFactory, ResourceVizFactory) {
   withStyles($scope, styles)
 
   $scope.uid = $scope.$id
   $scope.busyCounter = 0
+  $scope.params = {}
+  const topicScoreLowerThreshold = 0.0
 
   const { id: topicId } = $stateParams
   $scope.topicId = topicId
 
   $scope.setAvailableSortings(SortingMethods)
 
-  if (!$location.search().orderby) {
-    $scope.setSorting(SortingMethods[0])
-  } else {
-    $scope.setSorting($location.search().orderby)
-  }
+  bindStateChangeToObject($scope, $location, 'params', [
+    'from',
+    'to',
+    ['with', 'with', undefined, serializeStringList, deserializeStringList],
+    ['keywords', 'keywords', undefined, serializeStringList, deserializeStringList],
+    ['orderby', 'orderby', 'topic-modelling-score'],
+  ])
 
-  const topicScoreLowerThreshold = 0.0
+  const getSearchParams = () => assignIn({}, $scope.params, {
+    topicModellingScoresLowerThreshold: topicScoreLowerThreshold,
+    topicModellingIndex: topicId,
+  })
 
   $scope.resources = []
 
   $scope.loadMoreResources = () => {
     if ($scope.busyCounter !== 0) return
 
-    const searchParams = $location.search()
-    const params = assignIn({}, {
+    const params = assignIn(getSearchParams(), {
       limit: $scope.resourcesPageLimit,
       offset: $scope.resources.length,
-      topicModellingScoresLowerThreshold: topicScoreLowerThreshold,
-      topicModellingIndex: topicId,
-    }, searchParams)
+    })
 
     $scope.busyCounter += 1
     ResourceFactory.get(params).$promise
@@ -93,12 +102,20 @@ function controller($scope, $stateParams, $log, $location, ResourceFactory) {
       })
   }
 
-  $scope.$on('$locationChangeSuccess', () => {
+  /*
+    load the timeline of filtered resources
+  */
+  $scope.syncTimeline = () => ResourceVizFactory
+    .get(angular.extend({ viz: 'timeline' }, getSearchParams())).$promise
+    .then(res => $scope.setTimeline(res.result.timeline))
+    .catch(e => $log.error(`Could not load timeline: ${e.message}`))
+
+  $scope.$watch('params', () => {
     $scope.resources = []
     $scope.totalItems = 0
     $scope.loadMoreResources()
-  })
-  $scope.loadMoreResources()
+    $scope.syncTimeline()
+  }, true)
 }
 
 angular.module('histograph').controller('TopicResourcesCtrl', controller)

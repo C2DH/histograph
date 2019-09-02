@@ -614,7 +614,19 @@ module.exports = function(io){
 
       if(!form.isValid)
         return helpers.formError(form.errors, res);
-      
+
+      if (form.params.topicModellingIndex) {
+        form.params.topicModellingIndex = parseInt(form.params.topicModellingIndex, 10)
+      }
+      if (form.params.topicModellingScoresLowerThreshold) {
+        form.params.topicModellingScoresLowerThreshold = parseFloat(form.params.topicModellingScoresLowerThreshold)
+      }
+
+      if (form.params.keywords) {
+        const keywords = form.params.keywords.split(',').map(decodeURIComponent)
+        form.params.fullTextQuery = keywords.map(kw => `"${kw}"`).join(' AND ')
+      }
+        
       Resource.getTimeline(form.params, function (err, timeline) {
         if(err)
           return helpers.cypherQueryError(err, res);

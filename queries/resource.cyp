@@ -1017,16 +1017,45 @@ return count(distinct res.start_time)
 
 // name: get_timeline
 //
-MATCH (res:resource)
+// NOTE: if `from_uuid` parameter is provided it assumes that `to_uuid` is provided as well.
+{if:ids}
+// UUID match
+MATCH (r:resource)
+WHERE r.uuid in {ids}
+WITH collect(id(r)) AS ids
+{/if}
+{unless:ids}
+WITH NULL AS ids
+{/unless}
+
+{if:fullTextQuery}
+// match full text query
+CALL db.index.fulltext.queryNodes('resource_text_index_en', {fullTextQuery})
+YIELD node AS res
+WHERE ids IS NULL OR id(res) IN ids
+WITH DISTINCT collect(id(res)) AS ids
+{/if}
 
 {if:with}
-  WHERE exists(res.start_month)
-  WITH res
-  MATCH (ent:entity)-[r:appears_in]->(res)
-  WHERE ent.uuid IN {with}
-  WITH DISTINCT res 
+// match belonging to resource
+MATCH (r:resource)<-[:appears_in]-(ent:entity)
+WHERE 
+  ent.uuid IN {with} AND 
+  (ids IS NULL OR id(r) IN ids)
+WITH DISTINCT collect(id(r)) AS ids
 {/if}
-  WHERE exists(res.start_month)
+
+{if:from_uuid}
+// match from/to UUID boundaries
+MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
+WITH DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)] as ids
+{/if}
+
+
+MATCH (res:resource)
+WHERE 
+  (ids IS NULL OR id(res) IN ids)
+  AND exists(res.start_month)
 {if:mimetype}
   AND res.mimetype = {mimetype}
 {/if}
@@ -1039,6 +1068,11 @@ MATCH (res:resource)
 {if:end_time}
   AND res.end_time <= {end_time}
 {/if} 
+
+{if:topicModellingScoresLowerThreshold}
+  AND res.topic_modelling__scores[{topicModellingIndex}] >= {topicModellingScoresLowerThreshold}
+{/if}
+
 WITH  res.start_month as tm, min(res.start_time) as t, count(res) as weight
 RETURN tm, t, weight
 ORDER BY tm ASC
