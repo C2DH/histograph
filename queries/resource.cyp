@@ -106,31 +106,42 @@ RETURN {
 // get resources with number of comments, if any
 //
 // NOTE: if `from_uuid` parameter is provided it assumes that `to_uuid` is provided as well.
-
-{if:from_uuid}
-MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
-// UNWIND nodes(p) as r
-WITH extract(n in nodes(p) | id(n)) as neo4jids
+{if:ids}
+// UUID match
+MATCH (r:resource)
+WHERE r.uuid in {ids}
+WITH collect(id(r)) AS ids
 {/if}
+{unless:ids}
+WITH NULL AS ids
+{/unless}
 
 {if:fullTextQuery}
+// match full text query
 CALL db.index.fulltext.queryNodes('resource_text_index_en', {fullTextQuery})
-YIELD node as res
-WITH collect(id(res)) as fullTextResultIds
+YIELD node AS res
+WHERE ids IS NULL OR id(res) IN ids
+WITH DISTINCT collect(id(res)) AS ids
 {/if}
 
-{unless:with}
-MATCH (res:resource)
-{/unless}
 {if:with}
-  MATCH (res:resource)<-[:appears_in]-(ent:entity)
-  WHERE ent.uuid IN {with}
-  WITH DISTINCT res
+// match belonging to resource
+MATCH (r:resource)<-[:appears_in]-(ent:entity)
+WHERE 
+  ent.uuid IN {with} AND 
+  (ids IS NULL OR id(r) IN ids)
+WITH DISTINCT collect(id(r)) AS ids
 {/if}
-WHERE true
-{if:ids}
-  AND res.uuid IN {ids}
+
+{if:from_uuid}
+// match from/to UUID boundaries
+MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
+WITH DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)] as ids
 {/if}
+
+MATCH (res:resource)
+WHERE 
+  (ids IS NULL OR id(res) IN ids)
 {if:start_time}
   AND res.start_time >= {start_time}
 {/if}
@@ -142,14 +153,6 @@ WHERE true
 {/if}
 {if:mimetype}
   AND res.mimetype IN {mimetype}
-{/if}
-
-{if:from_uuid}
-  AND id(res) IN neo4jids
-{/if}
-
-{if:fullTextQuery}
-  AND id(res) IN fullTextResultIds
 {/if}
 
 {if:topicModellingScoresLowerThreshold}
@@ -216,14 +219,15 @@ WITH res, locations, persons, organizations, social_groups, filter(x in collect(
   OPTIONAL MATCH (res)--(ann:annotation) 
   WITH res, collect(ann) as annotations, locations, persons, organizations, themes, social_groups
 {/if}
+{unless:with}
+  WITH res, [] as annotations, locations, persons, organizations, themes, social_groups
+{/unless}
 
 RETURN {
   id: res.uuid,
   type: 'resource',
   props: res,
-  {if:with}
-    annotations: annotations,
-  {/if}
+  annotations: annotations,
   persons:     persons,
   themes:     themes,
   organizations: organizations,
@@ -240,31 +244,42 @@ ORDER BY resource.props.start_time ASC
 
 // name: count_resources
 // count resources having a version, with current filters
-
-{if:from_uuid}
-MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
-// UNWIND nodes(p) as r
-WITH extract(n in nodes(p) | id(n)) as neo4jids
+{if:ids}
+// UUID match
+MATCH (r:resource)
+WHERE r.uuid in {ids}
+WITH collect(id(r)) AS ids
 {/if}
-
-{if:fullTextQuery}
-CALL db.index.fulltext.queryNodes('resource_text_index_en', {fullTextQuery})
-YIELD node as res
-WITH collect(id(res)) as fullTextResultIds
-{/if}
-
-{unless:with}
-MATCH (res:resource)
+{unless:ids}
+WITH NULL AS ids
 {/unless}
 
-{if:with}
-  MATCH (res:resource)<-[:appears_in]-(ent:entity)
-  WHERE ent.uuid IN {with}
-  WITH DISTINCT res
+{if:fullTextQuery}
+// match full text query
+CALL db.index.fulltext.queryNodes('resource_text_index_en', {fullTextQuery})
+YIELD node AS res
+WHERE ids IS NULL OR id(res) IN ids
+WITH DISTINCT collect(id(res)) AS ids
 {/if}
 
-WHERE true
+{if:with}
+// match belonging to resource
+MATCH (r:resource)<-[:appears_in]-(ent:entity)
+WHERE 
+  ent.uuid IN {with} AND 
+  (ids IS NULL OR id(r) IN ids)
+WITH DISTINCT collect(id(r)) AS ids
+{/if}
 
+{if:from_uuid}
+// match from/to UUID boundaries
+MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
+WITH DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)] AS ids
+{/if}
+
+MATCH (res:resource)
+WHERE 
+  (ids IS NULL OR id(res) IN ids)
 {if:start_time}
   AND res.start_time >= {start_time}
 {/if}
@@ -275,25 +290,9 @@ WHERE true
   AND res.type IN {type}
 {/if}
 
-{if:from_uuid}
-  AND id(res) IN neo4jids
-{/if}
-
-{if:fullTextQuery}
-  AND id(res) IN fullTextResultIds
-{/if}
-
 {if:topicModellingScoresLowerThreshold}
   AND res.topic_modelling__scores[{topicModellingIndex}] >= {topicModellingScoresLowerThreshold}
 {/if}
-
-// {if:from_uuid}
-// WITH res
-// MATCH p=(b:resource {uuid: {from_uuid}})<-[:comes_after*]-(a:resource {uuid: {to_uuid}})
-// WHERE res.uuid in extract(n IN nodes(p)| n.uuid)
-// AND b.end_time <= {end_time}
-// AND a.start_time >= {start_time}
-// {/if}
 
 WITH collect(res) as resources
 WITH resources, length(resources) as total_items
