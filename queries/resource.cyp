@@ -106,24 +106,42 @@ RETURN {
 // get resources with number of comments, if any
 //
 // NOTE: if `from_uuid` parameter is provided it assumes that `to_uuid` is provided as well.
-{if:from_uuid}
-MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
-// UNWIND nodes(p) as r
-WITH extract(n in nodes(p) | id(n)) as neo4jids
+{if:ids}
+// UUID match
+MATCH (r:resource)
+WHERE r.uuid in {ids}
+WITH collect(id(r)) AS ids
+{/if}
+{unless:ids}
+WITH NULL AS ids
+{/unless}
+
+{if:fullTextQuery}
+// match full text query
+CALL db.index.fulltext.queryNodes('resource_text_index_en', {fullTextQuery})
+YIELD node AS res
+WHERE ids IS NULL OR id(res) IN ids
+WITH DISTINCT collect(id(res)) AS ids
 {/if}
 
-{unless:with}
-MATCH (res:resource)
-{/unless}
 {if:with}
-  MATCH (res:resource)<-[:appears_in]-(ent:entity)
-  WHERE ent.uuid IN {with}
-  WITH DISTINCT res
+// match belonging to resource
+MATCH (r:resource)<-[:appears_in]-(ent:entity)
+WHERE 
+  ent.uuid IN {with} AND 
+  (ids IS NULL OR id(r) IN ids)
+WITH DISTINCT collect(id(r)) AS ids
 {/if}
-WHERE res:resource
-{if:ids}
-  AND res.uuid IN {ids}
+
+{if:from_uuid}
+// match from/to UUID boundaries
+MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
+WITH DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)] as ids
 {/if}
+
+MATCH (res:resource)
+WHERE 
+  (ids IS NULL OR id(res) IN ids)
 {if:start_time}
   AND res.start_time >= {start_time}
 {/if}
@@ -137,8 +155,8 @@ WHERE res:resource
   AND res.mimetype IN {mimetype}
 {/if}
 
-{if:from_uuid}
-  AND id(res) IN neo4jids
+{if:topicModellingScoresLowerThreshold}
+  AND res.topic_modelling__scores[{topicModellingIndex}] >= {topicModellingScoresLowerThreshold}
 {/if}
 
 WITH res
@@ -199,16 +217,17 @@ WITH res, locations, persons, organizations, social_groups, filter(x in collect(
 
 {if:with}
   OPTIONAL MATCH (res)--(ann:annotation) 
-  WITH res, ann, locations, persons, organizations, themes, social_groups
+  WITH res, collect(ann) as annotations, locations, persons, organizations, themes, social_groups
 {/if}
+{unless:with}
+  WITH res, [] as annotations, locations, persons, organizations, themes, social_groups
+{/unless}
 
 RETURN {
   id: res.uuid,
   type: 'resource',
   props: res,
-  {if:with}
-    annotations: collect(ann),
-  {/if}
+  annotations: annotations,
   persons:     persons,
   themes:     themes,
   organizations: organizations,
@@ -225,36 +244,55 @@ ORDER BY resource.props.start_time ASC
 
 // name: count_resources
 // count resources having a version, with current filters
-{if:from_uuid}
-MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
-// UNWIND nodes(p) as r
-WITH extract(n in nodes(p) | id(n)) as neo4jids
+{if:ids}
+// UUID match
+MATCH (r:resource)
+WHERE r.uuid in {ids}
+WITH collect(id(r)) AS ids
 {/if}
-{unless:with}
-MATCH (res:resource)
+{unless:ids}
+WITH NULL AS ids
 {/unless}
 
-{if:with}
-  MATCH (res:resource)<-[:appears_in]-(ent:entity)
-  WHERE ent.uuid IN {with}
-  WITH DISTINCT res
+{if:fullTextQuery}
+// match full text query
+CALL db.index.fulltext.queryNodes('resource_text_index_en', {fullTextQuery})
+YIELD node AS res
+WHERE ids IS NULL OR id(res) IN ids
+WITH DISTINCT collect(id(res)) AS ids
 {/if}
 
-{?res:start_time__gt}
-{AND?res:end_time__lt}
-{AND?res:type__in}
+{if:with}
+// match belonging to resource
+MATCH (r:resource)<-[:appears_in]-(ent:entity)
+WHERE 
+  ent.uuid IN {with} AND 
+  (ids IS NULL OR id(r) IN ids)
+WITH DISTINCT collect(id(r)) AS ids
+{/if}
 
 {if:from_uuid}
-  AND id(res) IN neo4jids
+// match from/to UUID boundaries
+MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
+WITH DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)] AS ids
 {/if}
 
-// {if:from_uuid}
-// WITH res
-// MATCH p=(b:resource {uuid: {from_uuid}})<-[:comes_after*]-(a:resource {uuid: {to_uuid}})
-// WHERE res.uuid in extract(n IN nodes(p)| n.uuid)
-// AND b.end_time <= {end_time}
-// AND a.start_time >= {start_time}
-// {/if}
+MATCH (res:resource)
+WHERE 
+  (ids IS NULL OR id(res) IN ids)
+{if:start_time}
+  AND res.start_time >= {start_time}
+{/if}
+{if:end_time}
+  AND res.end_time <= {end_time}
+{/if}
+{if:type}
+  AND res.type IN {type}
+{/if}
+
+{if:topicModellingScoresLowerThreshold}
+  AND res.topic_modelling__scores[{topicModellingIndex}] >= {topicModellingScoresLowerThreshold}
+{/if}
 
 WITH collect(res) as resources
 WITH resources, length(resources) as total_items
@@ -979,16 +1017,45 @@ return count(distinct res.start_time)
 
 // name: get_timeline
 //
-MATCH (res:resource)
+// NOTE: if `from_uuid` parameter is provided it assumes that `to_uuid` is provided as well.
+{if:ids}
+// UUID match
+MATCH (r:resource)
+WHERE r.uuid in {ids}
+WITH collect(id(r)) AS ids
+{/if}
+{unless:ids}
+WITH NULL AS ids
+{/unless}
+
+{if:fullTextQuery}
+// match full text query
+CALL db.index.fulltext.queryNodes('resource_text_index_en', {fullTextQuery})
+YIELD node AS res
+WHERE ids IS NULL OR id(res) IN ids
+WITH DISTINCT collect(id(res)) AS ids
+{/if}
 
 {if:with}
-  WHERE exists(res.start_month)
-  WITH res
-  MATCH (ent:entity)-[r:appears_in]->(res)
-  WHERE ent.uuid IN {with}
-  WITH DISTINCT res 
+// match belonging to resource
+MATCH (r:resource)<-[:appears_in]-(ent:entity)
+WHERE 
+  ent.uuid IN {with} AND 
+  (ids IS NULL OR id(r) IN ids)
+WITH DISTINCT collect(id(r)) AS ids
 {/if}
-  WHERE exists(res.start_month)
+
+{if:from_uuid}
+// match from/to UUID boundaries
+MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
+WITH DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)] as ids
+{/if}
+
+
+MATCH (res:resource)
+WHERE 
+  (ids IS NULL OR id(res) IN ids)
+  AND exists(res.start_month)
 {if:mimetype}
   AND res.mimetype = {mimetype}
 {/if}
@@ -1001,6 +1068,11 @@ MATCH (res:resource)
 {if:end_time}
   AND res.end_time <= {end_time}
 {/if} 
+
+{if:topicModellingScoresLowerThreshold}
+  AND res.topic_modelling__scores[{topicModellingIndex}] >= {topicModellingScoresLowerThreshold}
+{/if}
+
 WITH  res.start_month as tm, min(res.start_time) as t, count(res) as weight
 RETURN tm, t, weight
 ORDER BY tm ASC
@@ -1254,6 +1326,7 @@ OPTIONAL MATCH (r)-[]-(e:entity:person)
 WITH { 
 	uuid: r.uuid, 
   startDate: r.start_date, 
+  endDate: r.end_date,
   nationalities: collect(e.metadata__nationality) 
 } AS result
 RETURN result

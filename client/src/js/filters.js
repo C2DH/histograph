@@ -38,7 +38,10 @@ angular.module('histograph')
   .filter('enrichWithStateParams', function () {
     return function (input, stateParams) {
       _.each(stateParams, function (d, k) {
-        input = input.replace(`:${k}`, d);
+        if (input) {
+          // eslint-disable-next-line no-param-reassign
+          input = input.replace(`:${k}`, d);
+        }
       })
       return input
     }

@@ -151,22 +151,14 @@ module.exports = angular
     $locationProvider.hashPrefix('')
 
     /*
-      set up states and rules to be used as grammar for the filters controller, cfr js/controllers/filters.js
+      set up states and rules to be used as grammar for the filters controller,
+      cfr js/controllers/filters.js
     */
     $stateProvider
-      .state('index', {
-        url: '/in',
-
-        templateUrl: 'templates/index.html',
-        controller: 'IndexCtrl',
-        reloadOnSearch: false,
-      })
-
       .state('explore', {
         url: '/',
         abstract: true,
         templateUrl: 'templates/explore.html',
-        controller: 'ExploreCtrl',
         grammar: {
           name: 'resource',
           label: 'show',
@@ -232,7 +224,26 @@ module.exports = angular
       })
       .state('explore.resources', {
         url: '',
-        templateUrl: 'templates/partials/resources-masonry.html',
+        templateUrl: 'templates/partials/resources-list.html',
+        controller: 'ExploreResourcesCtrl',
+        grammar: {
+          label: 'gallery',
+          connector: {
+            type: 'with document type',
+            relatedTo: 'which mentions',
+            notRelatedTo: 'related to anyone',
+            from: 'from',
+            to: 'to'
+          },
+          types: GRAMMAR.AS_TYPES,
+          relatedTo: {
+            typeahead: 'entity'
+          }
+        }
+      })
+      .state('explore.noise', {
+        url: 'noise',
+        templateUrl: 'templates/partials/resources-list.html',
         controller: 'ExploreResourcesCtrl',
         grammar: {
           label: 'gallery',
@@ -248,25 +259,7 @@ module.exports = angular
             typeahead: 'entity'
           }
         },
-      })
-      .state('explore.noise', {
-        url: 'noise',
-        templateUrl: 'templates/partials/resources-masonry.html',
-        controller: 'ExploreNoiseCtrl',
-        grammar: {
-          label: 'gallery',
-          connector: {
-            type: 'with document type',
-            relatedTo: 'which mentions',
-            notRelatedTo: 'related to anyone',
-            from: 'from',
-            to: 'to'
-          },
-          types: GRAMMAR.AS_TYPES,
-          relatedTo: {
-            typeahead: 'entity'
-          }
-        },
+        resourceRetriever: 'userNoise'
       })
       .state('explore.projection', {
         url: 'projection/:modelA/:modelB',
@@ -298,8 +291,31 @@ module.exports = angular
       .state('explorer', {
         url: '/explorer',
         templateUrl: 'templates/partials/explorer.html',
-        controller: 'ExplorerCtrl'
+        controller: 'ExplorerCtrl',
+        grammar: {
+          connector: {},
+          relatedTo: undefined
+        }
       })
+      .state('topics-resources', {
+        url: '/topics/:id/resources',
+        templateUrl: 'templates/partials/topic-resources.html',
+        controller: 'TopicResourcesCtrl',
+        grammar: {
+          connector: {
+            relatedTo: 'which mentions',
+            notRelatedTo: 'related to anyone',
+            from: 'from',
+            to: 'to',
+            keywords: 'with keywords',
+            topicScoreThreshold: 'with topic score above'
+          },
+          relatedTo: {
+            typeahead: 'entity'
+          }
+        }
+      })
+      // TODO: NOT USED: Is broken and is not referenced anywhere.
       .state('explore.issues', {
         url: 'issues',
         templateUrl: 'templates/partials/issues-masonry.html',

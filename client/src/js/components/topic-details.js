@@ -1,5 +1,6 @@
 import {
-  get, cloneDeep, assignIn, noop
+  get, cloneDeep, assignIn, noop,
+  includes, without, uniq, concat
 } from 'lodash'
 import { withStyles, theme } from '../styles'
 
@@ -82,10 +83,33 @@ const styles = {
       padding: '.2em .8em 0em',
       marginBottom: '.2em',
     },
+  },
+  buttonsPanel: {
+    display: 'flex',
+    alignContent: 'stretch',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  showResourcesButton: {
+    background: 'none',
+    display: 'inline-flex',
+    padding: [['0.3em', '0.9em']],
+    outline: 'none',
+    '& .fa': {
+      marginRight: '0.5em'
+    }
+  },
+  selectedKeyword: {
+    color: '#222222 !important',
+    background: `${theme.colours.text.light.secondary} !important`,
+  },
+  keywordSelectable: {
+    cursor: 'pointer'
   }
 }
 
-function controller($scope, $log, TopicsService) {
+function controller($scope, $log, $location, TopicsService) {
   withStyles($scope, styles)
 
   $scope.$watch('topicId', index => {
@@ -132,6 +156,21 @@ function controller($scope, $log, TopicsService) {
     }
   }
   $scope.cancelEditLabel = () => { $scope.editingLabel = false }
+
+  $scope.showResources = () => {
+    $location.path(`/topics/${$scope.topicId}/resources`).search('topicId', undefined)
+  }
+
+  $scope.isKeywordSelected = keyword => includes($scope.selectedKeywords, keyword)
+
+  $scope.selectKeyword = keyword => {
+    if (!$scope.keywordSelectionEnabled) return
+    if ($scope.isKeywordSelected(keyword)) {
+      $scope.selectedKeywords = without($scope.selectedKeywords, keyword)
+    } else {
+      $scope.selectedKeywords = uniq(concat($scope.selectedKeywords, keyword))
+    }
+  }
 }
 
 function service($resource, HgSettings) {
@@ -146,7 +185,11 @@ const directive = {
   scope: {
     topicId: '=hiTopicDetails',
     onCloseClicked: '&onClose',
-    onTopicUpdated: '&onTopicUpdated'
+    onTopicUpdated: '&onTopicUpdated',
+    showResourcesButton: '=showResourcesButton',
+    selectedKeywords: '=selectedKeywords',
+    keywordSelectionEnabled: '=keywordSelectionEnabled',
+    showCloseButton: '<showCloseButton'
   },
   templateUrl: 'templates/partials/topic-details.html',
   controller: 'TopicDetailsCtrl',

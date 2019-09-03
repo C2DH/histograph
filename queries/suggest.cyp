@@ -371,7 +371,7 @@ RETURN {
 
 // name: get_matching_entities_count
 // get resources by query, will suggest other enpoint too
-CALL db.index.explicit.auto.searchNodes({query})
+CALL db.index.fulltext.queryNodes({resource_index}, {query})
 YIELD node as n
 WHERE 'entity' in labels(n)
 WITH last(labels(n)) as group, count(n) as count_items
@@ -383,7 +383,7 @@ RETURN {
 
 // name: get_matching_entities
 // get resources by query
-CALL db.index.fulltext.queryNodes('full_text_index', {query})
+CALL db.index.fulltext.queryNodes({resource_index}, {query})
 YIELD node as n
 WHERE {entity} in labels(n)
 WITH (n)

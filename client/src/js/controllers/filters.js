@@ -1,5 +1,28 @@
 /* eslint-env browser */
 /* globals angular, _ */
+const {
+  assignIn, omitBy, isUndefined,
+  isEmpty, get, isArray
+} = require('lodash')
+
+/**
+ * [RK] NOTE a filter guard used to remove query search filter parameters when moving from
+ * a view with the parameter supported to a view with parameter not supported.
+ * This is a temporary measure until the filters bar is refactored for real.
+ */
+function filterGuard(scope, $location, queryParameterName, grammarName) {
+  const isNotDefinedInGrammar = isUndefined(get(scope.grammar, grammarName))
+  const isPresentInFilters = !isUndefined(get(scope.filters, queryParameterName))
+
+  if (isNotDefinedInGrammar && isPresentInFilters) {
+    setTimeout(() => {
+      $location.search(queryParameterName, null).replace()
+    })
+    delete scope.filters[queryParameterName]
+    delete scope.filterItems[queryParameterName]
+  }
+}
+
 /**
  * @ngdoc function
  * @name histograph.controller:FiltersCtrl
@@ -41,16 +64,16 @@ angular.module('histograph')
     $scope.removeFilter = function (key, value) {
       $log.log('FiltersCtrl -> removeFilter() - key:', key, '- value:', value)
       const aliveFilters = _.filter(angular.copy($scope.filters[key]), function (d) {
-        return value && (d != value)
+        return value && (d !== value)
       })
 
-      if (key == 'with') {
+      if (key === 'with') {
         const index = _.map($scope.filterItems.with, 'id').indexOf(value);
         $scope.filterItems.with.splice(index, 1);
       }
 
 
-      if (aliveFilters.length == 0) $location.search(key, null);
+      if (aliveFilters.length === 0) $location.search(key, null);
       else $location.search(key, aliveFilters.join(','));
     }
 
@@ -65,6 +88,7 @@ angular.module('histograph')
       // force string
       if (!value) return;
 
+      // eslint-disable-next-line no-param-reassign
       value = `${value}`;
       if (!$scope.filters[key]) $location.search(key, value);
       else {
@@ -72,7 +96,7 @@ angular.module('histograph')
 
         let list = _.compact(_.map(angular.copy($scope.filters[key]), _.trim));
 
-        (`${value}`).split(',').forEach(function (v) {
+        (`${value}`).split(',').forEach(function () {
           if (list.indexOf(value) === -1) list.push(value);
         })
         // cleanup duplicates
@@ -98,7 +122,7 @@ angular.module('histograph')
         $scope.filterItems.with = [];
       } else {
         _.each(angular.copy($scope.filters), function (d, key) {
-          if (key == 'with') {
+          if (key === 'with') {
             SuggestFactory.getUnknownNodes({
               ids: d
             }, function (res) {
@@ -123,7 +147,7 @@ angular.module('histograph')
       // handle 'type' and mimetype (pseudo-array)
       for (const i in candidates) {
         const list = _.uniq(_.compact(_.map((`${candidates[i]}`).split(','), _.trim)));
-        filters[i] = list;
+        filters[i] = list.length === 1 ? list[0] : list;
         qs.push(`${encodeURIComponent(i)}=${encodeURIComponent(candidates[i])}`);
       }
       // set query for search ctrl
@@ -202,5 +226,25 @@ angular.module('histograph')
       }
 
       if (state.grammar) $scope.grammar = state.grammar
+
+      filterGuard($scope, $location, 'keywords', 'connector.keywords')
+      filterGuard($scope, $location, 'with', 'connector.relatedTo')
+      filterGuard($scope, $location, 'tst', 'connector.topicScoreThreshold')
+    })
+
+    const singleValueAsList = v => (isArray(v) ? v : [v])
+
+    $scope.$watch('filters.keywords', (keywords, oldKeywords) => {
+      if (isEmpty(keywords) && isEmpty(oldKeywords)) return
+      const kw = !isEmpty(keywords) ? singleValueAsList(keywords).map(encodeURIComponent).join(',') : undefined
+      const searchParams = omitBy(assignIn({}, $location.search(), { keywords: kw }), isUndefined)
+      $location.search(searchParams)
+    }, true)
+
+    $scope.$watch('filters.tst', (val, oldVal) => {
+      if (isUndefined(val) && isUndefined(oldVal)) return
+      const tst = val === 0 ? undefined : val
+      const searchParams = omitBy(assignIn({}, $location.search(), { tst }), isUndefined)
+      $location.search(searchParams)
     })
   })

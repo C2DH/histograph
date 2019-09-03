@@ -76,6 +76,9 @@ require('./components/topic-details.js')
 require('./components/snackbar.js')
 require('./components/explorer.js')
 require('./components/explorerFilter.js')
+require('./components/textItemsFilter.js')
+require('./components/resources-panel.js')
+require('./components/slider-value-filter.js')
 
 require('./controllers/core.js')
 require('./controllers/filters.js')
@@ -97,6 +100,7 @@ require('./controllers/resource.js')
 require('./controllers/search.js')
 require('./controllers/user.js')
 require('./controllers/explorer.js')
+require('./controllers/topicResources.js')
 
 // modal controllers. templates in templates/modal
 require('./controllers/modals/contribute.js')

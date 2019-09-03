@@ -1,3 +1,5 @@
+import { isEmpty } from 'lodash'
+
 /* eslint-env browser */
 /* globals angular */
 /* eslint-disable prefer-arrow-callback, func-names, object-shorthand */
@@ -17,7 +19,7 @@ angular.module('histograph')
     VisualizationFactory, EntityExtraFactory, EntityRelatedExtraFactory,
     localStorageService, EntityRelatedFactory, EVENTS, VIZ, MESSAGES,
     ORDER_BY, SETTINGS, UserFactory, OptionalFeaturesService, $window,
-    HgSettings) {
+    HgSettings, ResourceVizFactory) {
     $scope.apiBaseUrl = HgSettings.apiBaseUrl
 
     $log.log('CoreCtrl ready', $location);
@@ -175,6 +177,20 @@ angular.module('histograph')
       $scope.timeline = items;
     }
 
+    /*
+      load the timeline of filtered resources
+      [RK] TODO: This needs to go to a service when everything is refactored
+      and using this method.
+    */
+    $scope.syncTimeline = params => {
+      if (isEmpty(params)) return $scope.setTimeline([])
+      return ResourceVizFactory
+        .get(angular.extend({ viz: 'timeline' }, params)).$promise
+        .then(res => $scope.setTimeline(res.result.timeline))
+        .catch(e => $log.error(`Could not load timeline: ${e.message}`))
+    }
+
+
     $scope.setCurrentResourceRange = v => {
       $scope.currentResourceRange = v
     }
@@ -211,22 +227,22 @@ angular.module('histograph')
       $scope.availableSortings = availableSortings;
     };
 
-    $scope.setSorting = function (sorting) {
-      if (!sorting) {
+    $scope.setSorting = value => {
+      if (!value) {
         $log.log('CoreCtrl -> setSorting() ignore undefined sorting')
         return;
       }
-      if (typeof sorting === 'string') {
-        var sorting = _.first(_.filter(ORDER_BY, { value: sorting }));
+      if (typeof value === 'string') {
+        const sorting = _.first(_.filter($scope.availableSortings, { value }));
         if (sorting) {
           $scope.sorting = sorting;
           $location.search('orderby', sorting.value)
         }
         return;
       }
-      $scope.sorting = sorting;
-      if (sorting.value == 'relevance') $location.search('orderby', null);
-      else $location.search('orderby', sorting.value)
+      $scope.sorting = value;
+      if ($scope.sorting.value === 'relevance') $location.search('orderby', null);
+      else $location.search('orderby', $scope.sorting.value)
     }
 
 
@@ -1147,25 +1163,13 @@ angular.module('histograph')
       });
 
     /*
-      Load timeline, after some ms
+      Loading background (contextual) timeline.
+      This is a timeline without filters showing the density of
+      resources.
     */
-    $timeout(function () {
-      /*
-          First load only,
-          or to be updated whenever a
-          CHANGES in resource set occurs
-        */
-
-
-      VisualizationFactory.resource(VIZ.TIMELINE).then(function (res) {
-        $log.log('CoreCtrl @EVENTS.USE_USER VisualizationFactory', res);
-        $scope.contextualTimeline = res.data.result.timeline;
-        // $scope.initialTimeline
-      });
-
-
-      // $scope.inspect({id: 17190});
-    }, 236);
+    VisualizationFactory.resource(VIZ.TIMELINE).then(function (res) {
+      $scope.contextualTimeline = res.data.result.timeline;
+    });
 
     $scope.hasImage = function (relatedItem) {
       const isImageType = relatedItem.props.mimetype == 'image' && relatedItem.props.url;

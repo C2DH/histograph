@@ -15,8 +15,16 @@
         <span class="fa fa-ban"></span>
       </button>  
     </div>
-    <button class="{{classes.closeButton}}" ng-click="onClose()">
+    <button class="{{classes.closeButton}}" ng-click="onClose()" ng-if="showCloseButton">
       <span class="fa fa-times-circle"></span>
+    </button>
+  </div>
+
+  <div class="{{classes.buttonsPanel}}">
+    <button ng-if="showResourcesButton"
+            class="{{classes.showResourcesButton}}"
+            ng-click="showResources()">
+      <span class="fa fa-th-list"></span> show resources
     </button>
   </div>
 
@@ -24,6 +32,10 @@
     Keywords
   </div>
   <div class="{{classes.keywordCloud}}">
-    <span ng-repeat="keyword in topic.keywords">{{keyword}}</span>
+    <span ng-repeat="keyword in topic.keywords"
+          class="{{isKeywordSelected(keyword) ? classes.selectedKeyword : ''}} {{keywordSelectionEnabled ? classes.keywordSelectable : ''}}"
+          ng-click="selectKeyword(keyword)">
+      {{keyword}}
+    </span>
   </div>
 </div>

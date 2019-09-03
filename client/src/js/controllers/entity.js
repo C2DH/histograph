@@ -6,7 +6,7 @@
  */
 angular.module('histograph')
   .controller('EntityCtrl', function ($scope, $log, $stateParams, socket, $filter, entity, persons, locations, EntityExtraFactory, EntityRelatedFactory, EVENTS, ORDER_BY) {
-    $log.debug('EntityCtrl ready', +$stateParams.id);
+    // $log.debug('EntityCtrl ready', +$stateParams.id);
 
     $scope.item = $scope.entity = entity.result.item;
 

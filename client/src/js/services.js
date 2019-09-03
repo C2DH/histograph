@@ -1,6 +1,7 @@
 /* eslint-env browser */
 /* globals angular, io */
 /* eslint-disable prefer-arrow-callback, func-names, object-shorthand */
+import { proxyWithPreparedApiQueryParameters } from './utils'
 /**
  * @ngdoc service
  * @name histograph.services
@@ -34,17 +35,23 @@ angular.module('histograph')
     Get/Update/Delete one resource
   */
   .factory('ResourceFactory', function ($resource, HgSettings) {
-    return $resource(`${HgSettings.apiBaseUrl}/api/resource/:id`, {}, {
+    const resource = $resource(`${HgSettings.apiBaseUrl}/api/resource/:id`, {}, {
       query: { method: 'GET' },
     });
+    return {
+      get: (...args) => proxyWithPreparedApiQueryParameters(resource, 'get', args)
+    }
   })
   /*
     DEPRECATED
   */
   .factory('ResourceVizFactory', function ($resource, HgSettings) {
-    return $resource(`${HgSettings.apiBaseUrl}/api/resource/:id/:viz`, {}, {
+    const resource = $resource(`${HgSettings.apiBaseUrl}/api/resource/:id/:viz`, {}, {
       query: { method: 'GET' },
     });
+    return {
+      get: (...args) => proxyWithPreparedApiQueryParameters(resource, 'get', args)
+    }
   })
   /*
     Should contain all viz methods available (GET only vis)
@@ -154,7 +161,10 @@ angular.module('histograph')
     Get a list of resource
   */
   .factory('UserFactory', function ($resource, HgSettings) {
-    return $resource(`${HgSettings.apiBaseUrl}/api/user/:method/:extra`);
+    const resource = $resource(`${HgSettings.apiBaseUrl}/api/user/:method/:extra`, {}, {});
+    return {
+      get: (...args) => proxyWithPreparedApiQueryParameters(resource, 'get', args)
+    }
   })
   /*
     Add / get :model related to user related

@@ -1,0 +1,41 @@
+<div class="topic-resources-page">
+  <!-- Menu bar -->
+  <div id='perspective-menu' class="tk-proxima-nova header-menu">
+    <ul>
+      <li class="menu-item" ng-include src="'templates/partials/helpers/grammar.html'"></li>
+      <li class="menu-item">
+        <div class="btn-group" uib-dropdown is-open="false">
+            <button id="sorting-button-{{uid}}" type="button" class="btn btn-default btn-line" uib-dropdown-toggle>
+              sorted by {{sorting.label}} <span class="caret"></span>
+            </button>
+            <ul class="uib-dropdown-menu dropdown-menu" role="menu" aria-labelledby="sorting-button-{{uid}}">
+              <li class="{{sorting === item ? 'active' : ''}}" ng-repeat="item in availableSortings">
+                <a ng-click='setSorting(item)'>by {{item.label}}</a>
+              </li>
+            </ul>
+          </div>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="{{classes.container}}">
+    <!-- Topic details side panel  -->
+    <div hi-topic-details="topicId"
+        on-close="unselectCurrentTopic()"
+        on-topic-updated="reloadData()"
+        ng-show="topicId !== undefined"
+        show-resources-button='false'
+        selected-keywords="params.keywords"
+        keyword-selection-enabled="true"
+        class="{{classes.containerChild}} {{classes.topicDetails}}">
+    </div>
+
+    <div hi-resources-panel
+         load-resources="loadResources"
+         load-resources-params="searchParams"
+         pin-resource="queue"
+         class="{{classes.containerChild}} {{classes.mainPanel}}">
+    </div>
+
+  </div>
+</div>

@@ -1,3 +1,14 @@
+import {
+  assignIn, omit, isEmpty,
+  omitBy, isUndefined
+} from 'lodash'
+
+import {
+  bindStateChangeToObject,
+  serializeStringList,
+  deserializeStringList
+} from '../utils'
+
 /**
  * @ngdoc function
  * @name histograph.controller:indexCtrl
@@ -5,43 +16,11 @@
  * # IndexCtrl
  */
 angular.module('histograph')
-  .controller('IndexCtrl', function ($scope, $log, ResourceFactory, EVENTS) {
-    $log.debug('IndexCtrl ready', $scope.params);
-  // the original index page, almost empty
-  })
-
-  .controller('ExploreCtrl', function ($scope, $log, $timeout, ResourceFactory, CooccurrencesFactory, cleanService, InquiryFactory, EVENTS) {
-    $log.debug('ExploreCtrl ready', $scope.params);
-
-
-    /*
-      Set graph title
-    */
-    $scope.setHeader({
-      graph: 'cooccurrences network of people connected if they appear in the same document',
-      seealso: 'A list of resources to start with'
-    });
-
-
-    /*
-      listener: $scope.timeline
-      load the contextual timeline, if some filters are specified.
-    */
-    $scope.$watch('timeline', function (timeline) {
-      if (!timeline) return;
-      $log.log('IndexCtrl @timeline ready');
-    });
-
-    // start
-    // $scope.sync();
-    // $scope.syncGraph();
-  })
-
   /*
     wall of issues
     ---
   */
-  .controller('ExploreIssuesCtrl', function ($scope, $log, IssueFactory, EVENTS) {
+  .controller('ExploreIssuesCtrl', function ($scope, $log, IssueFactory) {
     $log.debug('ExploreIssuesCtrl ready', $scope.params);
     $scope.limit = 20;
     $scope.offset = 0;
@@ -63,124 +42,34 @@ angular.module('histograph')
     $scope.sync();
   })
 
-  /*
-    wall of noise
-    ---
-  */
-  .controller('ExploreNoiseCtrl', function ($scope, $log, UserFactory, EVENTS) {
-    $log.debug('ExploreNoiseCtrl ready', $scope.params);
-    $scope.limit = 20;
-    $scope.offset = 0;
+  /* wall of resources */
+  .controller('ExploreResourcesCtrl', function ($scope, $location, $state, ResourceFactory, UserFactory) {
+    $scope.limit = 20
 
-    $scope.sync = function () {
-      $scope.loading = true;
-      UserFactory.get(angular.extend({
-        method: 'noise',
-        limit: $scope.limit,
-        offset: $scope.offset
-      }, $scope.params), function (res) {
-        $scope.loading = false;
-        $scope.offset = res.info.offset;
-        $scope.limit = res.info.limit;
-        $scope.totalItems = res.info.total_items;
-        if ($scope.offset > 0) $scope.addRelatedItems(res.result.items);
-        else $scope.setRelatedItems(res.result.items);
-      })
-    };
+    bindStateChangeToObject($scope, $location, 'resourcesSearchParams', [
+      'from',
+      'to',
+      ['type', 'type', undefined, serializeStringList, deserializeStringList],
+      ['with', 'with', undefined, serializeStringList, deserializeStringList],
+      ['keywords', 'keywords', undefined, serializeStringList, deserializeStringList],
+      ['orderby', 'orderby', 'topic-modelling-score'],
+    ])
 
-    $scope.$on(EVENTS.API_PARAMS_CHANGED, function () {
-      $scope.offset = 0;
-      $log.debug('ExploreNoiseCtrl @API_PARAMS_CHANGED', $scope.params);
-      $scope.sync();
-      // $scope.syncGraph();
-    });
+    $scope.loadResources = params => ResourceFactory
+      .get(assignIn({}, params, { limit: $scope.limit })).$promise
 
-    $scope.$on(EVENTS.INFINITE_SCROLL, function (e) {
-      $scope.offset += $scope.limit;
-      $log.debug('ExploreCtrl @INFINITE_SCROLL', '- skip:', $scope.offset, '- limit:', $scope.limit);
-      $scope.sync();
-    });
-
-    $scope.sync();
-  })
-
-  /*
-    wall of resources
-  */
-  .controller('ExploreResourcesCtrl', function ($scope, $log, socket, ResourceVizFactory, VIZ, ResourceFactory, EVENTS) {
-    $log.debug('ExploreResourcesCtrl ready', $scope.params);
-    $scope.limit = 20;
-    $scope.offset = 0;
-    /*
-      Reload related items, with filters.
-    */
-    $scope.sync = function () {
-      $scope.lock('ExploreResourcesCtrl');
-      ResourceFactory.get(angular.extend({
-        limit: $scope.limit,
-        offset: $scope.offset
-      }, $scope.params), function (res) {
-        $scope.unlock('ExploreResourcesCtrl');
-        $scope.loading = false;
-        $scope.offset = res.info.offset;
-        $scope.limit = res.info.limit;
-        $scope.totalItems = res.info.total_items;
-        if ($scope.offset > 0) $scope.addRelatedItems(res.result.items);
-        else $scope.setRelatedItems(res.result.items);
-        // reset if needed
-        $scope.setFacets('type', res.info.groups);
-      })
+    if ($state.current.resourceRetriever === 'userNoise') {
+      $scope.loadResources = params => UserFactory
+        .get(assignIn({}, params, {
+          method: 'noise',
+          limit: $scope.limit
+        })).$promise
     }
 
-    /*
-      LoadTimeline
-      ---
+    // Only trigger timeline context update when there are context related parameters present
+    $scope.$watch('resourcesSearchParams', params => {
+      $scope.timelineContextParams = omitBy(omit(params, ['from', 'to', 'orderby']), isUndefined)
+    }, true)
 
-      load the timeline of filtered resources
-    */
-    $scope.syncTimeline = function () {
-      if (!_.isEmpty($scope.params)) {
-        ResourceVizFactory.get(angular.extend({
-          viz: 'timeline'
-        }, $scope.params), function (res) {
-        // if(res.result.titmeline)
-          $scope.setTimeline(res.result.timeline)
-        });
-      } else $scope.setTimeline([])
-    };
-
-    /*
-      listener: EVENTS.API_PARAMS_CHANGED
-      some query parameter has changed, reload the list accordingly.
-    */
-    $scope.$on(EVENTS.API_PARAMS_CHANGED, function () {
-      $scope.offset = 0;
-      $log.debug('ExploreCtrl @API_PARAMS_CHANGED', $scope.params);
-      $scope.sync();
-      // $scope.syncGraph();
-      $scope.syncTimeline();
-    });
-
-    $scope.$on(EVENTS.INFINITE_SCROLL, function (e) {
-      $scope.offset += $scope.limit;
-      $log.debug('ExploreCtrl @INFINITE_SCROLL', '- skip:', $scope.offset, '- limit:', $scope.limit);
-      $scope.sync();
-    });
-
-    function onSocket(result) {
-      console.log('ExploreResourcesCtrl @socket', result)
-      for (let i = 0, l = $scope.relatedItems.length; i < l; i++) {
-        if ($scope.relatedItems[i].id == result.resource.id) {
-          $scope.relatedItems[i] = result.data.related.resource
-          break;
-        }
-      }
-    }
-
-    socket.on('entity:upvote-related-resource:done', onSocket);
-    // socket.on('entity:create-related-issue:done', onSocket);
-
-    if (!_.isEmpty($scope.params)) $scope.syncTimeline();
-
-    $scope.sync();
+    $scope.$watch('timelineContextParams', $scope.syncTimeline, true)
   })

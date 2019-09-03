@@ -7,14 +7,15 @@
   </div>
 
   <!-- Page container -->
-  <div class="{{classes.container}}"
-      ng-if="optionalFeatures.topicModellingTimeline.enabled">
+  <div class="{{classes.container}}">
 
     <!-- Topic details side panel  -->
     <div hi-topic-details="params.topicId"
          on-close="unselectCurrentTopic()"
          on-topic-updated="reloadData()"
          ng-show="params.topicId !== undefined"
+         show-resources-button='true'
+         show-close-button='true'
          class="{{classes.containerChild}} {{classes.topicDetails}}">
     </div>
 
@@ -62,16 +63,13 @@
       </div>
   
       <!-- Resources list -->
-      <div class="selected-resources related-resources-container">
-        <div ng-repeat="relatedItem in selectedResources" 
-             ng-include='"templates/partials/resource-lite.html"'
-             class="masonry-brick">
-        </div>
-        <div class="more" ng-if="selectedResources.length < totalItems">
-          <button class="btn" ng-click="loadMoreResources()">load more items</button>
-        </div>
+      <div hi-resources-panel
+           load-resources="loadResources"
+           load-resources-params="resourcesSearchParams"
+           pin-resource="queue"
+           class="{{classes.containerChild}} {{classes.mainPanel}}">
       </div>
-  
+
     </div>
   </div>
 </div>
