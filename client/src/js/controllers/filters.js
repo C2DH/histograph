@@ -14,12 +14,12 @@ function filterGuard(scope, $location, queryParameterName, grammarName) {
   const isNotDefinedInGrammar = isUndefined(get(scope.grammar, grammarName))
   const isPresentInFilters = !isUndefined(get(scope.filters, queryParameterName))
 
-  console.log('****1111', queryParameterName, grammarName, isNotDefinedInGrammar, isPresentInFilters, get(scope.grammar, grammarName))
   if (isNotDefinedInGrammar && isPresentInFilters) {
     setTimeout(() => {
       $location.search(queryParameterName, null).replace()
     })
     delete scope.filters[queryParameterName]
+    delete scope.filterItems[queryParameterName]
   }
 }
 
@@ -228,6 +228,7 @@ angular.module('histograph')
       if (state.grammar) $scope.grammar = state.grammar
 
       filterGuard($scope, $location, 'keywords', 'connector.keywords')
+      filterGuard($scope, $location, 'with', 'connector.relatedTo')
     })
 
     $scope.$watch('filters.keywords', (keywords, oldKeywords) => {
