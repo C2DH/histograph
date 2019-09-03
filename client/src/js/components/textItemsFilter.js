@@ -1,4 +1,7 @@
-import { uniq, concat, without } from 'lodash'
+import {
+  uniq, concat, without,
+  isUndefined, isArray
+} from 'lodash'
 import { withStyles } from '../styles'
 
 const styles = {
@@ -56,6 +59,11 @@ function controller($scope) {
   $scope.isDropdownOpen = false
   $scope.uid = $scope.$id
   if ($scope.items === undefined) $scope.items = []
+
+  $scope.$watch('items', val => {
+    if (isUndefined(val)) return
+    if (!isArray($scope.items)) $scope.items = [$scope.items]
+  })
 
   $scope.addItem = () => {
     $scope.items = uniq(concat($scope.items, $scope.currentInput))
