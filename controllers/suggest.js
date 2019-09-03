@@ -425,7 +425,8 @@ module.exports =  function(io){
       var form = validator.request(req, {
             limit: 20,
             offset: 0,
-            entity: 'person'
+            entity: 'person',
+            resource_index: 'full_text_index'
           }, {
             fields: [
               // validator.SPECIALS.entity
@@ -434,9 +435,8 @@ module.exports =  function(io){
       if(!form.isValid)
         return helpers.formError(form.errors, res);
       
-      var q = parser.toLucene(req.query.query, 'name_search');
+      var q = parser.toLucene(req.query.query);
       form.params.query = q;
-      console.log('get_entities', form.params.query);
       models.getMany({
         queries: {
           count_items: queries.get_matching_entities_count,
@@ -525,8 +525,7 @@ module.exports =  function(io){
           });
       if(!form.isValid)
         return helpers.formError(form.errors, res);
-      console.log('query passed', form.params.query)
-      var q = parser.toLucene(form.params.query, 'name_search');
+      var q = parser.toLucene(form.params.query);
 
       // build a nodes edges graph
       helpers.cypherGraph(queries.get_matching_entities_graph, {
