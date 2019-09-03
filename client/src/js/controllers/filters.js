@@ -1,8 +1,28 @@
 /* eslint-env browser */
 /* globals angular, _ */
 const {
-  assignIn, omitBy, isUndefined, isEmpty
+  assignIn, omitBy, isUndefined,
+  isEmpty, get
 } = require('lodash')
+
+/**
+ * [RK] NOTE a filter guard used to remove query search filter parameters when moving from
+ * a view with the parameter supported to a view with parameter not supported.
+ * This is a temporary measure until the filters bar is refactored for real.
+ */
+function filterGuard(scope, $location, queryParameterName, grammarName) {
+  const isNotDefinedInGrammar = isUndefined(get(scope.grammar, grammarName))
+  const isPresentInFilters = !isUndefined(get(scope.filters, queryParameterName))
+
+  console.log('****1111', queryParameterName, grammarName, isNotDefinedInGrammar, isPresentInFilters, get(scope.grammar, grammarName))
+  if (isNotDefinedInGrammar && isPresentInFilters) {
+    setTimeout(() => {
+      $location.search(queryParameterName, null).replace()
+    })
+    delete scope.filters[queryParameterName]
+  }
+}
+
 /**
  * @ngdoc function
  * @name histograph.controller:FiltersCtrl
@@ -206,6 +226,8 @@ angular.module('histograph')
       }
 
       if (state.grammar) $scope.grammar = state.grammar
+
+      filterGuard($scope, $location, 'keywords', 'connector.keywords')
     })
 
     $scope.$watch('filters.keywords', (keywords, oldKeywords) => {

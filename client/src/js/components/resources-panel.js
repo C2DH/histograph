@@ -1,5 +1,5 @@
 import {
-  isUndefined, assignIn
+  isUndefined, assignIn, without
 } from 'lodash'
 import { withStyles, theme } from '../styles'
 
@@ -41,19 +41,21 @@ const styles = {
 function controller($scope, $log, HgSettings) {
   withStyles($scope, styles)
 
-  $scope.busyCounter = 0
+  $scope.busyCounter = []
 
   $scope.loadMoreResources = () => {
-    if ($scope.busyCounter !== 0) return
+    const requestId = $scope.busyCounter.length
+    $scope.busyCounter.push(requestId)
 
     const params = assignIn({}, $scope.params, {
       limit: $scope.resourcesPageLimit,
       offset: $scope.resources.items.length,
     })
 
-    $scope.busyCounter += 1
     $scope.loadResources(params)
       .then(results => {
+        if ($scope.busyCounter.indexOf(requestId) !== $scope.busyCounter.length - 1) return
+
         $scope.resources.items = $scope.resources.items.concat(results.result.items)
         $scope.resources.meta = {
           totalResources: results.info.total_items
@@ -63,7 +65,7 @@ function controller($scope, $log, HgSettings) {
         $log.error('Could not get resources from the API', e.message)
       })
       .finally(() => {
-        $scope.busyCounter -= 1
+        $scope.busyCounter = without($scope.busyCounter, requestId)
       })
   }
 

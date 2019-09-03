@@ -161,7 +161,10 @@ angular.module('histograph')
     Get a list of resource
   */
   .factory('UserFactory', function ($resource, HgSettings) {
-    return $resource(`${HgSettings.apiBaseUrl}/api/user/:method/:extra`);
+    const resource = $resource(`${HgSettings.apiBaseUrl}/api/user/:method/:extra`, {}, {});
+    return {
+      get: (...args) => proxyWithPreparedApiQueryParameters(resource, 'get', args)
+    }
   })
   /*
     Add / get :model related to user related
