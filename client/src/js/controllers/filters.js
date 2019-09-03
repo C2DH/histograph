@@ -147,7 +147,7 @@ angular.module('histograph')
       // handle 'type' and mimetype (pseudo-array)
       for (const i in candidates) {
         const list = _.uniq(_.compact(_.map((`${candidates[i]}`).split(','), _.trim)));
-        filters[i] = list;
+        filters[i] = list.length === 1 ? list[0] : list;
         qs.push(`${encodeURIComponent(i)}=${encodeURIComponent(candidates[i])}`);
       }
       // set query for search ctrl
@@ -229,6 +229,7 @@ angular.module('histograph')
 
       filterGuard($scope, $location, 'keywords', 'connector.keywords')
       filterGuard($scope, $location, 'with', 'connector.relatedTo')
+      filterGuard($scope, $location, 'tst', 'connector.topicScoreThreshold')
     })
 
     $scope.$watch('filters.keywords', (keywords, oldKeywords) => {
@@ -237,4 +238,11 @@ angular.module('histograph')
       const searchParams = omitBy(assignIn({}, $location.search(), { keywords: kw }), isUndefined)
       $location.search(searchParams)
     }, true)
+
+    $scope.$watch('filters.tst', (val, oldVal) => {
+      if (isUndefined(val) && isUndefined(oldVal)) return
+      const tst = val === 0 ? undefined : val
+      const searchParams = omitBy(assignIn({}, $location.search(), { tst }), isUndefined)
+      $location.search(searchParams)
+    })
   })

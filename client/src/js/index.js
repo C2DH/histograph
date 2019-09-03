@@ -78,6 +78,7 @@ require('./components/explorer.js')
 require('./components/explorerFilter.js')
 require('./components/textItemsFilter.js')
 require('./components/resources-panel.js')
+require('./components/slider-value-filter.js')
 
 require('./controllers/core.js')
 require('./controllers/filters.js')

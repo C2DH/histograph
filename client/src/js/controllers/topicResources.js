@@ -52,13 +52,15 @@ const SortingMethods = [
   { label: 'date (oldest first)', value: 'date' },
 ]
 
-function controller($scope, $stateParams, $log, $location, ResourceFactory, ResourceVizFactory) {
+function controller($scope, $stateParams, $location, ResourceFactory) {
   withStyles($scope, styles)
+
+  // NOTE: a workaround to disable ruler (see filters.js). Ugly but saves from refactoring.
+  $scope.rulerDisabled = true
 
   $scope.uid = $scope.$id
   $scope.busyCounter = 0
   $scope.params = {}
-  const topicScoreLowerThreshold = 0.0
 
   const { id: topicId } = $stateParams
   $scope.topicId = topicId
@@ -70,12 +72,12 @@ function controller($scope, $stateParams, $log, $location, ResourceFactory, Reso
     'to',
     ['with', 'with', undefined, serializeStringList, deserializeStringList],
     ['keywords', 'keywords', undefined, serializeStringList, deserializeStringList],
+    ['tst', 'topicModellingScoresLowerThreshold', 0.0, v => v.toPrecision(2), parseFloat],
     ['orderby', 'orderby', 'topic-modelling-score'],
   ])
 
   $scope.$watch('params', () => {
     $scope.searchParams = assignIn({}, $scope.params, {
-      topicModellingScoresLowerThreshold: topicScoreLowerThreshold,
       topicModellingIndex: topicId,
     })
   }, true)

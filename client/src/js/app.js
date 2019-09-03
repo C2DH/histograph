@@ -307,7 +307,8 @@ module.exports = angular
             notRelatedTo: 'related to anyone',
             from: 'from',
             to: 'to',
-            keywords: 'with keywords'
+            keywords: 'with keywords',
+            topicScoreThreshold: 'with topic score above'
           },
           relatedTo: {
             typeahead: 'entity'

@@ -95,7 +95,6 @@ const template =
             </div>
           </li>
         </ul>
-
       </div>
     </div>
   `
