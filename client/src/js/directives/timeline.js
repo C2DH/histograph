@@ -1,3 +1,5 @@
+import { get, isNil } from 'lodash'
+
 /* eslint-env browser */
 /* globals angular, d3, _ */
 /**
@@ -350,9 +352,9 @@ angular.module('histograph')
 
           // evaluate scope .filters against the current timeExtension and
           // decide if there is the need for updating
-          const left = scope.filters.from && scope.filters.from.length ? d3.timeParse('%Y-%m-%d')(scope.filters.from[0]).getTime() : tim.timeExtent[0]
-          const right = scope.filters.to && scope.filters.to.length ? d3.timeParse('%Y-%m-%d')(scope.filters.to[0]).getTime() : tim.timeExtent[1]
-
+          const [fromTime, toTime] = [scope.filters.from, scope.filters.to].map(d3.timeParse('%Y-%m-%d'))
+          const left = !isNil(fromTime) ? fromTime.getTime() : tim.timeExtent[0]
+          const right = !isNil(toTime) ? toTime.getTime() : tim.timeExtent[1]
           const proceed = left !== tim.left || right !== tim.right
 
           tim.left = left

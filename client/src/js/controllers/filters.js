@@ -63,7 +63,8 @@ angular.module('histograph')
     */
     $scope.removeFilter = function (key, value) {
       $log.log('FiltersCtrl -> removeFilter() - key:', key, '- value:', value)
-      const aliveFilters = _.filter(angular.copy($scope.filters[key]), function (d) {
+      const item = isArray($scope.filters[key]) ? $scope.filters[key] : [$scope.filters[key]]
+      const aliveFilters = _.filter(angular.copy(item), function (d) {
         return value && (d !== value)
       })
 
@@ -94,7 +95,8 @@ angular.module('histograph')
       else {
         $log.log('FiltersCtrl -> addFilter() - key:', key, '- value:', value)
 
-        let list = _.compact(_.map(angular.copy($scope.filters[key]), _.trim));
+        const item = isArray($scope.filters[key]) ? $scope.filters[key] : [$scope.filters[key]]
+        let list = _.compact(_.map(angular.copy(item), _.trim));
 
         (`${value}`).split(',').forEach(function () {
           if (list.indexOf(value) === -1) list.push(value);

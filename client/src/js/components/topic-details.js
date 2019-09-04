@@ -11,7 +11,7 @@ const styles = {
     alignContent: 'stretch',
     fontFamily: '"proxima-nova",sans-serif',
     height: '100%',
-    width: '100%'
+    width: '100%',
   },
   panelTop: {
     display: 'flex',
@@ -19,6 +19,7 @@ const styles = {
     alignContent: 'stretch',
     justifyContent: 'space-between',
     padding: [['0.9em', '1.2em']],
+    flexShrink: 0
   },
   label: {
     extend: theme.text.h3,
@@ -53,6 +54,7 @@ const styles = {
   keywordsLabel: {
     margin: [['0em', '1.2em']],
     textTransform: 'uppercase',
+    flexShrink: 0
   },
   keywordCloud: {
     display: 'flex',
@@ -60,6 +62,7 @@ const styles = {
     flexWrap: 'wrap',
     margin: [['0.9em', '1.2em']],
     overflowY: 'scroll',
+    flexShrink: 0,
     '& span': {
       marginRight: '.3em',
       marginBottom: '.3em',
@@ -90,12 +93,15 @@ const styles = {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   showResourcesButton: {
     background: 'none',
     display: 'inline-flex',
     padding: [['0.3em', '0.9em']],
     outline: 'none',
+    borderWidth: '1px',
+    borderStyle: 'solid',
     '& .fa': {
       marginRight: '0.5em'
     }
