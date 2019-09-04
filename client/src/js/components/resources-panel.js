@@ -73,11 +73,11 @@ function controller($scope, $log, HgSettings) {
     $scope.loadMoreResources()
   }, true)
 
-  $scope.getImageUrl = function (relatedItem) {
-    if (relatedItem.props.iiif_url) {
-      return relatedItem.props.iiif_url.replace(/info.json$/, 'full/pct:20/0/default.jpg');
+  $scope.getImageUrl = function (resource) {
+    if (resource.props.iiif_url) {
+      return resource.props.iiif_url.replace(/info.json$/, 'full/pct:20/0/default.jpg');
     }
-    return `${HgSettings.apiBaseUrl}/media/${relatedItem.props.url}`;
+    return `${HgSettings.apiBaseUrl}/media/${resource.props.url}`;
   }
 }
 
@@ -105,7 +105,7 @@ const itemTemplate = /* html */ `
   </h4>
         
   <div class="meta">
-    <span gasp-type="date" class="empty" ng-if="!resource.props.start_time">no date found</span>
+    <span gasp-type="date" class="empty" gasp-parent="{{resource.type}}-{{resource.id}}" ng-if="!resource.props.start_time">no date found</span>
     <span class='date' ng-if="resource.props.start_time"> {{resource.props | guessInterval}}</span>
     <span ng-if='resource.matches.length' class='tags'> — <i translate>resource.in_between</i>:
       <span ng-repeat="mat in resource.matches">
@@ -120,7 +120,7 @@ const itemTemplate = /* html */ `
     </span>
 
     <span ng-if='resource.persons.length' class='tags'> — <i translate='resource.people.mentioned'></i>:
-      <span ng-repeat="tag in resource.persons" ng-include='"templates/partials/entity-tag.html"' ng-init='item=relatedItem'></span>  
+      <span ng-repeat="tag in resource.persons" ng-include='"templates/partials/entity-tag.html"' ng-init='item=resource'></span>  
     </span>
 
   </div>
