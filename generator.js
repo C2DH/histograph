@@ -5,8 +5,7 @@
   Cfr test/models.*.js
 
 */
-var should   = require('should'),
-    _        = require('lodash');
+var _        = require('lodash');
 
 module.exports = function(options) {
   return {
