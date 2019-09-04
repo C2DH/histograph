@@ -57,6 +57,8 @@ angular.module('histograph')
       $scope.facets[key] = values;
     }
 
+    $scope.asArray = item => (isArray(item) ? item : [item])
+
 
     /*
       Filters function for templates
