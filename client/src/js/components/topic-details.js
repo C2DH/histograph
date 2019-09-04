@@ -62,7 +62,6 @@ const styles = {
     flexWrap: 'wrap',
     margin: [['0.9em', '1.2em']],
     overflowY: 'scroll',
-    flexShrink: 0,
     '& span': {
       marginRight: '.3em',
       marginBottom: '.3em',

@@ -8,7 +8,6 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignContent: 'stretch',
-    height: '100%'
   },
   resourceItems: {
     display: 'flex',
