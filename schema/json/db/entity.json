@@ -14,15 +14,6 @@
         "a-tale-of-two-rivers"
       ]
     },
-    "type": {
-      "description": "Type of the entity. E.g. 'person', 'location'. List is configurable. This field becomes a label",
-      "pattern": "^[^\\s]+$",
-      "type": "string",
-      "examples": [
-        "person",
-        "location"
-      ]
-    },
     "uuid": {
       "description": "Unique ID of the entity",
       "type": "string",
@@ -177,7 +168,6 @@
   },
   "required": [
     "slug",
-    "type",
     "uuid",
     "name"
   ]

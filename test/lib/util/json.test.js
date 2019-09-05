@@ -3,7 +3,7 @@ const assert = require('assert')
 const { validated, formatValidationErrors } = require('../../../lib/util/json')
 
 const validateTestsValid = {
-  'mutations.merge_resource': {
+  'db.resource': {
     testJson: {
       slug: 'moo',
       uuid: 'abc123',
@@ -18,13 +18,11 @@ const validateTestsValid = {
       },
       iiif_url: './foo/bar/info.json'
     },
-    schemaUri: 'mutations/merge_resource.json',
+    schemaUri: 'db/resource.json',
   },
-  'mutations.merge_entity': {
+  'db.entity': {
     testJson: {
-      resource_uuid: 'resabc123',
       slug: 'chicago',
-      type: 'location',
       uuid: 'abc123',
       name: 'Chicago',
       entity: {
@@ -33,12 +31,16 @@ const validateTestsValid = {
       },
       links: {
         wikidata_id: '123'
-      },
-      frequency: 1,
-      languages: ['en'],
-      username: 'moo'
+      }
     },
-    schemaUri: 'mutations/merge_entity.json'
+    schemaUri: 'db/entity.json'
+  },
+  'db.appears_in': {
+    testJson: {
+      frequency: 1,
+      languages: ['en']
+    },
+    schemaUri: 'db/appears_in.json'
   },
   'mutations.merge_relationship_resource_version': {
     testJson: {
@@ -87,7 +89,7 @@ const validateTestsValid = {
 }
 
 const validateTestsInvalid = {
-  'mutations.merge_resource': {
+  'db.resource': {
     testJson: {
       uuid: 'abc123',
       name: 'test',
@@ -103,7 +105,7 @@ const validateTestsInvalid = {
         fra: 'o'
       }
     },
-    schemaUri: 'mutations/merge_resource.json',
+    schemaUri: 'db/resource.json',
     expectedErrors: [
       ['unknown', 'unexpected additional property'],
       ['another', 'unexpected additional property'],
@@ -115,9 +117,8 @@ const validateTestsInvalid = {
       ['creation_time', 'should be integer']
     ]
   },
-  'mutations.merge_entity': {
+  'db.entity': {
     testJson: {
-      resource_uuid: 'resabc 123',
       slug: 'chica go',
       type: 'location',
       uuid: 'abc123',
@@ -129,18 +130,26 @@ const validateTestsInvalid = {
       links: {
         wikipedia_uri: '123'
       },
-      frequency: 'asdf',
-      languages: ['en'],
-      username: 'moo',
       unknownfield: 'test'
     },
-    schemaUri: 'mutations/merge_entity.json',
+    schemaUri: 'db/entity.json',
     expectedErrors: [
+      ['type', 'unexpected additional property'],
       ['unknownfield', 'unexpected additional property'],
       ['slug', 'should match pattern "^[^\\s]+$"'],
       ['entity.asdf', 'unexpected additional property'],
       ['links.wikipedia_uri', 'should match format "uri"'],
-      ['resource_uuid', 'should match pattern "^[^\\s]+$"'],
+    ]
+  },
+  'db.appears_in': {
+    testJson: {
+      frequency: 'asdf',
+      languages: ['en'],
+      unknownfield: 'test'
+    },
+    schemaUri: 'db/appears_in.json',
+    expectedErrors: [
+      ['unknownfield', 'unexpected additional property'],
       ['frequency', 'should be integer']
     ]
   },

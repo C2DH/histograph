@@ -158,11 +158,6 @@
     "last_modification_time": {
       "description": "Resource modification UNIX time in milliseconds",
       "type": "integer"
-    },
-    "previous_resource_uuid": {
-      "description": "UUID of the resource that comes before this resources",
-      "type": "string",
-      "pattern": "^[^\\s]+$"
     }
   },
   "required": [

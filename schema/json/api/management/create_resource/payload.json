@@ -36,9 +36,6 @@
         },
         "iiif_url": {
           "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/iiif_url"
-        },
-        "previous_resource_uuid": {
-          "$ref": "http://c2dh.uni.lu/histograph/db/resource.json#/properties/previous_resource_uuid"
         }
       },
       "required": [
@@ -61,11 +58,17 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "type": {
+            "description": "Type of the entity. E.g. 'person', 'location'. List is configurable. This field becomes a label",
+            "pattern": "^[^\\s]+$",
+            "type": "string",
+            "examples": [
+              "person",
+              "location"
+            ]
+          },      
           "slug": {
             "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/slug"
-          },
-          "type": {
-            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/type"
           },
           "name": {
             "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/name"
@@ -78,6 +81,27 @@
           },
           "links": {
             "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/links"            
+          },
+          "first_name": {
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/first_name"            
+          },
+          "last_name": {
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/last_name"            
+          },
+          "lat": {
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/lat"            
+          },
+          "lng": {
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/lng"            
+          },
+          "country": {
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/country"            
+          },
+          "geoname_id": {
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/geoname_id"            
+          },
+          "geocoding_id": {
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/geocoding_id"            
           }
         },
         "required": [

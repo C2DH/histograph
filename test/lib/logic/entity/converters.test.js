@@ -4,7 +4,7 @@ const { omit } = require('lodash')
 const YAML = require('yamljs')
 
 const {
-  createResourcePayloadToMergeEntityList,
+  createResourcePayloadToEntityAndAppearanceList,
   createResourcePayloadToMergeRelationshipResourceVersionList
 } = require('../../../../lib/logic/entity/converters')
 
@@ -54,37 +54,45 @@ const validCreateResourcePayload = {
   ]
 }
 
-describe('createResourcePayloadToMergeResource', () => {
+describe('createResourcePayloadToEntityAndAppearanceList', () => {
   it('converts valid payload', () => {
-    const testResourceUuid = 'test123'
 
     const expectedMergeEntitiesList = [
       {
-        resource_uuid: testResourceUuid,
-        slug: 'chicago',
-        type: 'location',
-        name: 'Chicago',
-        languages: ['en'],
-        frequency: 2
+        entity: {
+          slug: 'chicago',
+          name: 'Chicago',
+        },
+        appearance: {
+          languages: ['en'],
+          frequency: 2
+        },
+        type: 'location'
       },
       {
-        resource_uuid: testResourceUuid,
-        slug: 'schuman',
+        entity: {
+          slug: 'schuman',
+          name: 'Schuman',
+        },
+        appearance: {
+          languages: ['en'],
+          frequency: 1
+        },
         type: 'person',
-        name: 'Schuman',
-        languages: ['en'],
-        frequency: 1
-      },
+      }
     ]
 
     const variableFields = ['uuid']
 
-    const mergeEntitiesList = createResourcePayloadToMergeEntityList(
-      validCreateResourcePayload, testResourceUuid
+    const mergeEntitiesList = createResourcePayloadToEntityAndAppearanceList(
+      validCreateResourcePayload
     )
 
     assert.deepEqual(
-      mergeEntitiesList.map(e => omit(e, variableFields)),
+      mergeEntitiesList.map(e => {
+        e.entity = omit(e.entity, variableFields)
+        return e
+      }),
       expectedMergeEntitiesList
     )
   })
@@ -124,7 +132,7 @@ describe('createResourcePayloadToMergeResource', () => {
     }
 
     try {
-      createResourcePayloadToMergeEntityList(invalidPayload, 'x')
+      createResourcePayloadToEntityAndAppearanceList(invalidPayload)
       assert.fail('Expected to raise an error')
     } catch (e) {
       assert.equal(e.message, 'JSON validation errors: data.entitiesLocations[0] should have required property \'entityIndex\'')
@@ -136,8 +144,8 @@ describe('createResourcePayloadToMergeRelationshipResourceVersionList', () => {
   it('converts valid payload', () => {
     const testResourceUuid = 'test123'
 
-    const mergeEntitiesList = createResourcePayloadToMergeEntityList(
-      validCreateResourcePayload, testResourceUuid
+    const mergeEntitiesList = createResourcePayloadToEntityAndAppearanceList(
+      validCreateResourcePayload
     )
 
     const expectedMergeVersionsList = [
