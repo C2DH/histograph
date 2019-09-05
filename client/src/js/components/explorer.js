@@ -7,6 +7,24 @@ const TypeToPlot = {
   bar: BarPlot
 }
 
+const TypeToPlotOptions = {
+  bubble: {
+    colours: {
+      overlay: {
+        selected: '#3333330f'
+      },
+      value: {
+        // outlierAbove: '#00ff33',
+        // outlierBelow: '#ff0000',
+        outlierAbove: '#eeee00',
+        outlierBelow: '#eeee00',
+        mean: '#eeee00'
+      }
+    }
+  },
+  bar: {}
+}
+
 const TypeToUnits = {
   bubble: 2,
   bar: 1
@@ -133,7 +151,8 @@ const directive = {
 
       idsToAdd.forEach(id => {
         const { label, type } = configuration[id]
-        const plot = new TypeToPlot[type]({ title: label })
+        const opts = assignIn({}, TypeToPlotOptions[type], { title: label })
+        const plot = new TypeToPlot[type](opts)
         $scope.explorer.addPlot(plot, { units: TypeToUnits[type], id })
       })
 
