@@ -1,10 +1,26 @@
 import { difference, assignIn, get } from 'lodash'
 import { Explorer, HeatBubblePlot, BarPlot } from 'd3-explorer'
+import { interpolateRdYlGn } from 'd3-scale-chromatic'
+import { scaleSequential } from 'd3'
 import { withStyles } from '../styles'
+
+
+function getColourLinear({ val, mean, std }) {
+  const linearScale = scaleSequential(interpolateRdYlGn)
+    .domain([mean - std, mean + std]).clamp([])
+  return linearScale(val)
+}
 
 const TypeToPlot = {
   bubble: HeatBubblePlot,
   bar: BarPlot
+}
+
+const TypeToPlotOptions = {
+  bubble: {
+    colourFn: getColourLinear
+  },
+  bar: {}
 }
 
 const TypeToUnits = {
@@ -133,7 +149,8 @@ const directive = {
 
       idsToAdd.forEach(id => {
         const { label, type } = configuration[id]
-        const plot = new TypeToPlot[type]({ title: label })
+        const opts = assignIn({}, TypeToPlotOptions[type], { title: label })
+        const plot = new TypeToPlot[type](opts)
         $scope.explorer.addPlot(plot, { units: TypeToUnits[type], id })
       })
 
