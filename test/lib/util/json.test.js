@@ -42,16 +42,15 @@ const validateTestsValid = {
     },
     schemaUri: 'db/appears_in.json'
   },
-  'mutations.merge_relationship_resource_version': {
+  'db.version': {
     testJson: {
-      resource_uuid: '123',
       service: 'test-ned',
       language: 'en',
       yaml: '...',
       creation_date: new Date().toISOString(),
       creation_time: Date.now(),
     },
-    schemaUri: 'mutations/merge_relationship_resource_version.json'
+    schemaUri: 'db/version.json'
   },
   'api.management.create_resource.payload': {
     testJson: {
@@ -153,16 +152,14 @@ const validateTestsInvalid = {
       ['frequency', 'should be integer']
     ]
   },
-  'mutations.merge_relationship_resource_version': {
+  'db.version': {
     testJson: {
-      resource_uuid: 123,
       language: ['en'],
       foo: 'bar'
     },
-    schemaUri: 'mutations/merge_relationship_resource_version.json',
+    schemaUri: 'db/version.json',
     expectedErrors: [
       ['foo', 'unexpected additional property'],
-      ['resource_uuid', 'should be string'],
       ['service', 'missing required property'],
       ['language', 'should be string'],
       ['yaml', 'missing required property']

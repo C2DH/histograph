@@ -5,7 +5,7 @@ const YAML = require('yamljs')
 
 const {
   createResourcePayloadToEntityAndAppearanceList,
-  createResourcePayloadToMergeRelationshipResourceVersionList
+  createResourcePayloadToVersionList
 } = require('../../../../lib/logic/entity/converters')
 
 const validCreateResourcePayload = {
@@ -140,18 +140,16 @@ describe('createResourcePayloadToEntityAndAppearanceList', () => {
   })
 })
 
-describe('createResourcePayloadToMergeRelationshipResourceVersionList', () => {
+describe('createResourcePayloadToVersionList', () => {
   it('converts valid payload', () => {
-    const testResourceUuid = 'test123'
 
     const mergeEntitiesList = createResourcePayloadToEntityAndAppearanceList(
       validCreateResourcePayload
     )
 
-    const expectedMergeVersionsList = [
+    const expectedVersions = [
       {
         language: 'en',
-        resource_uuid: testResourceUuid,
         service: 'unknown',
         yaml: YAML.stringify([
           { id: mergeEntitiesList[0].uuid, context: { left: 0, right: 10 } },
@@ -161,15 +159,15 @@ describe('createResourcePayloadToMergeRelationshipResourceVersionList', () => {
       }
     ]
 
-    const mergeVersionsList = createResourcePayloadToMergeRelationshipResourceVersionList(
-      validCreateResourcePayload, mergeEntitiesList, testResourceUuid
+    const versions = createResourcePayloadToVersionList(
+      validCreateResourcePayload, mergeEntitiesList
     )
 
     const variableFields = ['creation_date', 'creation_time']
 
     assert.deepEqual(
-      mergeVersionsList.map(v => omit(v, variableFields)),
-      expectedMergeVersionsList
+      versions.map(v => omit(v, variableFields)),
+      expectedVersions
     )
   })
 })
