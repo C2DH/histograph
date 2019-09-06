@@ -1,5 +1,6 @@
 import {
-  isUndefined, assignIn, without
+  isUndefined, assignIn, without,
+  get, isNil
 } from 'lodash'
 import { withStyles, theme } from '../styles'
 
@@ -55,9 +56,11 @@ function controller($scope, $log, HgSettings) {
       .then(results => {
         if ($scope.busyCounter.indexOf(requestId) !== $scope.busyCounter.length - 1) return
 
-        $scope.resources.items = $scope.resources.items.concat(results.result.items)
+        const items = get(results, 'result.items', [get(results, 'result.item')]).filter(i => !isNil(i))
+
+        $scope.resources.items = $scope.resources.items.concat(items)
         $scope.resources.meta = {
-          totalResources: results.info.total_items
+          totalResources: get(results, 'info.total_items', items.length)
         }
       })
       .catch(e => {
@@ -73,11 +76,19 @@ function controller($scope, $log, HgSettings) {
     $scope.loadMoreResources()
   }, true)
 
+  $scope.hasImage = function (resource) {
+    const isImageType = get(resource, 'props.mimetype') === 'image' && !!get(resource, 'props.url')
+    const hasIiif = !!get(resource, 'props.iiif_url')
+
+    return isImageType || hasIiif;
+  }
+
   $scope.getImageUrl = function (resource) {
-    if (resource.props.iiif_url) {
-      return resource.props.iiif_url.replace(/info.json$/, 'full/pct:20/0/default.jpg');
+    const iiifUrl = get(resource, 'props.iiif_url')
+    if (iiifUrl) {
+      return iiifUrl.replace(/info.json$/, 'full/pct:20/0/default.jpg');
     }
-    return `${HgSettings.apiBaseUrl}/media/${resource.props.url}`;
+    return `${HgSettings.apiBaseUrl}/media/${get(resource, 'props.url')}`;
   }
 }
 

@@ -6,6 +6,32 @@ import {
 import moment from 'moment'
 import { withStyles, theme } from '../styles'
 
+const HelpTooltips = {
+  topicModellingScores: {
+    aggregationMethod: /* html */ `
+    <ul>
+      <li>
+        <b>MAX</b>
+        <p>
+          Circle size represents the highest score the topic reached
+          in one of the resources in the bin. It <b>does not</b> indicate how
+          often the topic has been covered in all the resources in the bin.
+        </p>
+      </li>
+      <li>
+        <b>MEAN</b>
+        <p>
+          Circle size represents the average score of the topic considering
+          all the resources in the bin. It roughly indicates how often the topic
+          has been covered in the bin but <b>does not</b> indicate the highest 
+          score the topic ever reached.
+        </p>
+      </li>
+    </ul>
+    `
+  }
+}
+
 const styles = {
   explorerGraph: {
     display: 'flex',
@@ -61,7 +87,7 @@ const styles = {
     flexGrow: 3,
     overflowY: 'scroll',
     margin: '1em 1em 0 1em',
-  }
+  },
 }
 
 function toQueryParameters(o = {}) {
@@ -82,11 +108,13 @@ const EmptyResourceResponse = {
 
 angular.module('histograph')
   .controller('ExplorerCtrl', function (
-    $scope, $log, $location,
+    $scope, $log, $location, $compile,
     ResourceFactory,
     ExplorerService
   ) {
     withStyles($scope, styles)
+
+    $scope.helpTooltips = HelpTooltips
 
     // NOTE: a workaround to disable ruler (see filters.js). Ugly but saves from refactoring.
     $scope.rulerDisabled = true
