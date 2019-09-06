@@ -882,3 +882,58 @@ RETURN e.uuid as uuid
 MATCH(e:entity:{:type})
 WHERE EXISTS(e.{:field_name})
 RETURN DISTINCT(e.{:field_name}) AS value
+
+
+// name: save_or_update_with_appearance
+// NOTE: preferred way to save/update an entity
+// Preparation params:
+//  * type - entity type (person, location, etc...)
+// Parameters:
+//  * resource_uuid - UUID of the resource (required)
+//  * entities_and_appearances - a list of objects: { entity, appearance } where 
+//                              'entity' is the entity and 'appearance' the `appears_in` relation. 
+//  * username - name of the user who created this (optional)
+WITH {username} AS username
+MATCH (res:resource {uuid:{resource_uuid}})
+WITH res, toString(datetime()) AS now_date, timestamp() / 1000 AS now_time, username
+UNWIND {entities_and_appearances} AS properties
+MERGE (ent:entity:{:type} {slug:properties.entity.slug})
+ON CREATE SET
+  ent += properties.entity,
+  ent.celebrity     = 0,
+  ent.score         = 0,
+  ent.status        = 1,
+  ent.df            = 1,
+  ent.creation_date = now_date,
+  ent.creation_time = now_time,
+  ent.last_modification_date = now_date,
+  ent.last_modification_time = now_time
+ON MATCH SET
+  ent.__existingUuid = ent.uuid,
+  ent += properties.entity,
+  ent.uuid = ent.__existingUuid,
+  ent.__existingUuid = null,
+  ent.last_modification_date = now_date,
+  ent.last_modification_time = now_time
+WITH ent, res, username, collect(username) AS upvote, now_date, now_time, properties
+MERGE (ent)-[r:appears_in]->(res)
+ON CREATE SET
+  r += properties.appearance,
+  r.created_by = username,
+  r.upvote = upvote,
+  r.celebrity = size(upvote),
+  r.scores = size(upvote),
+  r.creation_date = now_date,
+  r.creation_time = now_time,
+  r.last_modification_date = now_date,
+  r.last_modification_time = now_time
+ON MATCH SET
+  r += properties.appearance,
+  r.last_modification_date = now_date,
+  r.last_modification_time = now_time
+RETURN {
+  id: id(ent),
+  props: ent,
+  type: last(labels(ent)),
+  rel: r
+} as result

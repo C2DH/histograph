@@ -1367,3 +1367,36 @@ RETURN {
   startDate: r.start_date,
   mentions: 0
 } as res
+
+
+// name: save_or_update
+// NOTE: preferred method to modify resource.
+// Parameters:
+//  * resources - a list of resource properties that satisfy flattened `http://c2dh.uni.lu/histograph/db/resource.json`
+//  * username - a name of user to make 
+WITH {username} AS username, toString(datetime()) AS date_now, timestamp() / 1000 AS time_now
+UNWIND {resources} AS parameters 
+MERGE (res:resource {slug: parameters.slug})
+ON CREATE SET
+  res += parameters,
+  res.creation_date = date_now,
+  res.creation_time = time_now,
+  res.last_modification_date = date_now,
+  res.last_modification_time = time_now
+ON MATCH SET
+  res.__existingUuid = res.uuid,
+  res += parameters,
+  res.uuid = res.__existingUuid,
+  res.__existingUuid = null,
+  res.last_modification_date = date_now,
+  res.last_modification_time = time_now
+// Add user if provided
+WITH res, username
+OPTIONAL MATCH (u:user {username: username})
+WITH res, collect(u) as users, username
+FOREACH (user in users | MERGE (user)-[:curates]-(res))
+RETURN {
+  id: id(res),
+  props: res,
+  curated_by: username
+} as result

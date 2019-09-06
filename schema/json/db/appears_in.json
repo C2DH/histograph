@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://c2dh.uni.lu/histograph/db/appears_in.json",
+  "title": "Appears In",
+  "description": "'Appears In' relationship between Entity and Resource",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "frequency": {
+      "description": "How many times the entity is mentioned in the resource",
+      "type": "integer",
+      "examples": [
+        2
+      ]
+    },
+    "languages": {
+      "description": "ISO 639-1 codes of languages the entity is mentioned in",
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]{2}$"
+      }
+    },
+    "services": {
+      "description": "names of services used to extract the entity",
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_by": {
+      "description": "Username of the user who created this relationship",
+      "type": "string"
+    },
+    "upvote": {
+      "description": "List of usernames who upvoted this relationship",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "celebrity": {
+      "description": "'Celebrity' score",
+      "type": "integer"
+    },
+    "score": {
+      "description": "TODO: Some other score",
+      "type": "integer"
+    },
+    "creation_date": {
+      "description": "Resource creation ISO timestamp",
+      "type": "string",
+      "format": "date-time"
+    },
+    "creation_time": {
+      "description": "Resource creation UNIX time in milliseconds",
+      "type": "integer"
+    },
+    "last_modification_date": {
+      "description": "Resource modification ISO timestamp",
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_modification_time": {
+      "description": "Resource modification UNIX time in milliseconds",
+      "type": "integer"
+    }
+  },
+  "required": [
+  ]
+}

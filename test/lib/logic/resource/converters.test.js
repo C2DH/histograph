@@ -2,10 +2,10 @@
 const assert = require('assert')
 const { omit } = require('lodash')
 const {
-  createResourcePayloadToMergeResource
+  createResourcePayloadToResource
 } = require('../../../../lib/logic/resource/converters')
 
-describe('createResourcePayloadToMergeResource', () => {
+describe('createResourcePayloadToResource', () => {
   it('converts valid payload', () => {
     const validCreateResourcePayload = {
       resource: {
@@ -23,7 +23,7 @@ describe('createResourcePayloadToMergeResource', () => {
       }
     }
 
-    const expectedMergeResourceObject = {
+    const expectedResourceObject = {
       caption: validCreateResourcePayload.resource.caption,
       content: validCreateResourcePayload.resource.content,
       title: validCreateResourcePayload.resource.title,
@@ -42,10 +42,10 @@ describe('createResourcePayloadToMergeResource', () => {
       end_year: '2019',
     }
 
-    const variableFields = ['creation_date', 'creation_time', 'uuid']
+    const variableFields = ['uuid']
 
-    const mergeResourceObject = createResourcePayloadToMergeResource(validCreateResourcePayload)
-    assert.deepEqual(omit(mergeResourceObject, variableFields), expectedMergeResourceObject)
+    const resourceObject = createResourcePayloadToResource(validCreateResourcePayload)
+    assert.deepEqual(omit(resourceObject, variableFields), expectedResourceObject)
   })
 
   it('fails on invalid payload', () => {
@@ -66,7 +66,7 @@ describe('createResourcePayloadToMergeResource', () => {
     }
 
     try {
-      createResourcePayloadToMergeResource(invalidPayload)
+      createResourcePayloadToResource(invalidPayload)
       assert.fail('Expected to raise an error')
     } catch (e) {
       assert.equal(e.message, 'Some languages are not matched in title/caption/content: en, fr')
