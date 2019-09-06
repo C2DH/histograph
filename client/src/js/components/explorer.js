@@ -1,6 +1,15 @@
 import { difference, assignIn, get } from 'lodash'
 import { Explorer, HeatBubblePlot, BarPlot } from 'd3-explorer'
+import { interpolateRdYlGn } from 'd3-scale-chromatic'
+import { scaleSequential } from 'd3'
 import { withStyles } from '../styles'
+
+
+function getColourLinear({ val, mean, std }) {
+  const linearScale = scaleSequential(interpolateRdYlGn)
+    .domain([mean - std, mean + std]).clamp([])
+  return linearScale(val)
+}
 
 const TypeToPlot = {
   bubble: HeatBubblePlot,
@@ -9,18 +18,7 @@ const TypeToPlot = {
 
 const TypeToPlotOptions = {
   bubble: {
-    colours: {
-      overlay: {
-        selected: '#3333330f'
-      },
-      value: {
-        // outlierAbove: '#00ff33',
-        // outlierBelow: '#ff0000',
-        outlierAbove: '#eeee00',
-        outlierBelow: '#eeee00',
-        mean: '#eeee00'
-      }
-    }
+    colourFn: getColourLinear
   },
   bar: {}
 }
