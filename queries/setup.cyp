@@ -23,6 +23,10 @@ CREATE CONSTRAINT ON (res:resource) ASSERT res.uuid IS UNIQUE
 // name: create_constraint_entity_uuid
 CREATE CONSTRAINT ON (ent:entity) ASSERT ent.uuid IS UNIQUE
 
+CREATE CONSTRAINT ON (ent:location) ASSERT ent.slug IS UNIQUE
+CREATE CONSTRAINT ON (ent:organization) ASSERT ent.slug IS UNIQUE
+CREATE CONSTRAINT ON (ent:person) ASSERT ent.slug IS UNIQUE
+
 // name: create_constraint_action_uuid
 CREATE CONSTRAINT ON (act:action) ASSERT act.uuid IS UNIQUE
 
