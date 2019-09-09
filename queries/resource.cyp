@@ -135,8 +135,10 @@ WITH DISTINCT collect(id(r)) AS ids
 
 {if:from_uuid}
 // match from/to UUID boundaries
+// NOTE: if no path found - skip this constraint
 MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
-WITH DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)] as ids
+WITH collect(DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)]) AS ids
+WITH coalesce(ids[0], NULL) as ids
 {/if}
 
 MATCH (res:resource)
@@ -273,8 +275,10 @@ WITH DISTINCT collect(id(r)) AS ids
 
 {if:from_uuid}
 // match from/to UUID boundaries
+// NOTE: if no path found - skip this constraint
 MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
-WITH DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)] AS ids
+WITH collect(DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)]) AS ids
+WITH coalesce(ids[0], NULL) as ids
 {/if}
 
 MATCH (res:resource)
@@ -1047,8 +1051,10 @@ WITH DISTINCT collect(id(r)) AS ids
 
 {if:from_uuid}
 // match from/to UUID boundaries
+// NOTE: if no path found - skip this constraint
 MATCH p = shortestPath((b:resource { uuid: {from_uuid} })<-[:comes_after*]-(a:resource { uuid: {to_uuid} }))
-WITH DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)] as ids
+WITH collect(DISTINCT [r IN nodes(p) WHERE (ids IS NULL OR id(r) IN ids) | id(r)]) AS ids
+WITH coalesce(ids[0], NULL) as ids
 {/if}
 
 
