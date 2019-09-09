@@ -922,7 +922,7 @@ ON CREATE SET
   r.created_by = username,
   r.upvote = upvote,
   r.celebrity = size(upvote),
-  r.scores = size(upvote),
+  r.score = size(upvote),
   r.creation_date = now_date,
   r.creation_time = now_time,
   r.last_modification_date = now_date,
