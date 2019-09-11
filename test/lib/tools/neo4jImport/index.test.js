@@ -3,7 +3,8 @@ const assert = require('assert')
 const { omit } = require('lodash')
 const YAML = require('yamljs')
 const {
-  createResourcePayloadToEntitiesAndRelationships
+  createResourcePayloadToEntitiesAndRelationships,
+  createResourcePayloadListToEntitiesAndRelationships
 } = require('../../../../lib/tools/neo4jImport')
 
 const validPayload = {
@@ -248,5 +249,41 @@ describe('createResourcePayloadToEntitiesAndRelationships', () => {
     })
 
     assert.equal(result.entity[0].properties.uuid, 'abc123')
+  })
+})
+
+describe('createResourcePayloadListToEntitiesAndRelationships', () => {
+  it('creates entities from correct payload without start Ids', () => {
+    const variableFields = [
+      'creation_date',
+      'creation_time',
+      'last_modification_date',
+      'last_modification_time',
+      'uuid'
+    ].map(f => `properties.${f}`)
+
+    const {
+      results,
+      entityTypeAndSlugToIdMapping,
+      lastIds
+    } = createResourcePayloadListToEntitiesAndRelationships([validPayload])
+
+    const expectedResult = getExpectedResult(results.entity.map(e => e.properties.uuid))
+    const testFields = ['resource', 'entity', 'appears_in', 'version', 'describes']
+
+    testFields.forEach(k => {
+      assert.deepEqual(results[k].map(v => omit(v, variableFields)), expectedResult[k])
+    })
+
+    assert.deepEqual(entityTypeAndSlugToIdMapping, {
+      'location:foo-luxembourg': 1,
+      'person:bar-luxembourg': 2,
+    })
+
+    assert.deepEqual(lastIds, {
+      entity: 2,
+      resource: 1,
+      version: 1
+    })
   })
 })
