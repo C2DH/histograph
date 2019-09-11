@@ -147,6 +147,22 @@
       "description": "Google geocoding ISO 3166-1 alpha 2 code of the country of the entity if 'type' is 'location'",
       "type": "string"
     },
+    "celebrity": {
+      "description": "'Celebrity' score. TODO: Investigate and add better explanation",
+      "type": "number"
+    },
+    "score": {
+      "description": "Score. TODO: Investigate and add better explanation",
+      "type": "number"
+    },
+    "df": {
+      "description": "Has something to do with TF-IDF calculation. TODO: Investigate and explain.",
+      "type": "number"
+    },
+    "status": {
+      "description": "Looks like a flag that indicates that the score is not negative. Used in queries. TODO: Investigate and explain.",
+      "type": "number"
+    },
     "creation_date": {
       "description": "Resource creation ISO timestamp",
       "type": "string",
