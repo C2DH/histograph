@@ -5,7 +5,7 @@ const YAML = require('yamljs')
 const {
   createResourcePayloadToEntitiesAndRelationships,
   createResourcePayloadListToEntitiesAndRelationships
-} = require('../../../../lib/tools/neo4jImport')
+} = require('../../../../lib/tools/neo4jImport/converters')
 
 const validPayload = {
   resource: {
@@ -118,7 +118,7 @@ const getExpectedResult = (
     {
       startId: entityStartId + 1,
       endId: resourceStartId + 1,
-      labels: ['appears_in'],
+      type: 'appears_in',
       properties: {
         celebrity: 0,
         frequency: 2,
@@ -130,7 +130,7 @@ const getExpectedResult = (
     {
       startId: entityStartId + 2,
       endId: resourceStartId + 1,
-      labels: ['appears_in'],
+      type: 'appears_in',
       properties: {
         celebrity: 0,
         frequency: 1,
@@ -159,7 +159,7 @@ const getExpectedResult = (
     {
       startId: versionStartId + 1,
       endId: resourceStartId + 1,
-      labels: ['describes'],
+      type: 'describes',
       properties: {}
     }
   ]
