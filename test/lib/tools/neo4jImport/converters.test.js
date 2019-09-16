@@ -14,7 +14,7 @@ const validPayload = {
     end_date: '2019-01-01T23:59:59Z',
     slug: 'about-foo',
     title: {
-      en: 'Foo Belval'
+      en: 'Foo, Belval'
     },
     caption: {
       en: 'A test page about Foo'
@@ -68,6 +68,7 @@ const getExpectedResult = (
     {
       id: resourceStartId + 1,
       labels: ['resource'],
+      spaces: { id: 'resource' },
       properties: {
         type: 'external-text',
         start_date: '2019-01-01T00:00:00Z',
@@ -81,8 +82,8 @@ const getExpectedResult = (
         languages: ['en'],
         mimetype: 'text/plain',
         slug: 'about-foo',
-        name: 'Foo Belval',
-        title_en: 'Foo Belval',
+        name: 'Foo, Belval',
+        title_en: 'Foo, Belval',
         caption_en: 'A test page about Foo',
         content_en: 'Content of a test page about Foo.'
       }
@@ -92,6 +93,7 @@ const getExpectedResult = (
     {
       id: entityStartId + 1,
       labels: ['entity', 'location'],
+      spaces: { id: 'entity' },
       properties: {
         name: 'Foo, Luxembourg',
         slug: 'foo-luxembourg',
@@ -104,6 +106,7 @@ const getExpectedResult = (
     {
       id: entityStartId + 2,
       labels: ['entity', 'person'],
+      spaces: { id: 'entity' },
       properties: {
         name: 'Bar, Luxembourg',
         slug: 'bar-luxembourg',
@@ -119,6 +122,7 @@ const getExpectedResult = (
       startId: entityStartId + 1,
       endId: resourceStartId + 1,
       type: 'appears_in',
+      spaces: { startId: 'entity', endId: 'resource' },
       properties: {
         celebrity: 0,
         frequency: 2,
@@ -130,6 +134,7 @@ const getExpectedResult = (
     {
       startId: entityStartId + 2,
       endId: resourceStartId + 1,
+      spaces: { startId: 'entity', endId: 'resource' },
       type: 'appears_in',
       properties: {
         celebrity: 0,
@@ -144,6 +149,7 @@ const getExpectedResult = (
     {
       id: versionStartId + 1,
       labels: ['version', 'annotation'],
+      spaces: { id: 'version' },
       properties: {
         language: 'en',
         service: 'unknown',
@@ -159,6 +165,7 @@ const getExpectedResult = (
     {
       startId: versionStartId + 1,
       endId: resourceStartId + 1,
+      spaces: { startId: 'version', endId: 'resource' },
       type: 'describes',
       properties: {}
     }
@@ -287,3 +294,5 @@ describe('createResourcePayloadListToEntitiesAndRelationships', () => {
     })
   })
 })
+
+module.exports = { validPayload }
