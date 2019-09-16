@@ -19,7 +19,7 @@ describe('CsvService', () => {
 
     assert.equal(csvLines.length, resources.length)
 
-    const stringRegex = '1,resource,about-foo,[^,]+,"Foo, Belval",text/plain,en,1546300800,2019-01-01T00:00:00Z,201901,2019,1546387199,2019-01-01T23:59:59Z,201901,2019,"Foo, Belval",A test page about Foo,Content of a test page about Foo.,external-text,[^,]+,[^,]+,[^,]+,[^,]+'
+    const stringRegex = '1,resource,about-foo,[^,]+,"Foo, Belval",text/plain,en,1546300800,2019-01-01T00:00:00Z,201901,2019,1546387199,2019-01-01T23:59:59Z,201901,2019,"Foo, Belval",A test page about Foo,Content of a test page \\\\n about Foo.,external-text,[^,]+,[^,]+,[^,]+,[^,]+'
     assert.ok(csvLines[0].match(stringRegex), `"${csvLines[0]}" does not match "${stringRegex}"`)
 
     const expectedHeader = ':ID(resource),:LABEL,slug:string,uuid:string,name:string,mimetype:string,languages:string[],start_time:int,start_date:string,start_month:float,start_year:float,end_time:int,end_date:string,end_month:float,end_year:float,title_en:string,caption_en:string,content_en:string,type:string,creation_date:string,creation_time:int,last_modification_date:string,last_modification_time:int'

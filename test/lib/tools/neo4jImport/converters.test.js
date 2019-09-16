@@ -20,7 +20,7 @@ const validPayload = {
       en: 'A test page about Foo'
     },
     content: {
-      en: 'Content of a test page about Foo.'
+      en: 'Content of a test page \n about Foo.'
     }
   },
   entities: [
@@ -85,7 +85,7 @@ const getExpectedResult = (
         name: 'Foo, Belval',
         title_en: 'Foo, Belval',
         caption_en: 'A test page about Foo',
-        content_en: 'Content of a test page about Foo.'
+        content_en: 'Content of a test page \n about Foo.'
       }
     }
   ],
@@ -283,8 +283,8 @@ describe('createResourcePayloadListToEntitiesAndRelationships', () => {
     })
 
     assert.deepEqual(entityTypeAndSlugToIdMapping, {
-      'location:foo-luxembourg': 1,
-      'person:bar-luxembourg': 2,
+      'location:foo-luxembourg': [1, results.entity[0].properties.uuid],
+      'person:bar-luxembourg': [2, results.entity[1].properties.uuid],
     })
 
     assert.deepEqual(lastIds, {
