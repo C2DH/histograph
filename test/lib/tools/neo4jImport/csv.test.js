@@ -1,6 +1,8 @@
 /* eslint-env mocha */
 const assert = require('assert')
 const { zip } = require('lodash')
+const generateCsv = require('csv-stringify/lib/sync')
+
 const {
   CsvService
 } = require('../../../../lib/tools/neo4jImport/csv')
@@ -19,8 +21,9 @@ describe('CsvService', () => {
 
     assert.equal(csvLines.length, resources.length)
 
-    const stringRegex = '1,resource,about-foo,[^,]+,"Foo, Belval",text/plain,en,1546300800,2019-01-01T00:00:00Z,201901,2019,1546387199,2019-01-01T23:59:59Z,201901,2019,"Foo, Belval",A test page about Foo,Content of a test page \\\\n about Foo.,external-text,[^,]+,[^,]+,[^,]+,[^,]+'
-    assert.ok(csvLines[0].match(stringRegex), `"${csvLines[0]}" does not match "${stringRegex}"`)
+    const row = generateCsv([csvLines[0]])
+    const stringRegex = '1,resource,about-foo,[^,]+,"Foo, Belval",text/plain,en,1546300800,2019-01-01T00:00:00Z,201901,2019,1546387199,2019-01-01T23:59:59Z,201901,2019,"Foo, Belval",A test page about Foo,"Content of a test page \n about Foo.",external-text,[^,]+,[^,]+,[^,]+,[^,]+'
+    assert.ok(row.match(stringRegex), `"${row}" does not match "${stringRegex}"`)
 
     const expectedHeader = ':ID(resource),:LABEL,slug:string,uuid:string,name:string,mimetype:string,languages:string[],start_time:int,start_date:string,start_month:float,start_year:float,end_time:int,end_date:string,end_month:float,end_year:float,title_en:string,caption_en:string,content_en:string,type:string,creation_date:string,creation_time:int,last_modification_date:string,last_modification_time:int'
     assert.equal(csvHeader, expectedHeader)
@@ -41,7 +44,8 @@ describe('CsvService', () => {
     ]
     zip(csvLines, expectedStringRegexes)
       .forEach(([s, regex]) => {
-        assert.ok(s.match(regex), `"${s}" does not match "${regex}"`)
+        const row = generateCsv([s])
+        assert.ok(row.match(regex), `"${row}" does not match "${regex}"`)
       })
 
     const expectedHeader = ':START_ID(entity),:END_ID(resource),:TYPE,frequency:int,languages:string[],upvote:string[],celebrity:int,score:int,creation_date:string,creation_time:int,last_modification_date:string,last_modification_time:int'
@@ -54,12 +58,12 @@ describe('CsvService', () => {
     const csvService = new CsvService('http://c2dh.uni.lu/histograph/db/resource.json')
     const csvLines = resources.map(r => csvService.serializeItem(r))
 
-    const parsedItems = csvLines.map(l => csvService.parseLine(l))
+    const parsedItems = csvLines.map(l => csvService.parseRow(l))
     assert.deepEqual(parsedItems, resources)
   })
 
   it('parses header', () => {
-    const header = ':ID(resource),:LABEL,slug:string,uuid:string,name:string,mimetype:string,languages:string[]'
+    const header = ':ID(resource),:LABEL,slug:string,uuid:string,name:string,mimetype:string,languages:string[]'.split(',')
     const csvService = new CsvService('http://c2dh.uni.lu/histograph/db/resource.json', header)
     assert.deepEqual(csvService.rules, [
       [undefined, 'ID', 'resource'],
