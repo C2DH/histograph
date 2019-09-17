@@ -10,7 +10,7 @@ RETURN {
   type: 'resource'
 } AS result
 UNION
-CALL db.index.fulltext.queryNodes('full_text_index', {entity_query})
+CALL db.index.fulltext.queryNodes('name', {entity_query})
 YIELD node as n
 WITH n
 MATCH (n)-[r:appears_in]->()
@@ -289,7 +289,7 @@ RETURN {
   count_items: count(res)
 } as g
 UNION
-CALL db.index.fulltext.queryNodes('full_text_index', {entity_query})
+CALL db.index.fulltext.queryNodes('name', {entity_query})
 YIELD node as ent
 WITH ent
 RETURN {
@@ -437,7 +437,7 @@ LIMIT {limit}
 
 // name: get_matching_entities_graph
 // e.g. START m=node:node_auto_index('full_search:*goerens*')
-CALL db.index.fulltext.queryNodes('full_text_index', {query})
+CALL db.index.fulltext.queryNodes('name', {query})
 YIELD node as m
 WHERE last(labels(m)) = {entity}
 MATCH (m)-[r:appears_in]->(ent)
