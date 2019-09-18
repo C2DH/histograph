@@ -4,7 +4,6 @@
 const { isFunction } = require('lodash')
 
 var fs       = require('fs'),
-    shortid  = require('shortid'),
     path     = require('path'),
     async    = require('async'),
     crypto   = require('crypto'),
@@ -22,6 +21,9 @@ var fs       = require('fs'),
     IS_WRONG_TYPE = 'is_wrong_type',
 
     neo4j      = require('seraph')(settings.neo4j.host);
+
+const { slugify, generateUuid } = require('./lib/util/text')
+const { reconcileDate, getMonths } = require('./lib/util/date')
 
 module.exports = {
   IS_EMPTY: IS_EMPTY,
@@ -534,21 +536,7 @@ module.exports = {
       return text; 
     },
     
-    slugify:function(text) {
-      var from = 'àáäâèéëêìíïîòóöôùúüûñç',
-          to   = 'aaaaeeeeiiiioooouuuunc',
-          text = text.toLowerCase();
-          
-      for (var i=0, l=from.length ; i<l ; i++) {
-        text = text.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
-      }
-      
-      return text.toLowerCase()
-        .replace(/[^a-z0-9]/g, '-')
-        .replace(/-{1,}/g,'-')
-        .replace(/-$/,'')
-        .replace(/^-/, '');
-    },
+    slugify,
     /*
       Transform spaces in undescore a url in a wiki url
       accordiong to http://en.wikipedia.org/wiki/Wikipedia:Page_name#Spaces.2C_underscores_and_character_coding
@@ -890,9 +878,7 @@ module.exports = {
     return result;
   },
 
-  uuid: function(){
-    return shortid.generate();
-  },
+  uuid: generateUuid,
 
   /*
     Return fromNow for a specific datetime in X format
@@ -901,36 +887,8 @@ module.exports = {
     return moment.utc(seconds*1000).fromNow()
 
   },
-  
-  /*
-    Transform a date in the current db format and return a dict of date and time
-    @date   - string e.g "1921-11-27"
-    @format - the parser e.g "MM-DD-YYYY"
-    @next [optional] - callback. if it is not provided, send back the result.
-  */
-  reconcileDate: function(date, format, next) {
-    var d = moment.utc(date, format),
-        result = {
-          date: d.format(),
-          time: +d.format('X')
-        };
-    if(next)
-      next(null, result);
-    else
-      return result;
-  },
-  /*
-    Get months for timeline.
-    @Return a dictionary of strings
-  */
-  getMonths: function(start_time, end_time, next){
-    return {
-      start_month: moment.utc(start_time, 'X').format('YYYYMM'),
-      end_month:   moment.utc(end_time, 'X').format('YYYYMM'),
-      start_year:  moment.utc(start_time, 'X').format('YYYY'),
-      end_year:    moment.utc(end_time, 'X').format('YYYY')
-    }
-  },
+  reconcileDate,
+  getMonths,
   /*
     options.start_date and options.start_time according to options.format.
     Cfr moment documentation.
