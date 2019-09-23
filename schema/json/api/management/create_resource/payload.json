@@ -112,7 +112,7 @@
     },
     "entitiesLocations": {
       "type": "array",
-      "description": "Locations of entities in text.",
+      "description": "Locations of entities in text. Locations are calculated based on text which is formed from title, caption and content in the following way: '<title>__<caption>__<content>' where '__' is a two character separator.",
       "additionalProperties": false,
       "items": {
         "type": "object",
@@ -129,11 +129,11 @@
           },
           "leftOffset": {
             "type": "integer",
-            "description": "Left offset"
+            "description": "Left offset. This is the index of the first character of the entity."
           },
           "rightOffset": {
             "type": "integer",
-            "description": "Right offset"
+            "description": "Right offset. This is the index of the next character after the last character of the entity. (same as in JavaScript String#slice)"
           }
         },
         "required": [
