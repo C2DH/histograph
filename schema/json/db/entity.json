@@ -10,7 +10,7 @@
       "description": "Unique textual identifier of the entity. Must not contain spaces.",
       "type": "string",
       "pattern": "^[^\\s]+$",
-      "maxLength": 128,
+      "maxLength": 256,
       "examples": [
         "a-tale-of-two-rivers"
       ]
