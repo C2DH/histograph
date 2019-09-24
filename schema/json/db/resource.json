@@ -10,6 +10,7 @@
       "description": "Unique textual identifier of the resource. Must not contain spaces.",
       "type": "string",
       "pattern": "^[^\\s]+$",
+      "maxLength": 128,
       "examples": [
         "a-tale-of-two-rivers"
       ]
