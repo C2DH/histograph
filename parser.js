@@ -159,7 +159,7 @@ module.exports = {
     var options = options || {},
         splitpoints = [], // sorted left and right points in order to segment content. 
         chunks = []; // the annotation chunks to be enriched.
-    
+
     // sort points by context.left ASC, context.right ASC
     points = _.sortBy(points, function(d){
       return d.context.left + d.context.right

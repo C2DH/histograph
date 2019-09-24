@@ -135,7 +135,7 @@ describe('createResourcePayloadToEntityAndAppearanceList', () => {
       createResourcePayloadToEntityAndAppearanceList(invalidPayload)
       assert.fail('Expected to raise an error')
     } catch (e) {
-      assert.equal(e.message, 'JSON validation errors: data.entitiesLocations[0] should have required property \'entityIndex\'')
+      assert.equal(e.message, 'JSON validation errors: "entitiesLocations[0].entityIndex": missing required property')
     }
   })
 })

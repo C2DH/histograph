@@ -10,6 +10,7 @@
       "description": "Unique textual identifier of the resource. Must not contain spaces.",
       "type": "string",
       "pattern": "^[^\\s]+$",
+      "maxLength": 256,
       "examples": [
         "a-tale-of-two-rivers"
       ]
@@ -57,13 +58,17 @@
     },
     "start_month": {
       "description": "Start Year and month of the validity of the document in 'YYYYMM' format where MM is a 01 based month",
-      "type": "string",
-      "pattern": "^[0-9]{4}[01][0-9]$"
+      "type": "number",
+      "examples": [
+        201803
+      ]
     },
     "start_year": {
       "description": "Start Year of the validity of the document in 'YYYY' format",
-      "type": "string",
-      "pattern": "^[0-9]{4}$"
+      "type": "number",
+      "examples": [
+        2018
+      ]
     },
     "end_time": {
       "description": "End UNIX time of the validity of the document in milliseconds",
@@ -76,13 +81,17 @@
     },
     "end_month": {
       "description": "End Year and month of the validity of the document in 'YYYYMM' format where MM is a 01 based month",
-      "type": "string",
-      "pattern": "^[0-9]{4}[01][0-9]$"
+      "type": "number",
+      "examples": [
+        201803
+      ]
     },
     "end_year": {
       "description": "End Year of the validity of the document in 'YYYY' format",
-      "type": "string",
-      "pattern": "^[0-9]{4}$"
+      "type": "number",
+      "examples": [
+        2018
+      ]
     },
     "url": {
       "description": "Location of the content of the resource for every language. Usually this is a full path to the resource file on the filesystem. Not used for textual resources anymore. Text content is not in the 'content' field.",

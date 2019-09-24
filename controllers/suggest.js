@@ -356,7 +356,7 @@ module.exports =  function(io){
         entity_query: entity_query,
         limit: form.params.limit,
         language: form.params.language,
-        resource_index: `resource_text_index_${language}`
+        resource_index: `text_${language}`
       }, function (err, items) {
         if (err) {
           
@@ -399,7 +399,7 @@ module.exports =  function(io){
       neo4j.query(queries.count, {
         resource_query: resource_query,
         entity_query: entity_query,
-        resource_index: `resource_text_index_${language}`
+        resource_index: `text_${language}`
         
       }, function (err, groups) {
         if (err) {
@@ -426,7 +426,7 @@ module.exports =  function(io){
             limit: 20,
             offset: 0,
             entity: 'person',
-            resource_index: 'full_text_index'
+            resource_index: 'name'
           }, {
             fields: [
               // validator.SPECIALS.entity
@@ -463,7 +463,7 @@ module.exports =  function(io){
       var form = validator.request(req, {
             limit: 20,
             offset: 0,
-            resource_index: `resource_text_index_${language}`
+            resource_index: `text_${language}`
           }, {
             
           });
@@ -498,7 +498,7 @@ module.exports =  function(io){
             limit: 20,
             offset: 0,
             query: '',
-            resource_index: `resource_text_index_${language}`
+            resource_index: `text_${language}`
           });
 
       if(!form.isValid)
