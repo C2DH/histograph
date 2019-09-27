@@ -19,7 +19,7 @@ angular.module('histograph')
     VisualizationFactory, EntityExtraFactory, EntityRelatedExtraFactory,
     localStorageService, EntityRelatedFactory, EVENTS, VIZ, MESSAGES,
     ORDER_BY, SETTINGS, UserFactory, OptionalFeaturesService, $window,
-    HgSettings, ResourceVizFactory) {
+    HgSettings, ResourceVizFactory, AuthService) {
     $scope.apiBaseUrl = HgSettings.apiBaseUrl
 
     $log.log('CoreCtrl ready', $location);
@@ -121,7 +121,7 @@ angular.module('histograph')
     $scope.setQuery = function (item) {
       $scope.freeze = 'sigma';
       $log.log('CoreCtrl > setQuery', arguments);
-      if (typeof item === 'string') location = `/#/search/${$scope.query}`;
+      if (typeof item === 'string') location = `/search/${$scope.query}`;
       else if (item.type == 'resource') $location.path(`r/${item.id}`);
       else if (item.type == 'person') $location.path(`e/${item.id}`);
       else $location.path(`search/${$scope.query}`);
@@ -506,6 +506,7 @@ angular.module('histograph')
 
 
     $scope.$on(EVENTS.USER_NOT_AUTHENTIFIED, function (e) {
+      AuthService.renewTokens()
       if ($scope.user.id) {
         // inform the user that it has to authentify ag
         $scope.setMessage('authentification troubles');
@@ -660,7 +661,7 @@ angular.module('histograph')
       // Otherwise check the current state
 
       if ($scope.currentState.name == 'neighbors.resources') {
-        $log.log(`    redirect to: /#/neighbors/${$scope.playlistIds.join(',')}`);
+        $log.log(`    redirect to: /neighbors/${$scope.playlistIds.join(',')}`);
         $location.path(`/neighbors/${$scope.playlistIds.join(',')}`);
       }
     };
@@ -1147,20 +1148,24 @@ angular.module('histograph')
       $scope.isAnnotating = false;
     })
 
-    $scope.lock('auth');
-    UserFactory
-      .get({ method: 'session' }).$promise
-      .then(function (response) {
-        $scope.user = _.get(response, 'result.item', {});
-        $log.log('Auth successful', $scope.user)
-        $scope.unlock('auth');
-      })
-      .catch(function (error) {
-        $log.error(`Could not fetch user details because: ${error.message}`);
-        $scope.user = { is_authenticated: false };
-        $scope.forceUnlock();
-        $scope.isLoading = false;
-      });
+    function fetchUser() {
+      console.log('***YYY', $scope.user)
+      if ($scope.user && $scope.user.is_authenticated) return
+      UserFactory
+        .get({ method: 'session' }).$promise
+        .then(function (response) {
+          $scope.user = _.get(response, 'result.item', {});
+          $log.log('Auth successful', $scope.user)
+        })
+        .catch(function (error) {
+          $log.error(`Could not fetch user details because: ${error.message}`)
+          $scope.user = { is_authenticated: false }
+          $scope.isLoading = false
+        });
+    }
+
+    $scope.$on('authenticated', fetchUser)
+    fetchUser()
 
     /*
       Loading background (contextual) timeline.

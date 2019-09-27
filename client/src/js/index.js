@@ -45,12 +45,22 @@ require('./lib/angular-masonry.min')
 require('angular-tour/dist/angular-tour')
 require('angular-tour/dist/angular-tour-tpls')
 
+window.auth0 = require('auth0-js')
+require('angular-auth0')
+require('angular-jwt')
 
 window.io = io(window.__hg_settings.apiBaseUrl)
 
 const app = require('./app.js')
 
-app.factory('HgSettings', () => window.__hg_settings)
+app.provider('HgSettings', function settingsProvider() {
+  this.getWhitelistedDomains = () => {
+    const url = window.document.createElement('a')
+    url.href = window.__hg_settings.apiBaseUrl
+    return [url.host, url.hostname]
+  }
+  this.$get = () => window.__hg_settings
+})
 
 require('./constant.js')
 require('./filters.js')
@@ -79,6 +89,7 @@ require('./components/explorerFilter.js')
 require('./components/textItemsFilter.js')
 require('./components/resources-panel.js')
 require('./components/slider-value-filter.js')
+require('./components/auth.js')
 
 require('./controllers/core.js')
 require('./controllers/filters.js')
@@ -101,6 +112,7 @@ require('./controllers/search.js')
 require('./controllers/user.js')
 require('./controllers/explorer.js')
 require('./controllers/topicResources.js')
+require('./controllers/loginCallback.js')
 
 // modal controllers. templates in templates/modal
 require('./controllers/modals/contribute.js')
@@ -131,7 +143,12 @@ require('../css/style.css')
 require('leaflet/dist/leaflet.css')
 require('../css/base.css')
 
-app.run(function ($log) {
+app.run(function ($log, AuthService) {
+  if (AuthService.isAuthenticated()) {
+    AuthService.renewTokens();
+  } else {
+    AuthService.handleAuthentication();
+  }
   $log.log('hg running...')
 })
 

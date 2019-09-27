@@ -15,7 +15,7 @@
   </div>   
   <div class="meta"><span class='type sans-serif' translate='resource.type.{{relatedItem.props.type}}'></span> {{$index + 1}} of {{totalItems}}</div>
   <h4>
-    <a href='#/r/{{relatedItem.id}}'>
+    <a href='/r/{{relatedItem.id}}'>
       <span lookup context='relatedItem' field='title' language='language'></span>
     </a>
    
@@ -44,7 +44,7 @@
   </div>
            
   <div class='img-wrapper' ng-if='hasImage(relatedItem)'>
-    <a ng-href='/#/r/{{relatedItem.id}}'>
+    <a ng-href='/r/{{relatedItem.id}}'>
       <div class="img"  style='background-image: url({{ getImageUrl(relatedItem) }})'></div>
     </a>
   </div>

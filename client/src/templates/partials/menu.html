@@ -1,0 +1,93 @@
+<header class="{{queueStatus}}">
+  <div class="row" ng-cloak="ng-cloak">
+    <div class="col-sm-12">
+
+      <div class="navbar-header">
+        <a class="serif" href="/">
+          <span>Histograph</span>
+        </a>
+      </div>
+
+      <ul class="menu nav navbar-nav navbar-right">
+        <li class='{{currentState.name == "explore.resources"?"active":""}}'>
+          <a href="/?{{qs}}">
+            <span id="tip1">gallery</span>
+          </a>
+        </li>
+        <li class='{{currentState.name == "explore.persons"?"active":""}}'>
+          <a ng-href="/projection/person/person?{{qs}}">
+            <span id="tip2">graph</span>
+          </a>
+        </li>
+        <li class='{{currentState.name == "explore.persons"?"active":""}}'
+          ng-if="optionalFeatures.topicModellingTimeline.enabled">
+          <a ng-href="/explorer?{{qs}}">
+            <span id="tip2">Bucket of Explorables</span>
+          </a>
+        </li>
+        <li>
+          <a class="with-number" ng-click="toggleQueue()" uib-tooltip="pinboard" tooltip-placement="bottom">
+            my pinboard
+            <div class="number animated lite">{{playlist.length}}
+            </div>
+          </a>
+        </li>
+        <li>
+          <a href="/u/{{user.id}}">my bookmarks</a>
+        </li>
+        <li id="tip-notification" ng-controller="PulseController">
+          <span uib-dropdown="uib-dropdown" on-toggle="toggle(open)">
+            <a class="with-number" href="/" uib-dropdown-toggle="uib-dropdown-toggle">
+              <i class="fa fa-flash"></i>
+              <div class="number animated" ng-if="pulsations &gt; 0">{{pulsations}}</div>
+            </a>
+            <ul class="uib-dropdown-menu dropdown-menu">
+              <li>
+                <a href="#" ng-if="syncing">loading...</a>
+              </li>
+              <li ng-repeat="relatedItem in notifications" ng-include="'templates/partials/action-lite.html'">
+              </li>
+              <li>
+                <a href="/noise" ng-if="!syncing" translate="header.activities"> </a>
+              </li>
+            </ul>
+          </span>
+        </li>
+        <li
+          class="{{currentState.name === 'search.resources' || currentState.name === 'search.persons' ? 'active' : ''}}">
+          <div>
+            <form id="search-field" ng-submit="setQuery(query)">
+              <input class="form-control" type="text" name="test" ng-model="__query"
+                typeahead-on-select="setQuery($item, $model, $label)" typeahead-editable="false" placeholder="search"
+                typeahead="item for items in suggest($viewValue)" typeahead-wait-ms="100"
+                typeahead-template-url="templates/partials/helpers/suggest.html" />
+            </form>
+          </div>
+        </li>
+        <li id="tip-user">
+          <span uib-dropdown="">
+            <a uib-dropdown-toggle="uib-dropdown-toggle">
+              <img ng-src="{{user.picture}}" />
+              <span>{{user.username}}</span>
+            </a>
+            <ul class="uib-dropdown-menu dropdown-menu">
+              <li>
+                <a style="cursor:pointer" ng-click="startGuidedTour()">start guided tour!</a>
+              </li>
+              <li>
+                <span>API Key&nbsp;</span>
+                <input value="{{user.apiKey}}" onclick="event.stopPropagation();" />
+              </li>
+              <li>
+                <a href="/u/adoH5fZmc">favourites</a>
+              </li>
+              <li>
+                <a href="/logout">logout</a>
+              </li>
+            </ul>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>

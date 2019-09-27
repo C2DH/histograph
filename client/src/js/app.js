@@ -43,7 +43,9 @@ module.exports = angular
     'perfect_scrollbar',
     'LocalStorageModule',
     'masonry',
-    'angular-tour'
+    'angular-tour',
+    'auth0.auth0',
+    'angular-jwt'
   ])
   .constant('LOCALES', {
     locales: {
@@ -1264,8 +1266,13 @@ module.exports = angular
         templateUrl: 'templates/partials/entities.html',
         controller: 'SearchEntitiesCtrl',
       })
+      .state('login_callback', {
+        url: '/login_callback',
+        templateUrl: 'templates/login-callback.html',
+        controller: 'LoginCallbackCtrl'
+      })
   })
-  .config(function ($httpProvider) {
+  .config(function ($httpProvider, jwtOptionsProvider, HgSettingsProvider) {
     // eslint-disable-next-line no-param-reassign
     $httpProvider.defaults.withCredentials = true
 
@@ -1277,14 +1284,41 @@ module.exports = angular
         //   return response
         // },
         responseError: function (rejection) {
-          if (rejection.status === 403) {
+          if (rejection.status === 403 || rejection.status === 401 || rejection.status === -1) {
             $rootScope.$broadcast(EVENTS.USER_NOT_AUTHENTIFIED);
-            $log.error('redirecting, authorization problems');
-            // location.reload(true);
+            const msg = rejection.status === -1
+              ? 'API server is offline'
+              : `Could not authenticate you: ${rejection.message}`
+            $log.error(msg);
           }
           return $q.reject(rejection);
         }
       };
+    });
+
+    jwtOptionsProvider.config({
+      tokenGetter: function getter(AuthService) {
+        return AuthService.getAccessToken();
+      },
+      whiteListedDomains: HgSettingsProvider.getWhitelistedDomains()
+    });
+
+    $httpProvider.interceptors.push('jwtInterceptor');
+  })
+  .config(function (angularAuth0Provider) {
+    angularAuth0Provider.init({
+      clientID: 'NWCCYK4xdmDjtHRU7gtXm4RJ76MJKn8s',
+      domain: 'c2dh.eu.auth0.com',
+      responseType: 'token id_token',
+      scope: 'openid profile read:messages',
+      audience: 'c2dh-histograph',
+      redirectUri: `${window.location.origin}/login-callback`
+    });
+  })
+  .config(function ($locationProvider) {
+    $locationProvider.html5Mode({
+      enabled: true,
+      requireBase: false
     });
   })
   .config(function ($provide) {

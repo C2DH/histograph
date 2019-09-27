@@ -8,7 +8,7 @@
         <img ng-src="{{inquiry.proposed_by.picture}}">
       </div>
     </div> -->
-    <div class="author"> by <a ng-href="/#/u/{{inquiry.proposed_by.username}}">{{inquiry.proposed_by.username}}</a> — {{inquiry.props.creation_date | date : 'longDate'}}, <b>{{inquiry.answers}} </b> answers
+    <div class="author"> by <a ng-href="/u/{{inquiry.proposed_by.username}}">{{inquiry.proposed_by.username}}</a> — {{inquiry.props.creation_date | date : 'longDate'}}, <b>{{inquiry.answers}} </b> answers
     </div>
     
     <div class="content" ng-bind-html="inquiry.props.description | marked"></div>

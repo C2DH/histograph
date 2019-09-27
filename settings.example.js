@@ -230,24 +230,6 @@ module.exports = {
   // },
   
   /*
-    Twitter Authentication method (with node passport)
-    if you wish to authenticate people with their twitter account
-  */ 
-  twitter: {
-    consumer_key: 'XWY',
-    consumer_secret: 'XxYyZz'
-  },
-  
-  /*
-    Google+ Authentication method (with node passport)
-    if you wish to authenticate people with their google account
-  */ 
-  google: { 
-    clientId: "xzy.apps.googleusercontent.com",
-    clientSecret: "xxx000"
-  },
-  
-  /*
     Refine here the task that would be available through node scripts/manage.js task manager.
   */ 
    availableTasks: {

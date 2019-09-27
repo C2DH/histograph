@@ -7,19 +7,19 @@
 </div> -->
   <div class="type">inquiry</div>
   <h4>
-    <a ng-href="#/r/{{item.id}}/inq/{{relatedItem.id}}" ng-bind-html="relatedItem.props.name | marked"></a>
+    <a ng-href="/r/{{item.id}}/inq/{{relatedItem.id}}" ng-bind-html="relatedItem.props.name | marked"></a>
   </h4>
   
-  <div class="author"> by <a ng-href="/#/u/{{inquiry.proposed_by.username}}">{{relatedItem.proposed_by.username}}</a> — {{relatedItem.props.creation_date | date : 'longDate'}}, <b>{{relatedItem.answers}} </b> answers
+  <div class="author"> by <a ng-href="/u/{{inquiry.proposed_by.username}}">{{relatedItem.proposed_by.username}}</a> — {{relatedItem.props.creation_date | date : 'longDate'}}, <b>{{relatedItem.answers}} </b> answers
   </div>
   <div class="content" ng-bind-html="relatedItem.props.description | marked"></div>
-  <div class="more"><a ng-href="#/inq/{{relatedItem.id}}">read more, or propose an answer</a></div>
+  <div class="more"><a ng-href="/inq/{{relatedItem.id}}">read more, or propose an answer</a></div>
 </div>
 
 
 <div ng-if='relatedItem.type == "issue"' class="related inquiry">
   <h4>{{relatedItem.props.title}}</h4>
-  <div class="author"> by <a ng-href="/#/u/{{inquiry.proposed_by.username}}">{{relatedItem.proposed_by.username}}</a> — {{relatedItem.props.creation_date | date : 'longDate'}}, <b>{{relatedItem.answers}} </b> answers
+  <div class="author"> by <a ng-href="/u/{{inquiry.proposed_by.username}}">{{relatedItem.proposed_by.username}}</a> — {{relatedItem.props.creation_date | date : 'longDate'}}, <b>{{relatedItem.answers}} </b> answers
   
   </div>
 </div>

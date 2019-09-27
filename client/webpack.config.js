@@ -65,6 +65,7 @@ module.exports = (env, options) => {
       hot: true,
       compress: true,
       historyApiFallback: true,
+      disableHostCheck: true,
     },
     resolve: {
       extensions: ['.js', '.jsx'],

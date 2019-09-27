@@ -110,7 +110,7 @@ const itemTemplate = /* html */ `
     <span class='type sans-serif' translate='resource.type.{{resource.props.type}}'></span> {{$index + 1}} of {{resources.meta.totalResources}}
   </div>
   <h4>
-    <a href='#/r/{{resource.id}}'>
+    <a href='/r/{{resource.id}}'>
       <span lookup context='resource' field='title' language='language'></span>
     </a>
   </h4>
@@ -137,7 +137,7 @@ const itemTemplate = /* html */ `
   </div>
            
   <div class='img-wrapper' ng-if='hasImage(resource)'>
-    <a ng-href='/#/r/{{resource.id}}'>
+    <a ng-href='/r/{{resource.id}}'>
       <div class="img"  style='background-image: url({{ getImageUrl(resource) }})'></div>
     </a>
   </div>

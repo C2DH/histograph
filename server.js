@@ -1,146 +1,50 @@
-/*
+const express = require('express')
+const compress = require('compression')
+const bodyParser = require('body-parser')
+const _ = require('lodash')
+const socketIo = require('socket.io')
+const fs = require('fs')
+const path = require('path')
+const morgan = require('morgan')
+const requireAll = require('require-all')
 
-  Welcome to Histograph
-  ===
+const auth = require('./auth')
+const settings = require('./settings')
+const { getLogger } = require('./lib/util/log')
 
-*/
-var express       = require('express'),        // call express
-    compress      = require('compression'),
-    session       = require('express-session');
+const log = getLogger()
 
-const cookieSession = require('cookie-session')
-const { compose: composeMiddleware } = require('compose-middleware')
+const app = express()
+const port = process.env.PORT || settings.port || 8000
+const env = settings.env || process.env.NODE_ENV || 'development'
+const server = app.listen(port)
+const io = socketIo.listen(server)
 
-var settings      = require('./settings');
+const ctrl = requireAll({
+  dirname: `${__dirname}/controllers`,
+  filter: /(.*).js$/,
+  resolve(f) {
+    return f(io)
+  }
+})
 
-var app           = exports.app = express(),                 // define our app using express
-    port          = process.env.PORT || settings.port || 8000,
-    env           = settings.env || process.env.NODE_ENV || 'development',
-    server        = app.listen(port),
-    io            = require('socket.io')
-                      .listen(server),
+const clientRouter = express.Router()
+const apiRouter = express.Router()
 
-    auth          = require('./auth'), // auth mechanism with passport
-    
-    bodyParser    = require('body-parser'),
-    cookieParser  = require('cookie-parser'),
-    
-    fs            = require('fs'),
-    path          = require('path'),
-    morgan        = require('morgan'),    // logging puropse
+log.info('title:', settings.title)
+log.info('logs: ', settings.paths.accesslog)
+log.info('env:  ', env)
+log.info('port: ', settings.port)
+log.info('media:', settings.paths.media)
 
-    ctrl          = require('require-all')({
-                      dirname: __dirname + '/controllers',
-                      filter  :  /(.*).js$/,
-                      resolve : function (f) {
-                        return f(io);
-                      }
-                    }),
-
-    cache         = undefined, // undefined; cfr. below
-
-    clientRouter  = express.Router(),
-    apiRouter     = express.Router(),
-
-    _             = require('lodash'),
-    
-    // app client scripts dependencies (load scripts in jade)
-    // clientFiles  = require('./client/src/files')[env],
-
-    // session middleware
-    sessionMiddleware;
-
-// check cache availability with redis
-if(settings.cache && settings.cache.redis) {
-  console.log('cache:','redis found in settings.js ...'); 
-  var redis = require('redis').createClient({
-        host: settings.cache.redis.host,
-        port: settings.cache.redis.port,
-      }),
-      RedisStore = require('connect-redis')(session);
-
-  cache = require('express-redis-cache')({
-    client: redis,
-    // host: settings.cache.redis.host,
-    // port: settings.cache.redis.port,
-    expire: 50 * 60 // 5 min OR till a POST/delete has benn done
-  });
-
-  cache.on('connected', function () {
-    console.log('cache:','connected to redis'); 
-  });
-
-  cache.on('error', function (error) {
-    console.log('redis connection error', error)
-  });
-
-  // initilalize session middleware with redis
-  sessionMiddleware = session({
-    name: 'hg.sid',
-    secret: settings.secret.cookie,
-    store: new RedisStore({
-      client: redis
-    }),
-    
-    // trustProxy: false,
-    resave: true,
-    saveUninitialized: true
-  });
-} else {
-  // initilalize session middleware without redis
-
-  const a = cookieSession({
-    name: 'hg.sess',
-    secret: settings.secret.cookie,
-    httpOnly: false,
-    signed: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 2592000000 // 30 days
-  })
-  const b = session({
-    name: 'hg.sid',
-    secret: settings.secret.cookie,
-    // trustProxy: false,
-    resave: true,
-    saveUninitialized: true
-  })
-  sessionMiddleware = composeMiddleware([a, b])
-}
-
-var getCacheName = function(req) {
-    return [req.path, JSON.stringify(req.query)].join().split(/[\/\{,:"\}]/)
-      .join('-')
-      .replace(/-{2,}/g, '-')
-      .replace(/^-/, '')
-      .replace(/-$/, '');// + '?' + JSON.stringify(req.query);
-  };
-
-
-console.log('title:', settings.title);
-console.log('logs: ', settings.paths.accesslog);
-console.log('env:  ', env);
-console.log('port: ', settings.port);
-console.log('media:', settings.paths.media);
-if(!cache){
-  console.log('cache:', 'not enabled');
-}
-
-
-
-app.use(compress());
-
-// configure logger
+app.use(compress())
 app.use(morgan('combined', {
-  stream: fs.createWriteStream(settings.paths.accesslog, {flags: 'a'})
-}));
+  stream: fs.createWriteStream(settings.paths.accesslog, { flags: 'a' })
+}))
 
-app.use(express.static('./client/dist'));
+app.use(express.static('./client/dist'))
 
-if ('production' == env) {
-  // app.use(express.static('./client/dist'));
-} else {
-  // app.use(express.static('./client/src'));
-
+if (env !== 'production') {
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', req.get('origin'))
     res.header('Access-Control-Allow-Methods', 'OPTIONS, POST, PUT, DELETE, GET')
@@ -150,259 +54,68 @@ if ('production' == env) {
     next()
   })
 }
-// serve docco documentation
-// app.use('/docs', express.static('./docs'));
 
 app.options('/*', (req, res) => {
   res.ok()
 })
 
-// configure static files and jade templates
-
-app.set('views', './client/views');
-app.set('view engine', 'pug');
-
-
 // configure app to use bodyParser(), this will let us get the data from a POST
-app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
-app.use(bodyParser.json({ limit: '10mb' }));
-
-// configure app to use sessions
-app.use(cookieParser());
-app.use(sessionMiddleware);
-
-
-app.use(auth.passport.initialize());
-app.use(auth.passport.session());
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }))
+app.use(bodyParser.json({ limit: '10mb' }))
+app.use(auth.checkJwt)
+app.use(auth.getUserProfile)
 
 // enrich express responses
-express.response.ok = function(result, info, warnings) {
-  var res = {
+express.response.ok = function responseOk(result, info, warnings) {
+  const res = {
     status: 'ok',
-    // user: this.req.user,
-    result: result
-  };
-  
-  if(info)
-    res.info = info;
-  
-  if(warnings)
-    res.warnings = warnings
-  
-  if(cache && (this.req.method == 'POST' || this.req.method == 'DELETE')) {
-    // delete the cache comppletely
-    var __ins = this;
-    cache.del('*', function() {
-      return __ins.json(res);
-    });
-    // // console.log(this.req.method , getCacheName(this.req));
-    // // refresh related caches if any
-    // var cnm = getCacheName(this.req).match(/[a-z]+-\d+/),
-    //     __ins = this;
-    // // it "should" be improved @todo
-    // if(cnm)
-    //   cache.del(cnm[0] + '*', function() {
-    //     return __ins.json(res);
-    //   });
-    // else
-    //   return this.json(res);
+    result
   }
-  else 
-    return this.json(res);
-};
 
-express.response.empty = function(warnings) {
-  // Since The 204 response MUST NOT include a message-body, we use a dummy 200 with status = empty...
+  if (info) { res.info = info }
+
+  if (warnings) { res.warnings = warnings }
+
+  return this.json(res)
+}
+
+express.response.empty = function responseEmpty() {
+  // Since The 204 response MUST NOT include a message-body,
+  // we use a dummy 200 with status = empty...
   return this.status(200).json({
     status: 'empty'
-  });
-};
+  })
+}
 
-express.response.error = function(statusCode, err) {
+express.response.error = function responseError(statusCode, err) {
   return this.status(statusCode).json({
     status: 'error',
     error: _.assign({
       code: statusCode,
     }, err)
-  });
-};
-
-/*
-  Client router configuration
-*/
-clientRouter.route('/').
-  get(function(req, res) { // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-    res.render('index', {
-      user: req.user || settings.anonymousUser,
-      message: 'hooray! welcome to our api!',
-      types: settings.types,
-      title: settings.title,
-      analytics: settings.analytics,
-      // scripts: clientFiles.scripts
-    });
-  });
-  
-clientRouter.route('/terms').
-  get(function(req, res) { // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-    res.render('terms', {
-      user: req.user || settings.anonymousUser,
-      message: 'hooray! welcome to our api!',
-      types: settings.types,
-      title: settings.title,
-      analytics: settings.analytics,
-      // scripts: clientFiles.scripts
-    });
-  });
-
-clientRouter.route('/login')
-  .post(function (req, res, next) {
-    auth.passport.authenticate('local', function(err, user, info) {
-      if(err) {
-        //console.log('login error', err)
-        return res.error(403, {message: 'not valid credentials'});
-      }
-      req.logIn(user, function(err) {
-        if (err)
-          return next(err);
-        return res.redirect('/api');
-      });
-    })(req, res, next)
-  });
-
-clientRouter.route('/logout')
-  .get(function(req, res){
-    req.logout();
-    res.redirect('/')
-    // res.render('index', {
-    //   user: req.user || 'anonymous',
-    //   message: 'hooray! welcome to our api!',
-    //   scripts: clientFiles.scripts
-    // });
-  });
-
-clientRouter.route('/signup')
-  .post(ctrl.user.signup)
-
-clientRouter.route('/activate')
-  .get(ctrl.user.activate)
-
-
-// twitter oauth mechanism
-clientRouter.route('/auth/twitter')
-  .get(function (req, res, next) {
-    if(req.query.next) {
-      var qs = '';
-      
-      if(req.query.jsonparams) {
-        try{
-          var params = JSON.parse(req.query.jsonparams),
-              qsp =  [];
-              
-          for(var key in params) {
-            qsp.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
-          }
-          
-          if(qsp.length)
-            qs = '?' + qsp.join('&')
-        } catch(e){
-          
-        }
-      }
-      req.session.redirectAfterLogin = req.query.next + qs;
-      
-      console.log(req.query, req.params, req.session)
-    }
-    
-    auth.passport.authenticate('twitter')(req, res, next)
-  });
-
-clientRouter.route('/auth/twitter/callback')
-  .get(function (req, res, next) {
-    auth.passport.authenticate('twitter', function(err, user, info) {
-      //console.log('user', user); // handle errors
-      req.logIn(user, function(err) {
-        if (err)
-          return next(err);
-        if(req.session.redirectAfterLogin) {
-          console.log('redirect to', req.session.redirectAfterLogin)
-          if (req.session.redirectAfterLogin.startsWith('http')) {
-            return res.redirect(req.session.redirectAfterLogin)
-          } else {
-            return res.redirect('/#' + req.session.redirectAfterLogin)
-          }
-        }
-          
-        return res.redirect('/');
-      });
-    })(req, res, next)
-  });
-
-
-// google oauth mechanism
-clientRouter.route('/auth/google')
-  .get(function (req, res, next) {
-    if(req.query.next) {
-      var qs = '';
-      
-      if(req.query.jsonparams) {
-        try{
-          var params = JSON.parse(req.query.jsonparams),
-              qsp =  [];
-              
-          for(var key in params) {
-            qsp.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
-          }
-          
-          if(qsp.length)
-            qs = '?' + qsp.join('&')
-        } catch(e){
-          
-        }
-      }
-      req.session.redirectAfterLogin = req.query.next + qs;
-      
-      console.log(req.query, req.params, req.session)
-    }
-    
-    auth.passport.authenticate('google',  { scope: 'https://www.googleapis.com/auth/plus.login' })(req, res, next)
-  });
-
-clientRouter.route('/auth/google/callback')
-  .get(function (req, res, next) {
-    auth.passport.authenticate('google', function(err, user, info) {
-      console.log('user:', user, 'error:',err, 'info', info); // handle errors
-      req.logIn(user, function(err) {
-        if (err)
-          return next(err);
-        if(req.session.redirectAfterLogin) {
-          console.log('redirect to', req.session.redirectAfterLogin)
-          return res.redirect('/#' + req.session.redirectAfterLogin)
-        }
-        return res.redirect('/');
-      });
-    })(req, res, next)
-  });
+  })
+}
 
 clientRouter.route('/media/:path/:file')
-  .get(function (req, res, next) {
-    var filename = path.join(settings.paths.media, req.params.path, req.params.file);
-    
-    res.sendFile(filename, function (err) {
-      if(err) {
-        res.status(err.status).end();
+  .get((req, res) => {
+    const filename = path.join(settings.paths.media, req.params.path, req.params.file)
+
+    res.sendFile(filename, (err) => {
+      if (err) {
+        res.status(err.status).end()
       }
-    });
+    })
   })
 
 clientRouter.route('/media/:file')
-  .get(function (req, res, next) {
-    var filename = path.join(settings.paths.media, req.params.file);
-    
-    res.sendFile(filename, {root: path.isAbsolute(settings.paths.media)?'':__dirname}, function (err) {
-      if(err) {
-        res.status(err.status).end();
+  .get((req, res) => {
+    const filename = path.join(settings.paths.media, req.params.file)
+
+    res.sendFile(filename, { root: path.isAbsolute(settings.paths.media) ? '' : __dirname }, (err) => {
+      if (err) {
+        res.status(err.status).end()
       }
-    });
+    })
   })
 /*
   serving Tiles for the specified path
@@ -410,92 +123,47 @@ clientRouter.route('/media/:file')
   tiles/{file}/{z}/{y}/{x}.jpg"
 
 */
-clientRouter.route('/tiles/:file/:z(\\d+)/:y(\\d+)/:x(\\d+\.jpg)')
-  .get(function (req, res, next) {
-    var filename = path.join(settings.paths.media, 'tiles', req.params.file, req.params.z, req.params.y, req.params.x);
-    console.log('requesting:', filename)
-    res.sendFile(filename, {root: path.isAbsolute(settings.paths.media)?'':__dirname}, function (err) {
-      if(err) {
-        res.status(err.status).end();
+clientRouter.route('/tiles/:file/:z(\\d+)/:y(\\d+)/:x(\\d+.jpg)')
+  .get((req, res) => {
+    const filename = path.join(settings.paths.media, 'tiles', req.params.file, req.params.z, req.params.y, req.params.x)
+    log.info('requesting:', filename)
+    res.sendFile(filename, { root: path.isAbsolute(settings.paths.media) ? '' : __dirname }, (err) => {
+      if (err) {
+        res.status(err.status).end()
       }
-    });
+    })
   })
 
 clientRouter.route('/txt/:file')
-  .get(function (req, res, next) {
-    var filename = path.join(settings.paths.txt, req.params.file);
-    res.sendFile(filename, {root: __dirname}, function (err) {
-      if(err) {
-        res.status(err.status).end();
+  .get((req, res) => {
+    const filename = path.join(settings.paths.txt, req.params.file)
+    res.sendFile(filename, { root: __dirname }, (err) => {
+      if (err) {
+        res.status(err.status).end()
       }
-    });
+    })
   })
 
 clientRouter.route('/txt/:path/:file')
-  .get(function (req, res, next) {
-    var filename = path.join(settings.paths.txt, req.params.path, req.params.file);
-    res.sendFile(filename, {root: __dirname}, function (err) {
-      if(err) {
-        res.status(err.status).end();
+  .get((req, res) => {
+    const filename = path.join(settings.paths.txt, req.params.path, req.params.file)
+    res.sendFile(filename, { root: __dirname }, (err) => {
+      if (err) {
+        res.status(err.status).end()
       }
-    });
-  });
-
-
-/*
-
-  Api router configuration
-  ===
-  
-  Middleware to use for all api requests.
-  If settings.allowUnauthenticatedRequests is set in settings module
-  and settings.env is set to 'development' it allows authentication free
-  api requests (e.g. to performance tuning issues)
-
-*/
-apiRouter.use(function (req, res, next) {
-  if(settings.disableAuth){
-    if(!req.isAuthenticated()){
-      console.log('discard authentication. Custom session token ...')
-      req.logIn(settings.anonymousUser, next);
-    } else {
-      console.log('no routing')
-      
-      next();
-    }
-  } else if(settings.authOrReadOnlyMode && req.method == 'GET'){
-    req.logIn(settings.anonymousUser, next);
-  } else if(req.isAuthenticated() || (settings.allowUnauthenticatedRequests && settings.env == 'development')) {
-    return next();
-  } else
-    return res.error(403);
-});
-
-// OPTIN enable cache if required
-if(cache) {
-  apiRouter.use(function (req, res, next) {
-    var cachename = getCacheName(req);
-
-    res.use_express_redis_cache = req.path.indexOf('/user') == -1 && req.method == 'GET';
-
-    console.log(cachename,'use cache',res.use_express_redis_cache);
-    cache.route({
-      name: cachename,
-      expire: _.isEmpty(req.query)? 60: 40,
-    })(req, res, next);
+    })
   })
-};
 
 // api index
-apiRouter.route('/').
-  get(function(req, res) { // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-    res.ok({ message: 'hooray! welcome to our api!' });   
-  });
+apiRouter.route('/')
+  .get((req, res) => { // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
+    res.ok({ message: 'hooray! welcome to our api!' })
+  })
 
-apiRouter.route('/another').
-  get(function(req, res) { // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-    res.ok({ message: 'hooray! another!' });   
-  });
+apiRouter.route('/another')
+  .get((req, res) => { // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
+    res.ok({ message: 'hooray! another!' })
+  })
 
 apiRouter.route('/settings/optional-features')
   .get((req, res) => res.json(settings.optionalFeatures))
@@ -524,20 +192,22 @@ dataApiRouter = require('./lib/endpoints/management')(dataApiRouter)
   ======================
 
 */
-app.use('/', clientRouter); // client router
+app.use('/', clientRouter) // client router
 app.use('/api/v1', dataApiRouter)
-app.use('/api', apiRouter); // api endpoint. we should be auth to pass this point.
+app.use('/api', apiRouter) // api endpoint. we should be auth to pass this point.
 
 function getErrorStatusCode(err) {
-  const { code, statusCode } = err
+  const { code, statusCode, status } = err
   if (statusCode) return statusCode
+  if (status) return status
   if (code === 'ERR_ASSERTION') return 400
   return 500
 }
 
-app.use(function (err, req, res, next) {
+app.use((err, req, res) => {
   const statusCode = getErrorStatusCode(err)
-  if (statusCode >= 500) console.log(err.stack)
+
+  if (statusCode >= 500) log.info(err.stack)
 
   const responseBody = {
     message: err.message
@@ -552,10 +222,10 @@ app.use(function (err, req, res, next) {
 
   Controller: user
   ----------------
-  
+
   Cfr. controllers/user.js
   Cfr Neo4j queries: [@todo]
-  
+
 */
 apiRouter.route('/user/session')// api session info
   .get(ctrl.user.session)
@@ -581,10 +251,10 @@ apiRouter.route('/user/apikey').put(ctrl.user.updateApiKey)
 
   Controller: inquiry
   -------------------
-  
+
   Cfr. controllers/inquiry.js
   Cfr Neo4j queries: queries/inquiry.cyp
-  
+
 */
 apiRouter.route('/inquiry')
   .get(ctrl.inquiry.getItems)
@@ -599,10 +269,10 @@ apiRouter.route('/inquiry/:id([\\da-zA-Z_\\-]+)/related/comment') // POST
 
   Controller: issue
   -------------------
-  
+
   Cfr. controllers/issue.js
   Cfr Neo4j queries: queries/issue.cyp
-  
+
 */
 apiRouter.route('/issue')
   .get(ctrl.issue.getItems)
@@ -615,15 +285,14 @@ apiRouter.route('/issue/:id([\\da-zA-Z_\\-]+)/downvote')
   .post(ctrl.issue.downvote)
 
 
-
 /*
 
   Controller: inquiry
   -------------------
-  
+
   Cfr. controllers/inquiry.js
   Cfr Neo4j queries: queries/inquiry.cyp
-  
+
 */
 apiRouter.route('/comment/:id([\\da-zA-Z_\\-]+)/upvote')
   .post(ctrl.comment.upvote)
@@ -634,10 +303,10 @@ apiRouter.route('/comment/:id([\\da-zA-Z_\\-]+)/downvote')
 
   Controller: resource
   ----------------------
-  
+
   Cfr. controllers/resource.js
   Cfr Neo4j queries: queries/resource.cyp
-  
+
 */
 apiRouter.route('/resource')
   .get(ctrl.resource.getItems)
@@ -665,16 +334,16 @@ apiRouter.route('/resource/:id([\\da-zA-Z_\\-]+)/related/:action(annotate)')
 apiRouter.route('/resource/:id([\\da-zA-Z_\\-]+)/related/user')
   .get(ctrl.resource.getRelatedUsers)
   .post(ctrl.resource.createRelatedUser)
-  .delete(ctrl.resource.removeRelatedUser) 
+  .delete(ctrl.resource.removeRelatedUser)
 apiRouter.route('/resource/:id([\\da-zA-Z_\\-]+)/related/issue')
   .post(ctrl.resource.createIssue)
   .get(ctrl.resource.getRelatedIssue)
 apiRouter.route('/resource/:id([\\da-zA-Z_\\-]+)/related/:entity(person|location|organization)/graph')
-  .get(ctrl.resource.getRelatedEntitiesGraph);
+  .get(ctrl.resource.getRelatedEntitiesGraph)
 apiRouter.route('/resource/:id([\\da-zA-Z_\\-]+)/related/resource/graph')
-  .get(ctrl.resource.getRelatedResourcesGraph);
+  .get(ctrl.resource.getRelatedResourcesGraph)
 apiRouter.route('/resource/:id([\\da-zA-Z_\\-]+)/related/resource/timeline')
-  .get(ctrl.resource.getRelatedResourcesTimeline);
+  .get(ctrl.resource.getRelatedResourcesTimeline)
 
 apiRouter.route('/cooccurrences/:entityA(person|theme|location|place|organization)/related/:entityB(person|theme|location|place|organization)') // @todo move to entity controller.
   .get(ctrl.resource.getCooccurrences)
@@ -684,56 +353,56 @@ apiRouter.route('/cooccurrences/:entityA(person|theme|location|place|organizatio
 
   Controller: entity
   ----------------------
-  
+
   Cfr. controllers/entity.js
   Cfr Neo4j queries: queries/entity.cyp
-  
+
 */
 apiRouter.route('/entity/:id([\\d,a-zA-Z\\-_]+)')
   .get(ctrl.entity.getItem)
-  
+
 apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/related/resource')
-  .get(ctrl.entity.getRelatedResources);
-  
+  .get(ctrl.entity.getRelatedResources)
+
 apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/related/:entity(person|location|theme|organization)')
   .get(ctrl.entity.getRelatedEntities)
 
 apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/related/issue')
   .post(ctrl.entity.createRelatedIssue) // that is, I AGREE
-  .delete(ctrl.entity.removeRelatedIssue); // that is, I DISAGREE
+  .delete(ctrl.entity.removeRelatedIssue) // that is, I DISAGREE
 
 apiRouter.route('/entity/:id/related/:entity(person|location|theme|organization)/graph')
-  .get(ctrl.entity.getRelatedEntitiesGraph);
+  .get(ctrl.entity.getRelatedEntitiesGraph)
 
 apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/related/resource/graph')
-  .get(ctrl.entity.getRelatedResourcesGraph);
-  
+  .get(ctrl.entity.getRelatedResourcesGraph)
+
 apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/related/resource/timeline')
-  .get(ctrl.entity.getRelatedResourcesTimeline);
+  .get(ctrl.entity.getRelatedResourcesTimeline)
 
 apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/upvote')
   .post(ctrl.entity.upvote)
-  
+
 apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/downvote')
   .post(ctrl.entity.downvote)
 
 apiRouter.route('/entity/:entity_id([\\da-zA-Z_\\-]+)/related/resource/:resource_id([\\da-zA-Z_\\-]+)')
-  .post(ctrl.entity.createRelatedResource) // create or merge the relationship. The authentified user will become a curator
-  .delete(ctrl.entity.removeRelatedResource); // delete the relationship whether possible
+  .post(ctrl.entity.createRelatedResource) // create or merge the relationship.
+  // The authentified user will become a curator
+  .delete(ctrl.entity.removeRelatedResource) // delete the relationship whether possible
 
 apiRouter.route('/entity/:entity_id([\\da-zA-Z_\\-]+)/related/resource/:resource_id([\\da-zA-Z_\\-]+)/:action(upvote|downvote|merge)')
-  .post(ctrl.entity.updateRelatedResource);
+  .post(ctrl.entity.updateRelatedResource)
 
-  
 
 /*
 
   Controller: collection
   ----------------------
-  
+
   Cfr. controllers/collection.js
   Cfr Neo4j queries: queries/collection.cyp
-  
+
 */
 // apiRouter.route('/collection')
 //   .get(ctrl.collection.getItems)
@@ -753,12 +422,12 @@ apiRouter.route('/entity/:entity_id([\\da-zA-Z_\\-]+)/related/resource/:resource
 
   Controller: search & suggest
   ----------------------
-  
+
   This controller answers every typeahead request.
-  
+
   Cfr. controllers/suggest.js
   Cfr Neo4j queries: queries/collection.cyp
-  
+
 */
 apiRouter.route('/suggest')
   .get(ctrl.suggest.suggest)
@@ -779,8 +448,8 @@ apiRouter.route('/suggest/all-in-between/:ids([\\da-zA-Z_\\-][\\d,a-zA-Z\\-_]+)/
 apiRouter.route('/suggest/all-in-between/:ids([\\da-zA-Z_\\-][\\d,a-zA-Z\\-_]+)/resource')
   .get(ctrl.suggest.getAllInBetweenResources)
 apiRouter.route('/suggest/all-in-between/:ids([\\da-zA-Z_\\-][\\d,a-zA-Z\\-_]+)/resource/timeline')
-.get(ctrl.suggest.getAllInBetweenTimeline)
-  
+  .get(ctrl.suggest.getAllInBetweenTimeline)
+
 apiRouter.route('/suggest/all-shortest-paths/:ids([\\d,a-zA-Z\\-_]+)')
   .get(ctrl.suggest.allShortestPaths)
 apiRouter.route('/suggest/all-in-between')
@@ -803,22 +472,23 @@ apiRouter.route('/suggest/dbpedia')
   .get(ctrl.suggest.dbpedia)
 
 const explorerRoutes = require('./lib/endpoints/public/explorer')
+
 apiRouter.use('/explorer/', explorerRoutes)
 
 /*
-  
+
   Socket io config
   ------
-  
+
   listen to connections with socket.io.
   Cfr. controllers/*.js to find how io has been implemented.
-  
-*/
-io.use(function (socket, next) {
-  sessionMiddleware(socket.request, {}, next);
-})
 
-process.on('SIGINT', function() {
-  console.log('Interrupted. Exiting...');
-  process.exit();
-});
+*/
+
+app.use((socket, next) => auth.checkJwt(socket.req, {}, next))
+app.use((socket, next) => auth.getUserProfile(socket.req, {}, next))
+
+process.on('SIGINT', () => {
+  log.info('Interrupted. Exiting...')
+  process.exit()
+})

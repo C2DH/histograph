@@ -16,14 +16,14 @@ module.exports = function(io){
   // io socket event listener
   if(io)
      io.on('connection', function (socket) {
-      // console.log('socket.request.session.passport.user', socket.request.session)
+      // console.log('socket.request.user', socket.request.session)
       var cookie_string = socket.request.headers.cookie;
       
       // socket.on('collection:create', function (data) {
-      //   console.log(socket.request.session.passport.user.username, 'is creating a new collection', data.id);
+      //   console.log(socket.request.user.username, 'is creating a new collection', data.id);
       //   // emit back to already connected people..
       //   io.emit('collection:create', {
-      //     user: socket.request.session.passport.user.username,
+      //     user: socket.request.user.username,
       //     data: data.id
       //   });
       // });

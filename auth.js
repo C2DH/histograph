@@ -1,137 +1,74 @@
-/*
-
-  authentication mechanism
-  ===
-
-*/
-
+const jwt = require('express-jwt')
+const jwtAuthz = require('express-jwt-authz')
+const jwksRsa = require('jwks-rsa')
 const createError = require('http-errors')
+const request = require('request')
+const decypher = require('decypher')
 const { isString, get } = require('lodash')
 
-var settings        = require('./settings'),
-    helpers         = require('./helpers'),
-    passport        = require('passport'),
+const { executeQuery } = require('./lib/util/neo4j')
+const { generateApiKey } = require('./lib/util/crypto')
+const { generateUuid } = require('./lib/util/text')
 
-    LocalStrategy   = require('passport-local').Strategy,
-    TwitterStrategy = require('passport-twitter').Strategy,
-    GoogleStrategy  = require('passport-google-oauth').OAuth2Strategy,
-    
+const userQueries = decypher('./queries/user.cyp')
 
-    queries         = require('decypher')('./queries/user.cyp'),
-    User            = require('./models/user'),
-    neo4j           = require('seraph')(settings.neo4j.host);
+/**
+ * Authentication middleware. When used, the
+ * Access Token must exist and be verified against
+ * the Auth0 JSON Web Key Set
+ */
+const checkJwt = jwt({
+  // Dynamically provide a signing key
+  // based on the kid in the header and
+  // the signing keys provided by the JWKS endpoint.
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: 'https://c2dh.eu.auth0.com/.well-known/jwks.json'
+  }),
 
+  // Validate the audience and the issuer.
+  audience: 'c2dh-histograph',
+  issuer: 'https://c2dh.eu.auth0.com/',
+  algorithms: ['RS256']
+})
 
-// auth mechanism: Local
-passport.use(new LocalStrategy(function (username, password, done) {
-  // get user having username or email = username and check if encription matches and check if 
-  User.check({
-    username: username,
-    password: password
-  }, function(err, user) {
-    if(err)
-      done({reason: 'credentials not matching', error: err});
-    else if(user.props.status != 'enabled')
-      done({reason: 'user is NOT active, its status should be enabled', found: user.status});
-    else
-      done(null, user);
+const readOnly = jwtAuthz(['read:data'])
+
+const AuthHeaderTokenRegex = /^Bearer\s+(.*)$/i
+
+function getBearerToken(req) {
+  return get(get(req.headers, 'authorization', '').match(AuthHeaderTokenRegex), 1)
+}
+
+async function fetchUserProfile(profileUrl, jwtToken) {
+  return new Promise((res, rej) => {
+    request.get(profileUrl, { auth: { bearer: jwtToken }, json: true }, (err, response, body) => {
+      if (err) return rej(err)
+      if (response.statusCode !== 200) return rej(createError(response.statusCode, body))
+      return res(body)
+    })
   })
-  // neo4j.query('Match(user:user) WHERE user.email = {nickname} OR user.username = {nickname} RETURN user',{
-  //   nickname: username
-  // }, function(err, res) {
-  //   if(err)
-  //     return done(err)
-    
-  //   if(!res.length) 
-  //     return done({reason: 'user not found'}) // the real reason, for loggin purposes. user not found
-    
-  //   var user = res[0];
-    
-  //   user.isValid = helpers.comparePassword(password, user.password, {
-  //     from: 'localstrategy',
-  //     secret: settings.secret.salt, 
-  //     salt: user.salt
-  //   });
+}
 
-  //   if(!user.isValid)
-  //     return done({reason: 'credentials not matching'});
-
-  //   if(user.status != 'enabled')
-  //     return done({reason: 'user is NOT active, its status should be enabled', found: user.status});
-
-  //   return done(null, user)
-  // })
-}));
-
-
-/*
-  Auth mechanism for twitter
-*/
-passport.use(new TwitterStrategy({
-    consumerKey: settings.twitter.consumer_key,
-    consumerSecret: settings.twitter.consumer_secret,
-    callbackURL: "/auth/twitter/callback"
-  },
-  function(token, tokenSecret, profile, done) {
-    User.create({
-      email: '@' + profile.displayName,
-      username: '@' + profile.displayName,
-      firstname: '@' + profile.displayName,
-      salt: '',
-      password:'',
-      status: 'enabled',
-      strategy: 'twitter',
-      about: '' + profile.description,
-      picture: profile.photos? profile.photos.pop().value: '',
-    },  function(err, user) {
-      console.log('twitter:', err? 'error': 'ok');
-      if(err) {
-        console.log(err)
-        done(err);
-      } else
-        done(null, user);
-    });
+function auth0UserProfileAsHistographUser(userProfile) {
+  return {
+    uuid: generateUuid(),
+    status: 'enabled',
+    username: userProfile.name,
+    authId: userProfile.sub,
+    picture: userProfile.picture,
+    apiKey: generateApiKey()
   }
-));
+}
 
-
-/*
-  Auth mechanism for google
-*/
-passport.use(new GoogleStrategy({
-    clientID: settings.google.clientId,
-    clientSecret: settings.google.clientSecret,
-    callbackURL:  "/auth/google/callback"
-  },
-  function(accessToken, refreshToken, profile, done) {
-    User.create({
-      email: 'g@' + profile.id,
-      username: profile.displayName + profile.id,
-      firstname: profile.displayName,
-      gender: profile.gender || '',
-      salt: '',
-      password:'',
-      status: 'enabled',
-      strategy: 'google',
-      about: '' + profile.description || '',
-      picture: profile.photos? profile.photos.pop().value: '',
-    },  function(err, user) {
-      console.log('google:', err? 'error': 'ok');
-      if(err) {
-        console.log(err);
-        done(err);
-      } else
-        done(null, user);
-    });
-  }
-));
-
-function asSerializedUser(user) {
+function presentHistographUser(user) {
   return {
     is_authentified: true,
     firstname: user.props.firstname,
     lastname: user.props.lastname,
-    email: user.email,
+    email: user.props.email,
     username: user.username,
     id: user.id,
     picture: user.props.picture,
@@ -139,15 +76,48 @@ function asSerializedUser(user) {
   }
 }
 
-passport.serializeUser((user, done) => {
-  done(null, asSerializedUser(user))
-})
+async function getUserFromDbByApiKey(apiKey) {
+  const result = await executeQuery(userQueries.get_by_api_key, { apiKey })
+  return result[0]
+}
 
-passport.deserializeUser((user, done) => {
-  done(null, user)
-})
+async function getUserFromDb(authId) {
+  const result = await executeQuery(userQueries.get_by_auth_id, { id: authId })
+  return result[0]
+}
 
-const AuthHeaderTokenRegex = /^Bearer\s+(.*)$/i
+async function saveUserInDb(user) {
+  const result = await executeQuery(userQueries.save_user_by_auth_id, user)
+  return result[0]
+}
+
+async function fetchAndSaveUser(profileUrl, jwtToken) {
+  const userProfile = await fetchUserProfile(profileUrl, jwtToken)
+  const user = auth0UserProfileAsHistographUser(userProfile)
+  return saveUserInDb(user)
+}
+
+function getUserProfile(req, res, next) {
+  const jwtData = req.user
+  const profileUrl = get(jwtData, 'aud.1')
+  const userId = get(jwtData, 'sub')
+  const jwtToken = getBearerToken(req)
+
+  if (!isString(profileUrl) || !isString(userId)) {
+    throw createError(404, `JWT Token malformed or not present. Could not find Profile URL (${profileUrl}) and/or User ID (${userId}).`)
+  }
+
+  getUserFromDb(userId)
+    .then(user => {
+      if (!user) return fetchAndSaveUser(profileUrl, jwtToken)
+      return user
+    })
+    .then(user => {
+      req.user = presentHistographUser(user)
+      next()
+    })
+    .catch(next)
+}
 
 /**
  * Middleware for authenticating user with an API Key.
@@ -159,19 +129,23 @@ const AuthHeaderTokenRegex = /^Bearer\s+(.*)$/i
  */
 function apiKeyAuthMiddleware(req, res, next) {
   const { apiKey: apiKeyQueryParameterValue } = req.query
-  const apiKeyHeaderValue = get(get(req.headers, 'authorization', '').match(AuthHeaderTokenRegex), 1)
+
+  const apiKeyHeaderValue = getBearerToken(req)
   const apiKey = apiKeyQueryParameterValue || apiKeyHeaderValue
 
   if (!isString(apiKey)) return next(createError(403, 'No API Key Provided ("apiKey")'))
-  return User.getByApiKey(apiKey, (err, user) => {
-    if (err) return next(err)
-    if (!user) return next(createError(403, 'Invalid API Key'))
-    req.user = asSerializedUser(user)
-    return next()
-  })
+  return getUserFromDbByApiKey(apiKey)
+    .then(user => {
+      if (!user) return next(createError(403, 'Invalid API Key'))
+      req.user = presentHistographUser(user)
+      return next()
+    })
+    .catch(next)
 }
 
 module.exports = {
-  passport,
-  apiKeyAuthMiddleware
+  apiKeyAuthMiddleware,
+  checkJwt,
+  readOnly,
+  getUserProfile
 }
