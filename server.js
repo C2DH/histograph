@@ -30,6 +30,8 @@ const ctrl = requireAll({
 
 const clientRouter = express.Router()
 const apiRouter = express.Router()
+apiRouter.use(auth.checkJwt)
+apiRouter.use(auth.getUserProfile)
 
 log.info('title:', settings.title)
 log.info('logs: ', settings.paths.accesslog)
@@ -62,8 +64,6 @@ app.options('/*', (req, res) => {
 // configure app to use bodyParser(), this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }))
 app.use(bodyParser.json({ limit: '10mb' }))
-app.use(auth.checkJwt)
-app.use(auth.getUserProfile)
 
 // enrich express responses
 express.response.ok = function responseOk(result, info, warnings) {
@@ -474,6 +474,10 @@ apiRouter.route('/suggest/dbpedia')
 const explorerRoutes = require('./lib/endpoints/public/explorer')
 
 apiRouter.use('/explorer/', explorerRoutes)
+
+app.get('*', (req, res, next) => {
+  res.sendFile(path.join(__dirname, './client/dist/index.html'), next)
+})
 
 /*
 
