@@ -1,5 +1,5 @@
 class AuthService {
-  constructor(state, angularAuth0, timeout, log, rootScope) {
+  constructor(state, angularAuth0, timeout, log, rootScope, location) {
     this.tag = 'histograph'
 
     this.state = state
@@ -7,6 +7,7 @@ class AuthService {
     this.timeout = timeout
     this.log = log
     this.rootScope = rootScope
+    this.location = location
   }
 
   localLogin(authResult) {
@@ -20,11 +21,12 @@ class AuthService {
     this.angularAuth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.localLogin(authResult)
-        this.state.go('explore.resources')
+        const url = window.localStorage.getItem(`${this.tag}.returnUrl`)
+        window.localStorage.removeItem(`${this.tag}.returnUrl`)
+        this.location.url(url || '/')
         this.timeout(() => this.rootScope.$broadcast('authenticated'))
-        console.log('!!AA')
       } else if (err) {
-        this.timeout(() => this.state.go('explore.resources'))
+        this.timeout(() => this.location.url('/'))
         this.log.error(err)
       }
     })
@@ -33,11 +35,11 @@ class AuthService {
   renewTokens() {
     this.angularAuth0.checkSession({}, (err, result) => {
       if (err) {
-        this.log.error(err)
+        // this.log.error(err)
+        this.login()
       } else {
         this.localLogin(result)
         this.timeout(() => this.rootScope.$broadcast('authenticated'))
-        console.log('!!BB')
       }
     })
   }
@@ -73,13 +75,38 @@ class AuthService {
   }
 
   login() {
+    window.localStorage.setItem(`${this.tag}.returnUrl`, this.location.url())
     this.angularAuth0.authorize()
   }
 }
 
-function service($state, angularAuth0, $timeout, $log, $rootScope) {
-  return new AuthService($state, angularAuth0, $timeout, $log, $rootScope)
+function service($state, angularAuth0, $timeout, $log, $rootScope, $location) {
+  return new AuthService($state, angularAuth0, $timeout, $log, $rootScope, $location)
+}
+
+function currentUserProvider() {
+  this.$get = function (UserFactory, $rootScope, $q) {
+    const getUserPromise = () => UserFactory.get({ method: 'session' })
+      .$promise
+      .then(result => result.result.item)
+
+    return getUserPromise()
+      .catch(err => {
+        if (err.status !== 403 && err.status !== 401) throw err
+        const d = $q.defer()
+
+        let unsubscribe
+        const onAuthenticated = () => {
+          d.resolve()
+          unsubscribe()
+        }
+        unsubscribe = $rootScope.$on('authenticated', onAuthenticated)
+
+        return d.promise.then(getUserPromise)
+      })
+  }
 }
 
 angular.module('histograph')
   .factory('AuthService', service)
+  .provider('currentUserPromise', currentUserProvider)

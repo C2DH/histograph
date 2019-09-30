@@ -221,6 +221,11 @@ module.exports = angular
           types: GRAMMAR.IN_TYPES,
           relatedTo: {
             typeahead: 'entity'
+          },
+          resolve: {
+            currentUser: function (currentUserPromise) {
+              return currentUserPromise
+            }
           }
         },
       })
@@ -240,6 +245,11 @@ module.exports = angular
           types: GRAMMAR.AS_TYPES,
           relatedTo: {
             typeahead: 'entity'
+          }
+        },
+        resolve: {
+          currentUser: function (currentUserPromise) {
+            return currentUserPromise
           }
         }
       })
@@ -297,6 +307,11 @@ module.exports = angular
         grammar: {
           connector: {},
           relatedTo: undefined
+        },
+        resolve: {
+          currentUser: function (currentUserPromise) {
+            return currentUserPromise
+          }
         }
       })
       .state('topics-resources', {
@@ -314,6 +329,11 @@ module.exports = angular
           },
           relatedTo: {
             typeahead: 'entity'
+          }
+        },
+        resolve: {
+          currentUser: function (currentUserPromise) {
+            return currentUserPromise
           }
         }
       })
@@ -384,6 +404,9 @@ module.exports = angular
               limit: 10
             }, {}).$promise;
           },
+          currentUser: function (currentUserPromise) {
+            return currentUserPromise
+          }
           // resources: function(EntityRelatedFactory, $stateParams) {
           //   return EntityRelatedFactory.get({
           //     id: $stateParams.id,
@@ -616,6 +639,9 @@ module.exports = angular
             return UserFactory.get({
               method: 'pulse'
             }).$promise;
+          },
+          currentUser: function (currentUserPromise) {
+            return currentUserPromise
           }
         }
       })
@@ -700,6 +726,9 @@ module.exports = angular
               model: 'annotate',
               id: $stateParams.id
             }).$promise;
+          },
+          currentUser: function (currentUserPromise) {
+            return currentUserPromise
           }
         },
         grammar: {
@@ -1042,6 +1071,11 @@ module.exports = angular
             }
           ]
         },
+        resolve: {
+          currentUser: function (currentUserPromise) {
+            return currentUserPromise
+          }
+        }
         // resolve: {
         //   allInBetween: function(SuggestFactory, $stateParams) {
         //     return SuggestFactory.allInBetween({
@@ -1137,6 +1171,9 @@ module.exports = angular
             return SuggestFactory.getStats({
               query: $stateParams.query
             }).$promise;
+          },
+          currentUser: function (currentUserPromise) {
+            return currentUserPromise
           }
         }
       })
@@ -1284,14 +1321,15 @@ module.exports = angular
         //   return response
         // },
         responseError: function (rejection) {
-          if (rejection.status === 403 || rejection.status === 401 || rejection.status === -1) {
+          if (rejection.status === 403 || rejection.status === 401) {
             $rootScope.$broadcast(EVENTS.USER_NOT_AUTHENTIFIED);
-            const msg = rejection.status === -1
-              ? 'API server is offline'
-              : `Could not authenticate you: ${rejection.message}`
-            $log.error(msg);
+            // const msg = `Could not authenticate you: ${rejection.message}`
+            // $log.error(msg);
           }
-          return $q.reject(rejection);
+          if (rejection.status === -1) {
+            $log.error('API server is offline')
+          }
+          return $q.reject(rejection)
         }
       };
     });

@@ -204,7 +204,7 @@ function getErrorStatusCode(err) {
   return 500
 }
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   const statusCode = getErrorStatusCode(err)
 
   if (statusCode >= 500) log.info(err.stack)
@@ -485,8 +485,8 @@ apiRouter.use('/explorer/', explorerRoutes)
 
 */
 
-app.use((socket, next) => auth.checkJwt(socket.req, {}, next))
-app.use((socket, next) => auth.getUserProfile(socket.req, {}, next))
+io.use((socket, next) => auth.checkJwt(socket.request, socket.request.res, next))
+io.use((socket, next) => auth.getUserProfile(socket.request, socket.request.res, next))
 
 process.on('SIGINT', () => {
   log.info('Interrupted. Exiting...')

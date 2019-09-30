@@ -18,7 +18,7 @@ angular.module('histograph')
     ResourceRelatedFactory, SuggestFactory, cleanService,
     VisualizationFactory, EntityExtraFactory, EntityRelatedExtraFactory,
     localStorageService, EntityRelatedFactory, EVENTS, VIZ, MESSAGES,
-    ORDER_BY, SETTINGS, UserFactory, OptionalFeaturesService, $window,
+    ORDER_BY, SETTINGS, currentUserPromise, OptionalFeaturesService, $window,
     HgSettings, ResourceVizFactory, AuthService) {
     $scope.apiBaseUrl = HgSettings.apiBaseUrl
 
@@ -37,12 +37,6 @@ angular.module('histograph')
       $window.localStorage.setItem('histograph.flags', JSON.stringify(value))
     }, true)
 
-    OptionalFeaturesService.get().$promise
-      .then(val => {
-        $scope.optionalFeatures = val
-      })
-      .catch(e => $log.error(e))
-
     $scope.params = {}; //  this would contain limit, offset, from, to and other API params. Cfr. EVENT.API_PARAMS_CHANGED
 
     // the paths followed by a single user
@@ -58,7 +52,27 @@ angular.module('histograph')
     $scope.playlistIds = [];
 
     // the current user
-    $scope.user = {};
+    $scope.user = {}
+    currentUserPromise
+      .then(u => {
+        $log.log('Current user', u)
+        $scope.user = u
+
+        /*
+          Loading background (contextual) timeline.
+          This is a timeline without filters showing the density of
+          resources.
+        */
+        VisualizationFactory.resource(VIZ.TIMELINE).then(function (res) {
+          $scope.contextualTimeline = res.data.result.timeline;
+        });
+
+        OptionalFeaturesService.get().$promise
+          .then(val => {
+            $scope.optionalFeatures = val
+          })
+          .catch(e => $log.error(e))  
+      })
 
     // current viewpoint (view mode)
     $scope.viewpoint = {
@@ -1148,34 +1162,6 @@ angular.module('histograph')
       $scope.isAnnotating = false;
     })
 
-    function fetchUser() {
-      console.log('***YYY', $scope.user)
-      if ($scope.user && $scope.user.is_authenticated) return
-      UserFactory
-        .get({ method: 'session' }).$promise
-        .then(function (response) {
-          $scope.user = _.get(response, 'result.item', {});
-          $log.log('Auth successful', $scope.user)
-        })
-        .catch(function (error) {
-          $log.error(`Could not fetch user details because: ${error.message}`)
-          $scope.user = { is_authenticated: false }
-          $scope.isLoading = false
-        });
-    }
-
-    $scope.$on('authenticated', fetchUser)
-    fetchUser()
-
-    /*
-      Loading background (contextual) timeline.
-      This is a timeline without filters showing the density of
-      resources.
-    */
-    VisualizationFactory.resource(VIZ.TIMELINE).then(function (res) {
-      $scope.contextualTimeline = res.data.result.timeline;
-    });
-
     $scope.hasImage = function (relatedItem) {
       const isImageType = relatedItem.props.mimetype == 'image' && relatedItem.props.url;
       const hasIiif = !!relatedItem.props.iiif_url;
@@ -1370,8 +1356,6 @@ angular.module('histograph')
 
   .controller('ResourceContextCtrl', function ($scope, $log, $stateParams, $filter, specials, relatedItems, relatedModel, relatedVizFactory, relatedFactory, socket, EVENTS, $controller) {
     $scope.currentTab = $scope.item.props.iiif_url ? 'resource-image' : 'related-resource';
-
-    // $log.log('***', $scope.item)
 
     $controller('RelatedItemsCtrl', {
       $scope: $scope,
