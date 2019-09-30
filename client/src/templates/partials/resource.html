@@ -16,10 +16,10 @@
           
           <span class="empty" ng-if="!item.props.start_time" tooltip='click to add a date'>without any date <a class='btn btn-contribute' ng-click='inspectMetadata(item, "date")' translate='button.edit'></a></span>
           <span ng-if='item.props.start_time'>
-            <a class='date' ng-href="#/r/{{item.id}}/inq/create/date" tooltip='click to propose a different date' ng-if="item.props.start_time">{{item.props|guessInterval}}</a><!-- <a class='btn btn-contribute' ng-click='inspectMetadata(item, "date")'>edit</a> -->
+            <a class='date' ng-href="/r/{{item.id}}/inq/create/date" tooltip='click to propose a different date' ng-if="item.props.start_time">{{item.props|guessInterval}}</a><!-- <a class='btn btn-contribute' ng-click='inspectMetadata(item, "date")'>edit</a> -->
           </span>
           <!-- <div class="collections">
-            <div class="collection" ng-repeat="collection in item.collections"><a ng-href="#/c/{{collection.id}}">{{collection.name|humanize}}</a></div>
+            <div class="collection" ng-repeat="collection in item.collections"><a ng-href="/c/{{collection.id}}">{{collection.name|humanize}}</a></div>
           </div> -->
         </div>
           
@@ -63,7 +63,7 @@
               <i class="fa fa-arrow-right"></i>
             </button>
 
-            <!-- <a class="btn btn-default action" tooltip="create a new inquiry" ng-href="#/r/{{item.id}}/inq/create">
+            <!-- <a class="btn btn-default action" tooltip="create a new inquiry" ng-href="/r/{{item.id}}/inq/create">
               <i class="fa fa-comment-o"></i>
             </a> -->
             <button class="btn btn-default action" tooltip="{{'tooltip.resource.add.to.myselection'|translate}}" ng-click="queue(item, true)">
@@ -135,7 +135,7 @@
         <div class="discussion" ng-if="item.comments.length > 0">
           <div class="comment" ng-repeat="com in item.comments">
             <span class="username">
-              <a ng-href='#/u/{{com.user.username}}'>{{com.user.username}}</a>
+              <a ng-href='/u/{{com.user.username}}'>{{com.user.username}}</a>
             </span>
             <span class="date">{{com.props.creation_date | date : 'longDate'}}</span> — {{com.props.content}}
             <span  ng-repeat="tag in com.props.tags" class='tag' data-id='{{tag|idify}}'>{{tag}}</span>

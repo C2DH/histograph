@@ -70,7 +70,7 @@
   <div class="related" ng-repeat="relatedItem in playlist" ng-if="relatedItem.type == 'resource'" data-id='{{relatedItem.id}}'>
        
     <h4>
-      <a ng-href="#/r/{{relatedItem.id}}" ng-bind-html="relatedItem.props | title : language"></a>
+      <a ng-href="/r/{{relatedItem.id}}" ng-bind-html="relatedItem.props | title : language"></a>
     </h4>
     
     <div class='actions'>
@@ -99,7 +99,7 @@
       </div>
     </div>
     <h4>
-      <a ng-href="#/e/{{relatedItem.id}}" ng-bind-html="relatedItem.props | title : language"></a>
+      <a ng-href="/e/{{relatedItem.id}}" ng-bind-html="relatedItem.props | title : language"></a>
     </h4>
     
     <div class='actions'>

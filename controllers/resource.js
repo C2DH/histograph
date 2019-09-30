@@ -32,24 +32,24 @@ module.exports = function(io){
   // io socket event listener
   if(io)
     io.on('connection', function(socket){
-      // console.log('socket.request.session.passport.user', socket.request.session)
+      // console.log('socket.request.user', socket.request.session)
       var cookie_string = socket.request.headers.cookie;
       //  console.log('a user connected', cookie_string);
 
       socket.on('start:commenting', function (data) {
-        console.log(socket.request.session.passport.user.username, 'is writing a comment on', data.id);
+        console.log(socket.request.user.username, 'is writing a comment on', data.id);
         // emit back to already connected people..
         io.emit('start:commenting', {
-          user: socket.request.session.passport.user.username,
+          user: socket.request.user.username,
           data: data.id
         });
       });
 
       socket.on('continue:commenting', function (data) {
-        console.log(socket.request.session.passport.user.username, 'is writing a comment on', data.id);
+        console.log(socket.request.user.username, 'is writing a comment on', data.id);
         // emit back to already connected people..
         io.emit('continue:commenting', {
-          user: socket.request.session.passport.user.username,
+          user: socket.request.user.username,
           data: data.id
         })
       });

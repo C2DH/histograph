@@ -12,9 +12,9 @@
      
     <div ng-if="collection.last_commented_resource" class="resource item">
          
-        <h4 class="" data-id='{{collection.last_commented_resource.id}}'><a ng-href="#/r/{{collection.last_commented_resource.id}}">{{collection.last_commented_resource.props.title || collection.last_commented_resource.props.name || collection.last_commented_resource.props.title_en || collection.last_commented_resource.props.title_fr}}</a></h4>
+        <h4 class="" data-id='{{collection.last_commented_resource.id}}'><a ng-href="/r/{{collection.last_commented_resource.id}}">{{collection.last_commented_resource.props.title || collection.last_commented_resource.props.name || collection.last_commented_resource.props.title_en || collection.last_commented_resource.props.title_fr}}</a></h4>
         <div class="collections">
-          <div class="collection" ng-repeat="collection in collection.last_commented_resource.collections"><a ng-href="#/c/{{collection.id}}">{{collection.name|humanize}}</a></div>
+          <div class="collection" ng-repeat="collection in collection.last_commented_resource.collections"><a ng-href="/c/{{collection.id}}">{{collection.name|humanize}}</a></div>
         </div>
         <span ng-click="startCommenting(item, 'date')">{{collection.last_commented_resource.props|guessInterval}}</span>
         
@@ -64,7 +64,7 @@
 
 <div id="see-also" fperfect-scrollbar wheel-propagation="true" refresh-on-change="related" suppress-scroll-x="true" wheel-speed="20">
   <div class="related" ng-repeat="relatedItem in related">
-    <h4><a ng-href="#/r/{{relatedItem.id}}">{{relatedItem.props.title || relatedItem.props.name || relatedItem.props.title_en}}</a></h4>
+    <h4><a ng-href="/r/{{relatedItem.id}}">{{relatedItem.props.title || relatedItem.props.name || relatedItem.props.title_en}}</a></h4>
     <a data-id='{{relatedItem.id}}'>view on graph</a>
     {{relatedItem.props|guessInterval}}
     

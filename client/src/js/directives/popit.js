@@ -175,7 +175,7 @@ angular.module('histograph')
 
           scope.link = {
             label: `go to ${type} page`,
-            href: `/#/e/${id}`,
+            href: `/e/${id}`,
             creator
           };
           if (removable === 'true') scope.link.removable = true;

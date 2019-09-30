@@ -10,8 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "angular": "1.5.11",
+    "angular-auth0": "3.0.4",
     "angular-cookies": "1.5.0",
     "angular-google-analytics": "1.1.6",
+    "angular-jwt": "^0.1.11",
     "angular-local-storage": "0.2.2",
     "angular-perfect-scrollbar": "0.0.5",
     "angular-resource": "1.5.0",
@@ -22,6 +24,7 @@
     "angular-translate-loader-static-files": "2.9.0",
     "angular-ui-bootstrap": "0.14.3",
     "angular-ui-router": "0.2.15",
+    "auth0-js": "9.11.3",
     "d3": "5.9.7",
     "d3-explorer": "git+https://github.com/theorm/d3-explorer.git",
     "d3-scale-chromatic": "^1.5.0",

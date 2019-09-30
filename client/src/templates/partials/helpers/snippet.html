@@ -19,7 +19,7 @@
           </div>
         </div>
         <div class='content'>
-          <h4><a ng-href='#/e/{{relatedItem.id}}/g' marked="relatedItem.props|lookup:'name':language"></a></h4>
+          <h4><a ng-href='/e/{{relatedItem.id}}/g' marked="relatedItem.props|lookup:'name':language"></a></h4>
           <div class='date'>{{relatedItem.type}} - 
 
             <span ng-if='relatedItem.type=="person"'>{{relatedItem.props.birth_time | datesOfAPerson : relatedItem.props.death_time}}</span>
@@ -43,8 +43,8 @@
 
 
         <div class='btn-group btn-group dual' style='margin: 10px 0'>
-          <a class='btn btn-default btn-line-white' ng-href='/#/e/{{relatedItem.id}}' translate>button.more</a>
-          <a class='btn btn-default btn-line-white' ng-href='/#/e/{{relatedItem.id}}/g' translate>button.egonetwork</a>
+          <a class='btn btn-default btn-line-white' ng-href='/e/{{relatedItem.id}}' translate>button.more</a>
+          <a class='btn btn-default btn-line-white' ng-href='/e/{{relatedItem.id}}/g' translate>button.egonetwork</a>
           <!-- <button class='btn btn-default btn-line-white' ng-click="queue(relatedItem)"> <span class="fa fa-thumb-tack" title='{{"tooltip.resource.add.to.myselection" |translate}}'></span></button> -->
           <button class='btn btn-default btn-line-white' title='{{"tooltip.sigma.center" |translate}}' data-id="{{relatedItem.id}}"> <span class="fa fa-dot-circle-o"></span></button>
         </div>
@@ -68,7 +68,7 @@
 
         </div>
         <div class='btn-group btn-group dual'>
-          <a class='btn btn-default btn-line-white' ng-href='/#/r/{{relatedItem.id}}'>more</a>
+          <a class='btn btn-default btn-line-white' ng-href='/r/{{relatedItem.id}}'>more</a>
            <button class='btn btn-default btn-line-white' ng-click="queue(relatedItem)"> <span class="fa fa-bookmark-o"></span></button>
            <button class='btn btn-default btn-line-white' data-id='{{center.id}}'> <span class="fa fa-dot-circle-o"></span></button>
         </div>

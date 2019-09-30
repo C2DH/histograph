@@ -44,7 +44,7 @@ module.exports = () => ({
     */
     session: function (req, res) {
       return res.ok({
-        item: req.session.passport.user
+        item: req.user
       });
     },
 

@@ -1,6 +1,6 @@
 <div id="see-also">
   <div class="related" ng-repeat="relatedItem in related">
-    <h4><a ng-href="#/r/{{relatedItem.id}}">{{relatedItem.props.title || relatedItem.props.name || relatedItem.props.title_en}}</a></h4>
+    <h4><a ng-href="/r/{{relatedItem.id}}">{{relatedItem.props.title || relatedItem.props.name || relatedItem.props.title_en}}</a></h4>
     <a data-id='{{relatedItem.id}}'>view on graph</a>
     {{relatedItem.props|guessInterval}}
     

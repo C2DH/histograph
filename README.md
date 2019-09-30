@@ -34,9 +34,6 @@ adjust the `paths` section of your `settings.js` file, then create the folders a
     mkdir contents/cache/queries
     mkdir contents/cache/services
 
-Histograph makes use of [node js passport](https://www.npmjs.com/package/passport) social auth as authentication method. It has been tested with [twitter](https://www.npmjs.com/package/passport-twitter) and [google plus](passport-google-oauth).
-Obtain the tokens and credentials for those services, then fill the twitter and google section of the `settings.js` file accordingly.
-
 Install [Neo4j](http://neo4j.com/) (v 2.3.*) and configure the database indexing by adding auto_indexing features in `conf/neo4j.properties` file.
 
 	# Autoindexing

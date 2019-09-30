@@ -487,3 +487,44 @@ RETURN {
   email: u.email,
   props: u
 }
+
+
+// name: get_by_auth_id
+MATCH (u:user)
+  WHERE u.authId = {id}
+WITH u
+  LIMIT 1
+RETURN {
+  id: u.uuid,
+  username: u.username,
+  props: u
+}
+
+// name: save_user_by_auth_id
+WITH toString(datetime()) AS date_now, timestamp() / 1000 AS time_now
+MERGE (k:user { authId:{authId} })
+ON CREATE SET
+  k.uuid = {uuid},
+  k.username   = {username},
+  k.status     = {status},
+  k.picture  = {picture},
+  k.apiKey     = {apiKey},
+
+  k.last_notification_time = time_now,
+  k.last_notification_date = date_now,
+  k.creation_time = time_now,
+  k.creation_date = date_now,
+  k.last_modification_time = time_now,
+  k.last_modification_date = date_now
+ON MATCH SET
+  k.username   = {username},
+  k.status     = {status},
+  k.picture  = {picture},
+  k.apiKey     = {apiKey},
+  k.last_modification_time = time_now,
+  k.last_modification_date = date_now 
+RETURN {
+  id: k.uuid,
+  username: k.username,
+  props: k
+}

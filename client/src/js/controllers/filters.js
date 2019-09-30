@@ -191,7 +191,7 @@ angular.module('histograph')
       (i.e. the root grammar)
     */
     $scope.setChoice = function (choice) {
-      const path = $scope.getState().href(choice.name, choice.params).replace(/^#/, '').replace('%20', ' ');
+      const path = $scope.getState().href(choice.name, choice.params)
       $log.log('FilterCtrl -> setChoice', choice.name, '- path:', path);
       $location.path(path).search($location.search())
     }
