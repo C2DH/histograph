@@ -1309,7 +1309,7 @@ module.exports = angular
         controller: 'LoginCallbackCtrl'
       })
   })
-  .config(function ($httpProvider, jwtOptionsProvider, HgSettingsProvider) {
+  .config(function ($httpProvider, jwtOptionsProvider, jwtInterceptorProvider, HgSettingsProvider) {
     // eslint-disable-next-line no-param-reassign
     $httpProvider.defaults.withCredentials = true
 
@@ -1335,11 +1335,16 @@ module.exports = angular
     });
 
     jwtOptionsProvider.config({
-      tokenGetter: function getter(AuthService) {
-        return AuthService.getAccessToken();
-      },
       whiteListedDomains: HgSettingsProvider.getWhitelistedDomains()
-    });
+    })
+
+    // https://github.com/auth0/angular-jwt/issues/188
+    // eslint-disable-next-line no-param-reassign
+    jwtInterceptorProvider.tokenGetter = function getter(AuthService) {
+      return AuthService.getAccessToken();
+    }
+    // eslint-disable-next-line no-param-reassign
+    jwtInterceptorProvider.tokenGetter.$inject = ['AuthService']
 
     $httpProvider.interceptors.push('jwtInterceptor');
   })

@@ -85,7 +85,7 @@ function service($state, angularAuth0, $timeout, $log, $rootScope, $location) {
 }
 
 function currentUserProvider() {
-  this.$get = function (UserFactory, $rootScope, $q) {
+  this.$get = function getter(UserFactory, $rootScope, $q) {
     const getUserPromise = () => UserFactory.get({ method: 'session' })
       .$promise
       .then(result => result.result.item)
