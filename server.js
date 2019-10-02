@@ -154,6 +154,12 @@ clientRouter.route('/txt/:path/:file')
     })
   })
 
+/* 404 handler for files */
+clientRouter.route(/\/.+/)
+  .get((req, res, next) => {
+    res.sendFile(path.join(__dirname, './client/dist/index.html'), next)
+  })
+
 // api index
 apiRouter.route('/')
   .get((req, res) => { // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
@@ -192,9 +198,9 @@ dataApiRouter = require('./lib/endpoints/management')(dataApiRouter)
   ======================
 
 */
-app.use('/', clientRouter) // client router
 app.use('/api/v1', dataApiRouter)
 app.use('/api', apiRouter) // api endpoint. we should be auth to pass this point.
+app.use('/', clientRouter) // client router
 
 function getErrorStatusCode(err) {
   const { code, statusCode, status } = err
@@ -216,6 +222,7 @@ app.use((err, req, res, next) => {
     responseBody.stack = err.stack
   }
   res.status(statusCode).json(responseBody)
+  next()
 })
 
 /*
@@ -475,9 +482,10 @@ const explorerRoutes = require('./lib/endpoints/public/explorer')
 
 apiRouter.use('/explorer/', explorerRoutes)
 
-app.get('*', (req, res, next) => {
-  res.sendFile(path.join(__dirname, './client/dist/index.html'), next)
-})
+apiRouter.route(/\/.+/)
+  .get((req, res, next) => {
+    res.status(404).send()
+  })
 
 /*
 
