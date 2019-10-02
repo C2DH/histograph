@@ -1,8 +1,35 @@
+/* eslint-env browser */
 import {
-  get, cloneDeep, assignIn, noop,
-  includes, without, uniq, concat
+  get, noop, isEmpty,
+  assignIn
 } from 'lodash'
 import { withStyles, theme } from '../styles'
+
+const HelpTooltips = {
+  topicModellingScores: {
+    aggregationMethod: /* html */ `
+    <ul>
+      <li>
+        <b>MAX</b>
+        <p>
+          Circle size represents the highest score the topic reached
+          in one of the resources in the bin. It <b>does not</b> indicate how
+          often the topic has been covered in all the resources in the bin.
+        </p>
+      </li>
+      <li>
+        <b>MEAN</b>
+        <p>
+          Circle size represents the average score of the topic considering
+          all the resources in the bin. It roughly indicates how often the topic
+          has been covered in the bin but <b>does not</b> indicate the highest 
+          score the topic ever reached.
+        </p>
+      </li>
+    </ul>
+    `
+  }
+}
 
 const styles = {
   container: {
@@ -22,15 +49,19 @@ const styles = {
     padding: [['0.9em', '1.2em']],
     flexShrink: 0
   },
+  filters: {
+    padding: [['0.9em', '1.2em']],
+    justifyContent: 'space-between',
+  },
   label: {
-    extend: theme.text.h3,
+    extend: theme.text.h2,
     display: 'flex',
     justifyContent: 'left',
     flexDirection: 'row',
     textAlign: 'left',
     flex: 1,
-    cursor: 'text',
-    borderBottom: `1px solid ${theme.colours.text.light.secondary}`,
+    alignSelf: 'center',
+    // borderBottom: `1px solid ${theme.colours.text.light.secondary}`,
     '& .fa': {
       marginRight: '.5em'
     }
@@ -46,86 +77,80 @@ const styles = {
       display: 'inherit',
     }
   },
-  editButton: {
-    background: 'none',
-    border: 'none',
-    outline: 'none',
-    padding: '0.2em .7em',
-  },
-  keywordsLabel: {
-    margin: [['0em', '1.2em']],
-    textTransform: 'uppercase',
-    flexShrink: 0
-  },
-  keywordCloud: {
+  removeExplorableButton: {
     display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    margin: [['0.9em', '1.2em']],
-    overflowY: 'scroll',
-    '& span': {
-      marginRight: '.3em',
-      marginBottom: '.3em',
-      color: theme.colours.text.light.secondary,
-      background: '#22222277',
-      padding: '0em .6em',
-      borderRadius: '1em',
-    }
-  },
-  labelEditPanel: {
-    display: 'flex',
-    alignContent: 'stretch',
     alignItems: 'center',
-    borderBottom: `1px solid ${theme.colours.text.light.secondary}`,
-    justifyContent: 'flex-start',
-    flexGrow: 1,
-    '& input': {
-      border: 'none',
-      outline: 'none',
-      background: '#ffffff22',
-      padding: '.2em .8em 0em',
-      marginBottom: '.2em',
+    '& i': {
+      marginRight: '0.3em'
     },
+    padding: '.2em .6em !important',
   },
-  buttonsPanel: {
+  row: {
     display: 'flex',
-    alignContent: 'stretch',
-    alignItems: 'center',
-    flexDirection: 'row',
     justifyContent: 'center',
-    flexShrink: 0,
-  },
-  showResourcesButton: {
-    background: 'none',
-    display: 'inline-flex',
-    padding: [['0.3em', '0.9em']],
-    outline: 'none',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    '& .fa': {
-      marginRight: '0.5em'
-    }
-  },
-  selectedKeyword: {
-    color: '#222222 !important',
-    background: `${theme.colours.text.light.secondary} !important`,
-  },
-  keywordSelectable: {
-    cursor: 'pointer'
+    flexDirection: 'row',
   }
 }
 
-function controller($scope, $log, $location) {
+function controller($scope, $log, $location, ExplorerService) {
   withStyles($scope, styles)
+  $scope.helpTooltips = HelpTooltips
+
+  function parametersFromUrl() {
+    const { filters } = $location.search()
+    const parsedFilters = isEmpty(filters) ? undefined : JSON.parse(atob(filters))
+    $scope.params = { filters: parsedFilters }
+  }
+  parametersFromUrl()
+
+  const parametersToUrl = (replace = false) => {
+    if ($scope.params === undefined) return
+
+    const { filters } = $scope.params
+    const queryParams = assignIn({}, $scope.params, {
+      filters: isEmpty(filters) ? undefined : btoa(JSON.stringify(filters)),
+    })
+    const l = $location.search(assignIn({}, $location.search(), queryParams))
+    if (replace) l.replace()
+  }
+  $scope.$on('$locationChangeSuccess', parametersFromUrl)
+  $scope.$watch('params.filters', () => parametersToUrl(true), true)
 
   function loadConfiguration() {
     const config = get($scope.explorerConfig, $scope.plotId)
     if (!config) return
     $scope.label = get(config, 'label')
+
+    ExplorerService.getAspectFilters($scope.plotId)
+      .then(filters => {
+        $scope.filters = filters
+      })
+      .catch(e => $log.error(
+        'Filters configuration:',
+        _.get(e, 'data.message', 'Error getting filters configuration')
+      ))
   }
 
   $scope.$watch('explorerConfig', loadConfiguration)
   $scope.$watch('plotId', loadConfiguration)
+
+  $scope.onFilterValueChanged = (plotId, key, value) => {
+    if ($scope.params === undefined) return
+
+    const filters = get($scope.params, 'filters', {})
+    const plotFilters = get(filters, plotId, {})
+    if (isEmpty(value)) {
+      delete plotFilters[key]
+    } else {
+      plotFilters[key] = value
+    }
+    if (isEmpty(plotFilters)) {
+      delete filters[plotId]
+    } else {
+      filters[plotId] = plotFilters
+    }
+    $scope.params.filters = filters
+  }
 }
 
 const template = /* html */ `
@@ -138,6 +163,25 @@ const template = /* html */ `
     </button>
   </div>
 
+  <div class="{{classes.row}}">
+    <button class="btn btn-default {{classes.removeExplorableButton}}"
+            ng-click="onClose()"
+            ng-disabled="true">
+      <i class="fa fa-times"/> <span>Remove from plot (coming soon)</span>
+    </button>
+  </div>
+
+  <div class="{{classes.filters}}">
+    <div hi-explorer-filter="filter"
+        hi-explorer-plot-id="{{plotId}}"
+        hi-help-tooltips="helpTooltips[id]"
+        hi-initial-value="params.filters[plotId][filter.key]"
+        hi-on-changed="onFilterValueChanged"
+        ng-repeat="filter in filters"
+        class="{{ classes.explorerFilter }}">
+    </div>
+  </div>
+
 </div>
 `
 
@@ -147,28 +191,10 @@ const directive = {
     plotId: '=hiExplorableConfiguration',
     onCloseClicked: '&onClose',
     explorerConfig: '=hiExplorerConfig',
-    // onTopicUpdated: '&onTopicUpdated',
-    // showResourcesButton: '=showResourcesButton',
-    // selectedKeywords: '=selectedKeywords',
-    // keywordSelectionEnabled: '=keywordSelectionEnabled',
-    // showCloseButton: '<showCloseButton'
   },
   template,
   controller: 'ExplorableConfigurationCtrl',
-  link: function link($scope, element) {
-    // $scope.$watch('editingLabel', isEditing => {
-    //   if (isEditing) {
-    //     setTimeout(() => angular.element(element).find('.label-input').focus())
-    //   }
-    // })
-
-    // angular.element(element).find('.label-input').bind('keydown keypress', event => {
-    //   if (event.which === 13) {
-    //     $scope.$apply(() => $scope.confirmEditLabel());
-    //     event.preventDefault();
-    //   }
-    // })
-
+  link: function link($scope) {
     $scope.onClose = () => {
       const fn = $scope.onCloseClicked || noop
       $scope.$applyAsync(fn())

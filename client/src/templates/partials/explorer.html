@@ -37,18 +37,11 @@
       <!-- Graph footer -->
       <div class="{{classes.graphFooter}}">
         <div class="{{classes.graphFooterSection}}">
-            <div ng-repeat="(id, filters) in explorerFiltersConfig">
-              <div hi-explorer-filter="filter"
-                   hi-explorer-plot-id="{{id}}"
-                   hi-help-tooltips="helpTooltips[id]"
-                   hi-initial-value="params.filters[id][filter.key]"
-                   hi-on-changed="onFilterValueChanged"
-                   ng-repeat="filter in filters"
-                   class="{{ classes.explorerFilter }}">
-              </div>
-            </div>      
+            <button class="btn btn-default {{classes.button}}"
+                    ng-disabled="true">
+              <i class="fa fa-plus"></i> <span>Add explorable (coming soon)</span>
+            </button>
         </div>
-        
         <div class="{{classes.graphFooterSection}}">
           <div>
             <button class="btn btn-default {{classes.zoomInButton}}" 

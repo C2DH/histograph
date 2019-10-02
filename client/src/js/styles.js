@@ -39,6 +39,9 @@ export const theme = {
   text: {
     h3: {
       fontSize: '1.2em'
-    }
+    },
+    h2: {
+      fontSize: '1.3em'
+    },
   }
 }

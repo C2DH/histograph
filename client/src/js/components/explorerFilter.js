@@ -3,7 +3,7 @@ import { withStyles } from '../styles'
 
 const styles = {
   container: {
-    border: '1px solid red'
+    // border: '1px solid red'
   },
   textInput: {
     display: 'inline-flex',
@@ -16,8 +16,8 @@ const styles = {
   },
   row: {
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
+    // justifyContent: 'center',
+    // alignItems: 'center'
   },
   tooltipHotspot: {
     display: 'flex',
@@ -46,9 +46,9 @@ const directive = {
     plotId: '@hiExplorerPlotId',
     helpTooltips: '<hiHelpTooltips'
   },
-  /* html */
-  template: `
-    <div class={{ classes.container }}>
+
+  template: /* html */ `
+    <div class="{{ classes.container }}">
       <!-- selection -->
       <div ng-if="config.type === 'selection'" class="dropdown {{classes.row}}">
         <div class="btn-group {{classes.row}}" uib-dropdown is-open="false">

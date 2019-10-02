@@ -49,10 +49,11 @@ const styles = {
     }
   },
   controls: {
+    position: 'relative',
     '& div': {
       backgroundColor: '#d6d6d63b',
       opacity: 0.3,
-      position: 'fixed',
+      position: 'absolute',
       border: 'none',
       margin: gearIconMarginPadding,
       padding: gearIconMarginPadding,
@@ -126,12 +127,13 @@ const directive = {
         const c = element[0].querySelector(`.${$scope.classes.controls} .${id}`)
         if (!c) return
 
+        const { y: containerY, x: containerX } = container.getBoundingClientRect()
         const {
           y, width: containerWidth, height: separatorHeight
         } = g.getBoundingClientRect()
         const { width: buttonWidth } = c.getBoundingClientRect()
-        c.style.top = `${y + separatorHeight}px`
-        c.style.left = `${containerWidth - buttonWidth / 2}px`
+        c.style.top = `${y - containerY + separatorHeight}px`
+        c.style.left = `${containerWidth - containerX - buttonWidth / 2}px`
         c.style.display = 'flex'
         // console.log(` *** ${id}:`, c.style)
       })

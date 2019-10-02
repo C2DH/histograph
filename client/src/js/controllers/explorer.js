@@ -6,32 +6,6 @@ import {
 import moment from 'moment'
 import { withStyles, theme } from '../styles'
 
-const HelpTooltips = {
-  topicModellingScores: {
-    aggregationMethod: /* html */ `
-    <ul>
-      <li>
-        <b>MAX</b>
-        <p>
-          Circle size represents the highest score the topic reached
-          in one of the resources in the bin. It <b>does not</b> indicate how
-          often the topic has been covered in all the resources in the bin.
-        </p>
-      </li>
-      <li>
-        <b>MEAN</b>
-        <p>
-          Circle size represents the average score of the topic considering
-          all the resources in the bin. It roughly indicates how often the topic
-          has been covered in the bin but <b>does not</b> indicate the highest 
-          score the topic ever reached.
-        </p>
-      </li>
-    </ul>
-    `
-  }
-}
-
 const styles = {
   explorerGraph: {
     display: 'flex',
@@ -84,13 +58,20 @@ const styles = {
   },
   explorableConfiguration: {
     flexGrow: 1,
-    flexBasis: '30%'
+    flexBasis: '25%'
   },
   mainPanel: {
     flex: '1 1 100%',
     flexGrow: 3,
     overflowY: 'scroll',
     margin: '1em 1em 0 1em',
+  },
+  button: {
+    display: 'flex',
+    alignItems: 'center',
+    '& i': {
+      marginRight: '0.3em'
+    }
   },
 }
 
@@ -117,8 +98,6 @@ angular.module('histograph')
     ExplorerService
   ) {
     withStyles($scope, styles)
-
-    $scope.helpTooltips = HelpTooltips
 
     // NOTE: a workaround to disable ruler (see filters.js). Ugly but saves from refactoring.
     $scope.rulerDisabled = true
@@ -335,22 +314,6 @@ angular.module('histograph')
     }
     $scope.unselectCurrentTopic = () => {
       $scope.params.topicId = undefined
-    }
-
-    $scope.onFilterValueChanged = (plotId, key, value) => {
-      const filters = get($scope.params, 'filters', {})
-      const plotFilters = get(filters, plotId, {})
-      if (isEmpty(value)) {
-        delete plotFilters[key]
-      } else {
-        plotFilters[key] = value
-      }
-      if (isEmpty(plotFilters)) {
-        delete filters[plotId]
-      } else {
-        filters[plotId] = plotFilters
-      }
-      $scope.params.filters = filters
     }
 
     $scope.configureExplorable = plotId => {
