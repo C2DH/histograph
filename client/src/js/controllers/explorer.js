@@ -110,6 +110,8 @@ angular.module('histograph')
     $scope.explorerData = {}
     $scope.explorerFiltersConfig = {}
 
+    $scope.previousQueryParams = {}
+
     /* Load explorer configuration */
     ExplorerService.getConfiguration()
       .then(config => {
@@ -239,33 +241,24 @@ angular.module('histograph')
       explorerConfig: $scope.explorerConfig,
     })
 
-    function updateExplorerData(params, oldParams = {}) {
+    function updateExplorerData(params) {
       if ($scope.explorerConfig === undefined) return
       const allPlotsIds = Object.keys($scope.explorerConfig)
 
       const {
         bins, from, to, filters
       } = params
-      const {
-        bins: oldBins, from: oldFrom, to: oldTo, filters: oldFilters
-      } = oldParams
 
       if (!bins) return
 
-      const commonParamsAreNotUpdated = isEqual(
-        [bins, from, to], [oldBins, oldFrom, oldTo]
-      )
-
-      let ids = allPlotsIds
-
-      if (commonParamsAreNotUpdated && (!isEmpty(filters) || !isEmpty(oldFilters))) {
-        ids = allPlotsIds.filter(id => !isEqual(filters[id], oldFilters[id]))
-      }
-
-      ids.forEach(id => {
+      allPlotsIds.forEach(id => {
         const queryParams = assignIn({ bins, from, to }, toQueryParameters(filters[id]))
+        const previousQueryParams = $scope.previousQueryParams[id]
+        if (isEqual(queryParams, previousQueryParams)) return
+
         ExplorerService.getAspectData(id, queryParams)
           .then(data => {
+            $scope.previousQueryParams[id] = queryParams
             $scope.explorerData[id] = data
           })
           .catch(e => $log.error(`Getting data ${id}:`, _.get(e, 'data.message', 'Error getting data')))
