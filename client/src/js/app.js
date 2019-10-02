@@ -45,7 +45,9 @@ module.exports = angular
     'masonry',
     'angular-tour',
     'auth0.auth0',
-    'angular-jwt'
+    'angular-jwt',
+    'ngMaterial',
+    'ngMessages'
   ])
   .constant('LOCALES', {
     locales: {

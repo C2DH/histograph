@@ -82,6 +82,10 @@ const styles = {
     backgroundColor: theme.colours.background.dark.primary,
     color: theme.colours.text.light.primary
   },
+  explorableConfiguration: {
+    flexGrow: 1,
+    flexBasis: '30%'
+  },
   mainPanel: {
     flex: '1 1 100%',
     flexGrow: 3,
@@ -149,7 +153,8 @@ angular.module('histograph')
         from,
         to,
         topicId,
-        filters
+        filters,
+        editPlotId
       } = $location.search()
       const parsedFilters = isEmpty(filters) ? undefined : JSON.parse(atob(filters))
       // const b = JSON.parse(filters || '{}')
@@ -159,7 +164,8 @@ angular.module('histograph')
         from,
         to,
         topicId,
-        filters: parsedFilters
+        filters: parsedFilters,
+        editPlotId
       }
     }
 
@@ -178,6 +184,7 @@ angular.module('histograph')
     $scope.$watch('params.to', () => parametersToUrl())
     $scope.$watch('params.topicId', () => parametersToUrl())
     $scope.$watch('params.filters', () => parametersToUrl(true), true)
+    $scope.$watch('params.editPlotId', () => parametersToUrl())
     parametersFromUrl()
 
     $scope.setBinsCount = val => {
@@ -344,6 +351,14 @@ angular.module('histograph')
         filters[plotId] = plotFilters
       }
       $scope.params.filters = filters
+    }
+
+    $scope.configureExplorable = plotId => {
+      $scope.params.editPlotId = plotId
+    }
+
+    $scope.finishEditingExplorableConfiguration = () => {
+      $scope.params.editPlotId = undefined
     }
 
     $scope.getTooltipContent = stepIndex => {
