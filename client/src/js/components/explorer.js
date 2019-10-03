@@ -238,7 +238,9 @@ const directive = {
     })
 
     $scope.$watch('plotIds', updateControlButtonsPositions)
-    $scope.$watch(() => $scope.explorer._getWH(), () => $scope.explorer.render(), true)
+    $scope.$watch(() => $scope.explorer._getWH(), () => {
+      $scope.explorer.render()
+    }, true)
   }
 }
 

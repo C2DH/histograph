@@ -197,7 +197,7 @@ const directive = {
   link: function link($scope) {
     $scope.onClose = () => {
       const fn = $scope.onCloseClicked || noop
-      $scope.$applyAsync(fn())
+      $scope.$applyAsync(fn)
     }
   }
 }

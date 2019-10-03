@@ -214,7 +214,7 @@ const directive = {
 
     $scope.onClose = () => {
       const fn = $scope.onCloseClicked || noop
-      $scope.$applyAsync(fn())
+      $scope.$applyAsync(fn)
     }
   }
 }
