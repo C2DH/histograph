@@ -39,6 +39,7 @@
     "leaflet": "1.5.1",
     "leaflet-iiif": "2.0.1",
     "lodash": "4.5.1",
+    "lucene": "^2.1.0",
     "marked": "0.3.19",
     "masonry-layout": "4.0.0",
     "moment": "2.10.2",

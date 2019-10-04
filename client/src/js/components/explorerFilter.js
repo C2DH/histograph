@@ -1,5 +1,6 @@
 import { get, isFunction, noop } from 'lodash'
-import { withStyles } from '../styles'
+import { withStyles, theme } from '../styles'
+import { parseSolrQuery, formatSolrQuery } from '../utils'
 
 const styles = {
   container: {
@@ -33,6 +34,45 @@ const styles = {
       padding: 0,
       listStyleType: 'none',
       textAlign: 'left'
+    }
+  },
+  chips: {
+    '& .md-chips': {
+      border: `1px solid ${theme.colours.text.light.secondary}`,
+      boxShadow: 'none',
+
+      '&.md-focused': {
+        boxShadow: 'none',
+      },
+
+      '& md-chip': {
+        height: '2em',
+        lineHeight: '2em',
+        fontSize: '14px',
+
+        '& .md-chip-remove': {
+          width: '2em',
+          height: '2em',
+
+          '& md-icon': {
+            minWidth: '1.2em',
+            minHeight: '1.2em',
+          }
+        }
+      },
+
+      '& .md-input': {
+        fontSize: '14px',
+      }
+    }
+  },
+  radiobuttons: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: '1em',
+    '& md-radio-button': {
+      flex: '0 1 auto',
+      marginRight: '.5em',
     }
   }
 }
@@ -99,6 +139,31 @@ const directive = {
           <i class="fa fa-search"></i>
         </button>
       </div>
+
+      <div ng-if="config.type === 'solr-keywords'">
+        <md-chips ng-model="listValue"
+                  id="autocompleteTitle"
+                  md-removable="true"
+                  md-enable-chip-edit="true"
+                  input-aria-label="Keyword"
+                  placeholder="Enter a keyword..."
+                  class="{{ classes.chips }}">
+          <md-autocomplete md-selected-item="keywordsAutocomplete.selectedItem"
+                           md-search-text="keywordsAutocomplete.searchText"
+                           md-items="item in keywordsSearch(keywordsAutocomplete.searchText)"
+                           md-item-text="item.name"
+                           input-aria-describedby="autocompleteTitle"
+                           placeholder="Enter a keyword...">
+            <span md-highlight-text="keywordsAutocomplete.searchText">{{item.name}}</span>
+          </md-autocomplete>
+        </md-chips>
+        <span>Press Enter to add a keyword</span>
+
+        <md-radio-group ng-model="solr.keywordGroupingMethod" class="{{ classes.radiobuttons }}">
+          <md-radio-button value="AND" class="md-primary">AND</md-radio-button>
+          <md-radio-button value="OR" class="md-primary">OR</md-radio-button>
+        </md-radio-group>
+      </div>
     </div>
   `,
   // link: function link($scope, element) {
@@ -111,11 +176,20 @@ function controller($scope) {
 
   $scope.uid = $scope.$id
 
+  $scope.keywordsAutocomplete = {}
   $scope.textInputValue = {}
+  $scope.listValue = []
+  $scope.solr = { keywordGroupingMethod: 'AND' }
 
   if ($scope.value === undefined && $scope.initialValue) {
     $scope.value = $scope.initialValue
     $scope.textInputValue.value = $scope.initialValue
+
+    if ($scope.config.type === 'solr-keywords') {
+      const [keywords, method] = parseSolrQuery($scope.initialValue || '')
+      $scope.solr.keywordGroupingMethod = method
+      $scope.listValue = keywords
+    }
   }
 
   $scope.$watch('config', config => {
@@ -126,6 +200,11 @@ function controller($scope) {
       if (config.type === 'multi-selection') $scope.value = []
       // eslint-disable-next-line prefer-destructuring
       if (config.type === 'selection') $scope.value = config.values[0]
+      if (config.type === 'solr-keywords') {
+        const [keywords, method] = parseSolrQuery($scope.value || '')
+        $scope.solr.keywordGroupingMethod = method
+        $scope.listValue = keywords
+      }
     }
   }, true)
 
@@ -155,6 +234,21 @@ function controller($scope) {
     const fn = isFunction($scope.onChanged) ? $scope.onChanged : noop
     fn($scope.plotId, get($scope.config, 'key'), v)
   }, true)
+
+
+  $scope.$watch(
+    () => ({ method: $scope.solr.keywordGroupingMethod, values: $scope.listValue }),
+    ({ method, values }) => {
+      $scope.value = formatSolrQuery(values, method)
+    },
+    true
+  )
+
+  // TODO: coming soon
+  // eslint-disable-next-line no-unused-vars
+  $scope.keywordsSearch = keyword => {
+    return Promise.resolve([])
+  }
 }
 
 angular.module('histograph')

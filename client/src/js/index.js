@@ -147,6 +147,7 @@ require('../css/annotorious.css')
 require('../css/style.css')
 require('leaflet/dist/leaflet.css')
 require('../css/base.css')
+require('angular-material/angular-material.css')
 
 app.run(function ($log, AuthService) {
   if (AuthService.isAuthenticated()) {
