@@ -1,8 +1,11 @@
 import {
   get, identity, isUndefined,
   assignIn, isString, isEmpty,
-  isArray, clone
+  isArray, clone, includes,
+  concat, uniq, isNil
 } from 'lodash'
+
+import lucene from 'lucene'
 
 // eslint-disable-next-line import/prefer-default-export
 export function bindStateChangeToObject($scope, $location, objectName, parameters) {
@@ -74,4 +77,48 @@ export function proxyWithPreparedApiQueryParameters(resource, method, args) {
   const params = args[0]
   argsCopy[0] = prepareApiQueryParameters(params)
   return resource[method](...argsCopy)
+}
+
+function luceneResultToPropertyList(result, property, items = []) {
+  const keys = Object.keys(result || {});
+  if (includes(keys, 'left') && includes(keys, 'right') && includes(keys, 'operator')) {
+    let keywords = luceneResultToPropertyList(result.left, property, items)
+    keywords = luceneResultToPropertyList(result.right, property, keywords)
+    return keywords
+  }
+  const value = result[property]
+  if (isNil(value)) return items
+  return concat(items, value)
+}
+
+function luceneResultToOperatorsList(result, items = []) {
+  const keys = Object.keys(result || {});
+  if (includes(keys, 'left') && includes(keys, 'right') && includes(keys, 'operator')) {
+    let operators = concat(items, result.operator)
+    operators = luceneResultToOperatorsList(result.left, operators)
+    operators = luceneResultToOperatorsList(result.right, operators)
+    return operators
+  }
+  return items
+}
+
+export function parseSolrQuery(str) {
+  const parseResult = lucene.parse(str)
+  const keywords = luceneResultToPropertyList(parseResult, 'term')
+  const operators = uniq(luceneResultToOperatorsList(parseResult))
+
+  if (operators.length > 1) throw new Error(`Solr query "${str}" contains more than one operator: "${operators}"`)
+
+  return [
+    keywords,
+    operators.length > 0 ? operators[0] : 'AND'
+  ]
+}
+
+const spaceRegex = /\s/
+
+export function formatSolrQuery(items, operator) {
+  return items
+    .map(item => (item.match(spaceRegex) ? `"${item}"` : item))
+    .join(` ${operator} `)
 }

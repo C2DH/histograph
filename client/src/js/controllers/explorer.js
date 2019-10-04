@@ -6,32 +6,6 @@ import {
 import moment from 'moment'
 import { withStyles, theme } from '../styles'
 
-const HelpTooltips = {
-  topicModellingScores: {
-    aggregationMethod: /* html */ `
-    <ul>
-      <li>
-        <b>MAX</b>
-        <p>
-          Circle size represents the highest score the topic reached
-          in one of the resources in the bin. It <b>does not</b> indicate how
-          often the topic has been covered in all the resources in the bin.
-        </p>
-      </li>
-      <li>
-        <b>MEAN</b>
-        <p>
-          Circle size represents the average score of the topic considering
-          all the resources in the bin. It roughly indicates how often the topic
-          has been covered in the bin but <b>does not</b> indicate the highest 
-          score the topic ever reached.
-        </p>
-      </li>
-    </ul>
-    `
-  }
-}
-
 const styles = {
   explorerGraph: {
     display: 'flex',
@@ -82,11 +56,22 @@ const styles = {
     backgroundColor: theme.colours.background.dark.primary,
     color: theme.colours.text.light.primary
   },
+  explorableConfiguration: {
+    flexGrow: 1,
+    flexBasis: '25%'
+  },
   mainPanel: {
     flex: '1 1 100%',
     flexGrow: 3,
     overflowY: 'scroll',
     margin: '1em 1em 0 1em',
+  },
+  button: {
+    display: 'flex',
+    alignItems: 'center',
+    '& i': {
+      marginRight: '0.3em'
+    }
   },
 }
 
@@ -114,8 +99,6 @@ angular.module('histograph')
   ) {
     withStyles($scope, styles)
 
-    $scope.helpTooltips = HelpTooltips
-
     // NOTE: a workaround to disable ruler (see filters.js). Ugly but saves from refactoring.
     $scope.rulerDisabled = true
 
@@ -126,6 +109,8 @@ angular.module('histograph')
 
     $scope.explorerData = {}
     $scope.explorerFiltersConfig = {}
+
+    $scope.previousQueryParams = {}
 
     /* Load explorer configuration */
     ExplorerService.getConfiguration()
@@ -149,7 +134,8 @@ angular.module('histograph')
         from,
         to,
         topicId,
-        filters
+        filters,
+        editPlotId
       } = $location.search()
       const parsedFilters = isEmpty(filters) ? undefined : JSON.parse(atob(filters))
       // const b = JSON.parse(filters || '{}')
@@ -159,7 +145,8 @@ angular.module('histograph')
         from,
         to,
         topicId,
-        filters: parsedFilters
+        filters: parsedFilters,
+        editPlotId
       }
     }
 
@@ -178,6 +165,7 @@ angular.module('histograph')
     $scope.$watch('params.to', () => parametersToUrl())
     $scope.$watch('params.topicId', () => parametersToUrl())
     $scope.$watch('params.filters', () => parametersToUrl(true), true)
+    $scope.$watch('params.editPlotId', () => parametersToUrl())
     parametersFromUrl()
 
     $scope.setBinsCount = val => {
@@ -253,33 +241,24 @@ angular.module('histograph')
       explorerConfig: $scope.explorerConfig,
     })
 
-    function updateExplorerData(params, oldParams = {}) {
+    function updateExplorerData(params) {
       if ($scope.explorerConfig === undefined) return
       const allPlotsIds = Object.keys($scope.explorerConfig)
 
       const {
         bins, from, to, filters
       } = params
-      const {
-        bins: oldBins, from: oldFrom, to: oldTo, filters: oldFilters
-      } = oldParams
 
       if (!bins) return
 
-      const commonParamsAreNotUpdated = isEqual(
-        [bins, from, to], [oldBins, oldFrom, oldTo]
-      )
-
-      let ids = allPlotsIds
-
-      if (commonParamsAreNotUpdated && (!isEmpty(filters) || !isEmpty(oldFilters))) {
-        ids = allPlotsIds.filter(id => !isEqual(filters[id], oldFilters[id]))
-      }
-
-      ids.forEach(id => {
+      allPlotsIds.forEach(id => {
         const queryParams = assignIn({ bins, from, to }, toQueryParameters(filters[id]))
+        const previousQueryParams = $scope.previousQueryParams[id]
+        if (isEqual(queryParams, previousQueryParams)) return
+
         ExplorerService.getAspectData(id, queryParams)
           .then(data => {
+            $scope.previousQueryParams[id] = queryParams
             $scope.explorerData[id] = data
           })
           .catch(e => $log.error(`Getting data ${id}:`, _.get(e, 'data.message', 'Error getting data')))
@@ -330,20 +309,12 @@ angular.module('histograph')
       $scope.params.topicId = undefined
     }
 
-    $scope.onFilterValueChanged = (plotId, key, value) => {
-      const filters = get($scope.params, 'filters', {})
-      const plotFilters = get(filters, plotId, {})
-      if (isEmpty(value)) {
-        delete plotFilters[key]
-      } else {
-        plotFilters[key] = value
-      }
-      if (isEmpty(plotFilters)) {
-        delete filters[plotId]
-      } else {
-        filters[plotId] = plotFilters
-      }
-      $scope.params.filters = filters
+    $scope.configureExplorable = plotId => {
+      $scope.params.editPlotId = plotId
+    }
+
+    $scope.finishEditingExplorableConfiguration = () => {
+      $scope.params.editPlotId = undefined
     }
 
     $scope.getTooltipContent = stepIndex => {

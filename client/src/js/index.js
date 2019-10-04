@@ -38,6 +38,10 @@ require('angular-translate-loader-static-files')
 require('perfect-scrollbar')
 require('angular-perfect-scrollbar')
 require('angular-local-storage')
+require('angular-aria')
+require('angular-animate')
+require('angular-messages')
+require('angular-material')
 
 window.imagesLoaded = require('imagesloaded')
 // https://github.com/klederson/angular-masonry-directive
@@ -90,6 +94,7 @@ require('./components/textItemsFilter.js')
 require('./components/resources-panel.js')
 require('./components/slider-value-filter.js')
 require('./components/auth.js')
+require('./components/explorable-configuration.js')
 
 require('./controllers/core.js')
 require('./controllers/filters.js')
@@ -142,6 +147,7 @@ require('../css/annotorious.css')
 require('../css/style.css')
 require('leaflet/dist/leaflet.css')
 require('../css/base.css')
+require('angular-material/angular-material.css')
 
 app.run(function ($log, AuthService) {
   if (AuthService.isAuthenticated()) {

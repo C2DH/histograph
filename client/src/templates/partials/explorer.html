@@ -13,7 +13,7 @@
     <div hi-topic-details="params.topicId"
          on-close="unselectCurrentTopic()"
          on-topic-updated="reloadData()"
-         ng-show="params.topicId !== undefined"
+         ng-if="params.topicId !== undefined"
          show-resources-button='true'
          show-close-button='true'
          class="{{classes.containerChild}} {{classes.topicDetails}}">
@@ -30,24 +30,18 @@
            hi-on-label-clicked="topicLabelClickHandler"
            hi-step-index="params.step"
            hi-get-tooltip-content="getTooltipContent"
+           hi-on-control-clicked="configureExplorable"
            class="{{classes.explorerGraph}}">
       </div>
   
       <!-- Graph footer -->
       <div class="{{classes.graphFooter}}">
         <div class="{{classes.graphFooterSection}}">
-            <div ng-repeat="(id, filters) in explorerFiltersConfig">
-              <div hi-explorer-filter="filter"
-                   hi-explorer-plot-id="{{id}}"
-                   hi-help-tooltips="helpTooltips[id]"
-                   hi-initial-value="params.filters[id][filter.key]"
-                   hi-on-changed="onFilterValueChanged"
-                   ng-repeat="filter in filters"
-                   class="{{ classes.explorerFilter }}">
-              </div>
-            </div>      
+            <button class="btn btn-default {{classes.button}}"
+                    ng-disabled="true">
+              <i class="fa fa-plus"></i> <span>Add explorable (coming soon)</span>
+            </button>
         </div>
-        
         <div class="{{classes.graphFooterSection}}">
           <div>
             <button class="btn btn-default {{classes.zoomInButton}}" 
@@ -71,6 +65,14 @@
            class="{{classes.containerChild}} {{classes.mainPanel}}">
       </div>
 
+    </div>
+
+    <!-- Plot details side panel -->
+    <div hi-explorable-configuration="params.editPlotId" 
+         hi-explorer-config="explorerConfig"
+         ng-if="params.editPlotId !== undefined"
+         on-close="finishEditingExplorableConfiguration()"
+         class="{{classes.containerChild}} {{classes.explorableConfiguration}}">
     </div>
   </div>
 </div>

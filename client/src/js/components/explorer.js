@@ -28,6 +28,9 @@ const TypeToUnits = {
   bar: 1
 }
 
+const gearIconSize = '2em'
+const gearIconMarginPadding = '0.2em'
+
 const styles = {
   tooltip: {
     background: '#eeeeeebb',
@@ -44,7 +47,31 @@ const styles = {
     '& span': {
       fontWeight: 'initial'
     }
-  }
+  },
+  controls: {
+    position: 'relative',
+    '& div': {
+      backgroundColor: '#d6d6d63b',
+      opacity: 0.3,
+      position: 'absolute',
+      border: 'none',
+      margin: gearIconMarginPadding,
+      padding: gearIconMarginPadding,
+      // marginRight: '1em',
+      outline: 'none',
+      display: 'none',
+      alignItems: 'center',
+      justifyItems: 'center',
+      '&:hover': {
+        opacity: 1,
+      },
+      '& .fa': {
+        width: gearIconSize,
+        height: gearIconSize,
+        lineHeight: gearIconSize
+      }
+    }
+  },
 }
 
 /**
@@ -71,10 +98,16 @@ const directive = {
     onBinSelected: '=hiOnBinSelected',
     onLabelClicked: '=hiOnLabelClicked',
     stepIndex: '=hiStepIndex',
-    getTooltipContent: '=hiGetTooltipContent'
+    getTooltipContent: '=hiGetTooltipContent',
+    onControlClicked: '=hiOnControlClicked',
   },
   /* html */
   template: `
+    <div class="{{classes.controls}}">
+      <div ng-repeat="id in plotIds" class="btn btn-default {{id}}">
+        <i class="fa fa-gear" ng-click="onControlClicked(id)"/>
+      </div>
+    </div>
     <div class="explorer-tooltip {{classes.tooltip}}">[tooltip-placeholder]</div>
     <div class="svg-container"></div>
   `,
@@ -82,13 +115,38 @@ const directive = {
     withStyles($scope, styles)
     const root = element[0].querySelector('.svg-container')
     const tooltipElement = element[0].querySelector('.explorer-tooltip')
+
+
+    function updateControlButtonsPositions() {
+      if (!$scope.plotIds) return
+      $scope.plotIds.forEach(id => {
+        const container = element[0].querySelector('.svg-container')
+        const g = container.querySelector(`.separator.${id}`)
+        if (!g) return
+
+        const c = element[0].querySelector(`.${$scope.classes.controls} .${id}`)
+        if (!c) return
+
+        const { y: containerY, x: containerX } = container.getBoundingClientRect()
+        const {
+          y, width: containerWidth, height: separatorHeight
+        } = g.getBoundingClientRect()
+        const { width: buttonWidth } = c.getBoundingClientRect()
+        c.style.top = `${y - containerY + separatorHeight}px`
+        c.style.left = `${containerWidth - containerX - buttonWidth / 2}px`
+        c.style.display = 'flex'
+        // console.log(` *** ${id}:`, c.style)
+      })
+    }
+
     $scope.explorer = new Explorer(root, {
       parameters: {
         handlers: {
           onBinSelected: (...args) => $scope.$apply($scope.onBinSelected(...args)),
           onLabelClicked: (...args) => $scope.$apply($scope.onLabelClicked(...args)),
           onBinOver: idx => $scope.$apply(() => { $scope.currentHighlightedBinIndex = idx }),
-          onBinOut: () => $scope.$apply(() => { $scope.currentHighlightedBinIndex = undefined })
+          onBinOut: () => $scope.$apply(() => { $scope.currentHighlightedBinIndex = undefined }),
+          onRendered: () => setTimeout(updateControlButtonsPositions, 0)
         },
         labels: {
           offset: 100,
@@ -158,6 +216,7 @@ const directive = {
         const { labels = [] } = configuration[id]
         $scope.explorer.setLabels(id, labels)
       })
+      $scope.plotIds = newPlotsIds
     })
 
     $scope.$watch('data', datum => {
@@ -178,7 +237,10 @@ const directive = {
       $scope.explorer.setSelectedBin(index)
     })
 
-    $scope.$watch(() => $scope.explorer._getWH(), () => $scope.explorer.render(), true)
+    $scope.$watch('plotIds', updateControlButtonsPositions)
+    $scope.$watch(() => $scope.explorer._getWH(), () => {
+      $scope.explorer.render()
+    }, true)
   }
 }
 
