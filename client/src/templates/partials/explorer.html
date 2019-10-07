@@ -37,10 +37,23 @@
       <!-- Graph footer -->
       <div class="{{classes.graphFooter}}">
         <div class="{{classes.graphFooterSection}}">
-            <button class="btn btn-default {{classes.button}}"
+            <!-- <button class="btn btn-default {{classes.button}}"
                     ng-disabled="true">
               <i class="fa fa-plus"></i> <span>Add explorable (coming soon)</span>
-            </button>
+            </button> -->
+
+          <div class="dropdown">
+            <div class="btn-group" uib-dropdown is-open="false">
+              <button id="add-explorable-{{uid}}" type="button" class="btn btn-default btn-line" uib-dropdown-toggle>
+                <i class="fa fa-plus"></i> <span>Add explorable</span> <span class="caret"></span>
+              </button>
+              <ul class="uib-dropdown-menu dropdown-menu" role="menu" aria-labelledby="add-explorable-{{uid}}">
+                <li ng-repeat="item in availableAspects">
+                  <a ng-click='addNewExplorable(item)'>{{ item.label }}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
         <div class="{{classes.graphFooterSection}}">
           <div>
@@ -72,6 +85,7 @@
          hi-explorer-config="explorerConfig"
          ng-if="params.editPlotId !== undefined"
          on-close="finishEditingExplorableConfiguration()"
+         on-remove-explorable="removeExplorable"
          class="{{classes.containerChild}} {{classes.explorableConfiguration}}">
     </div>
   </div>

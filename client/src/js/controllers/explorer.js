@@ -1,7 +1,7 @@
 /* eslint-env browser */
 import {
   assignIn, get, isEmpty, isEqual,
-  isArray, clone
+  isArray, clone, without, last
 } from 'lodash'
 import moment from 'moment'
 import { withStyles, theme } from '../styles'
@@ -11,7 +11,7 @@ const styles = {
     display: 'flex',
     flex: 1,
     width: '100%',
-    height: '300px',
+    height: '0px',
     alignContent: 'stretch',
     '& .svg-container': {
       width: '100%'
@@ -99,6 +99,8 @@ angular.module('histograph')
   ) {
     withStyles($scope, styles)
 
+    $scope.uid = $scope.$id
+
     // NOTE: a workaround to disable ruler (see filters.js). Ugly but saves from refactoring.
     $scope.rulerDisabled = true
 
@@ -108,25 +110,17 @@ angular.module('histograph')
     $scope.selectedItemMeta = undefined
 
     $scope.explorerData = {}
-    $scope.explorerFiltersConfig = {}
+    // $scope.explorerFiltersConfig = {}
 
     $scope.previousQueryParams = {}
 
-    /* Load explorer configuration */
-    ExplorerService.getConfiguration()
-      .then(config => {
-        $scope.explorerConfig = config
+    $scope.availableAspects = []
 
-        const ids = Object.keys(config)
-        ids.forEach(id => {
-          ExplorerService.getAspectFilters(id)
-            .then(filtersConfig => {
-              $scope.explorerFiltersConfig[id] = filtersConfig
-            })
-            .catch(e => $log.error('Filters configuration:', _.get(e, 'data.message', 'Error getting filters configuration')))
-        })
+    ExplorerService.getAvailableAspects()
+      .then(aspects => {
+        $scope.availableAspects = aspects
       })
-      .catch(e => $log.error('Explorer configuration:', _.get(e, 'data.message', 'Error getting explorer configuration')))
+      .catch(e => $log.error(e.message))
 
     function parametersFromUrl() {
       const {
@@ -135,9 +129,11 @@ angular.module('histograph')
         to,
         topicId,
         filters,
-        editPlotId
+        editPlotId,
+        explorables,
       } = $location.search()
       const parsedFilters = isEmpty(filters) ? undefined : JSON.parse(atob(filters))
+      const parsedExplorables = isEmpty(explorables) ? [] : explorables.split(',')
       // const b = JSON.parse(filters || '{}')
 
       $scope.params = {
@@ -146,14 +142,16 @@ angular.module('histograph')
         to,
         topicId,
         filters: parsedFilters,
-        editPlotId
+        editPlotId,
+        explorables: parsedExplorables
       }
     }
 
     const parametersToUrl = (replace = false) => {
-      const { filters } = $scope.params
+      const { filters, explorables } = $scope.params
       const queryParams = assignIn({}, $scope.params, {
         filters: isEmpty(filters) ? undefined : btoa(JSON.stringify(filters)),
+        explorables: isEmpty(explorables) ? undefined : explorables.join(',')
       })
       const l = $location.search(assignIn({}, $location.search(), queryParams))
       if (replace) l.replace()
@@ -166,6 +164,7 @@ angular.module('histograph')
     $scope.$watch('params.topicId', () => parametersToUrl())
     $scope.$watch('params.filters', () => parametersToUrl(true), true)
     $scope.$watch('params.editPlotId', () => parametersToUrl())
+    $scope.$watch('params.explorables', () => parametersToUrl(true), true)
     parametersFromUrl()
 
     $scope.setBinsCount = val => {
@@ -256,7 +255,9 @@ angular.module('histograph')
         const previousQueryParams = $scope.previousQueryParams[id]
         if (isEqual(queryParams, previousQueryParams)) return
 
-        ExplorerService.getAspectData(id, queryParams)
+        const { aspect } = $scope.explorerConfig[id]
+
+        ExplorerService.getAspectData(aspect, queryParams)
           .then(data => {
             $scope.previousQueryParams[id] = queryParams
             $scope.explorerData[id] = data
@@ -327,5 +328,37 @@ angular.module('histograph')
         .map(v => moment.utc(v).format('DD MMM YYYY'))
 
       return `${meta.totalResources} <span>items</span><br/> <span>from</span> ${fromTime}<br/> <span>to</span> ${toTime}`
+    }
+
+    $scope.addNewExplorable = aspect => {
+      $scope.params.explorables.push(aspect.aspect)
+    }
+
+    $scope.$watch(
+      () => ({
+        explorables: $scope.params.explorables,
+        aspects: $scope.availableAspects
+      }),
+      ({ explorables = [], aspects = [] }) => {
+        const aspectsById = aspects.reduce((acc, item) => {
+          // eslint-disable-next-line no-param-reassign
+          acc[item.aspect] = item
+          return acc
+        }, {})
+
+        $scope.explorerConfig = explorables.reduce((acc, id, idx) => {
+          const aspectConfig = aspectsById[id]
+          // eslint-disable-next-line no-param-reassign
+          if (aspectConfig !== undefined) acc[`${id}-${idx}`] = aspectConfig
+          return acc
+        }, {})
+      },
+      true
+    )
+
+    $scope.removeExplorable = explorableId => {
+      if (!explorableId) return
+      const idx = parseInt(last(explorableId.split('-')), 10)
+      $scope.params.explorables.splice(idx, 1)
     }
   })

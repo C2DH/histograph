@@ -237,22 +237,31 @@ const directive = {
       $scope.explorer.setSelectedBin(index)
     })
 
-    $scope.$watch('plotIds', updateControlButtonsPositions)
+    $scope.$watch('plotIds', updateControlButtonsPositions, true)
+    $scope.$watch('plotIds', ids => {
+      if (ids === undefined) return
+      // eslint-disable-next-line no-param-reassign
+      element[0].style.height = `${100 * ids.length}px`
+    }, true)
+
     $scope.$watch(() => $scope.explorer._getWH(), () => {
       $scope.explorer.render()
     }, true)
+
+    // When explorables are added/removed, the size of the plot is changed.
+    $scope.$watch(
+      () => element[0].getBoundingClientRect().height,
+      () => setTimeout(() => $scope.explorer.render(), 0)
+    )
   }
 }
 
 function service($resource, HgSettings) {
-  const configurationUrl = `${HgSettings.apiBaseUrl}/api/explorer/configuration`
-  const configurationResource = $resource(configurationUrl)
-
   const aspectUrl = `${HgSettings.apiBaseUrl}/api/explorer/aspects/:aspectId/:resource`
   const aspectResource = $resource(aspectUrl)
 
   return {
-    getConfiguration: () => configurationResource.get().$promise.then(v => v.toJSON()),
+    getAvailableAspects: () => aspectResource.query({}).$promise.then(v => v.map(x => x)),
     getAspectFilters: aspectId => aspectResource.query({ aspectId, resource: 'filters' }).$promise.then(v => v.map(x => x)),
     getAspectData: (aspectId, params) => aspectResource.get(assignIn({ aspectId, resource: 'data' }, params)).$promise.then(v => v.toJSON()),
   }
