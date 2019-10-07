@@ -81,9 +81,9 @@ export function proxyWithPreparedApiQueryParameters(resource, method, args) {
 
 function luceneResultToPropertyList(result, property, items = []) {
   const keys = Object.keys(result || {});
-  if (includes(keys, 'left') && includes(keys, 'right') && includes(keys, 'operator')) {
-    let keywords = luceneResultToPropertyList(result.left, property, items)
-    keywords = luceneResultToPropertyList(result.right, property, keywords)
+  if (includes(keys, 'left') || includes(keys, 'right')) {
+    let keywords = luceneResultToPropertyList(result.left || {}, property, items)
+    keywords = luceneResultToPropertyList(result.right || {}, property, keywords)
     return keywords
   }
   const value = result[property]

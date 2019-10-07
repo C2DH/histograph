@@ -1,4 +1,6 @@
-import { get, isFunction, noop } from 'lodash'
+import {
+  get, isFunction, noop, isEqual
+} from 'lodash'
 import { withStyles, theme } from '../styles'
 import { parseSolrQuery, formatSolrQuery } from '../utils'
 
@@ -181,31 +183,42 @@ function controller($scope) {
   $scope.listValue = []
   $scope.solr = { keywordGroupingMethod: 'AND' }
 
-  if ($scope.value === undefined && $scope.initialValue) {
-    $scope.value = $scope.initialValue
-    $scope.textInputValue.value = $scope.initialValue
+  function onValueUpdated() {
+    if (!$scope.config) return
+    const { type } = $scope.config
+    const { value } = $scope
 
-    if ($scope.config.type === 'solr-keywords') {
-      const [keywords, method] = parseSolrQuery($scope.initialValue || '')
+    if (value === undefined) return
+
+    if (type === 'solr-keywords') {
+      const [keywords, method] = parseSolrQuery(value || '')
       $scope.solr.keywordGroupingMethod = method
       $scope.listValue = keywords
     }
+    if (type === 'multi-selection') $scope.textInputValue.value = value
   }
 
-  $scope.$watch('config', config => {
-    if (!config) return
+  $scope.$watch('value', onValueUpdated, true)
+  $scope.$watch('config', onValueUpdated, true)
 
-    if ($scope.value === undefined) {
-      $scope.value = ''
-      if (config.type === 'multi-selection') $scope.value = []
-      // eslint-disable-next-line prefer-destructuring
-      if (config.type === 'selection') $scope.value = config.values[0]
-      if (config.type === 'solr-keywords') {
-        const [keywords, method] = parseSolrQuery($scope.value || '')
-        $scope.solr.keywordGroupingMethod = method
-        $scope.listValue = keywords
-      }
-    }
+  $scope.$watch('initialValue', initialValue => {
+    if (initialValue === undefined || $scope.value !== undefined) return
+    $scope.value = $scope.initialValue
+  }, true)
+
+  function updateValueForSolr() {
+    const values = $scope.listValue
+    const method = $scope.solr.keywordGroupingMethod
+    if (values === undefined) return
+    $scope.value = formatSolrQuery(values, method)
+  }
+  $scope.$watch('listValue', (newVal, oldVal) => {
+    if (isEqual(newVal, oldVal)) return
+    updateValueForSolr()
+  }, true)
+  $scope.$watch('solr', (newVal, oldVal) => {
+    if (isEqual(newVal, oldVal)) return
+    updateValueForSolr()
   }, true)
 
   $scope.addOrRemoveMultiSelectionItem = item => {
@@ -235,20 +248,9 @@ function controller($scope) {
     fn($scope.plotId, get($scope.config, 'key'), v)
   }, true)
 
-
-  $scope.$watch(
-    () => ({ method: $scope.solr.keywordGroupingMethod, values: $scope.listValue }),
-    ({ method, values }) => {
-      $scope.value = formatSolrQuery(values, method)
-    },
-    true
-  )
-
   // TODO: coming soon
   // eslint-disable-next-line no-unused-vars
-  $scope.keywordsSearch = keyword => {
-    return Promise.resolve([])
-  }
+  $scope.keywordsSearch = keyword => Promise.resolve([])
 }
 
 angular.module('histograph')
