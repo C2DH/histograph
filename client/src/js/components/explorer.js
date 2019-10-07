@@ -72,6 +72,9 @@ const styles = {
       }
     }
   },
+  selectedGear: {
+    background: '#33ff00 !important'
+  }
 }
 
 /**
@@ -98,13 +101,14 @@ const directive = {
     onBinSelected: '=hiOnBinSelected',
     onLabelClicked: '=hiOnLabelClicked',
     stepIndex: '=hiStepIndex',
+    selectedPlotId: '=hiSelectedPlotId',
     getTooltipContent: '=hiGetTooltipContent',
     onControlClicked: '=hiOnControlClicked',
   },
   /* html */
   template: `
     <div class="{{classes.controls}}">
-      <div ng-repeat="id in plotIds" class="btn btn-default {{id}}">
+      <div ng-repeat="id in plotIds" class="btn btn-default {{id}} {{id === selectedPlotId ? classes.selectedGear : ''}}">
         <i class="fa fa-gear" ng-click="onControlClicked(id)"/>
       </div>
     </div>
