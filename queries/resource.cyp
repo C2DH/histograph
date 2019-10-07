@@ -1336,12 +1336,13 @@ WITH {
   nationalities: collect(e.metadata__nationality) 
 } AS result
 RETURN result
-ORDER BY result.startDate
+ORDER BY r.start_time
 
 // name: find_keyword_frequency_aspect
-CALL db.index.fulltext.queryNodes("text_en", {keyword})
-YIELD node as r
-WITH r
+CALL db.index.fulltext.queryNodes("text_en", {keyword}) 
+YIELD node as r 
+WITH collect(r.uuid) as mentioned_ids
+MATCH (r:resource) 
 WHERE
   {if:start_time}
     r.start_time >= {start_time} AND
@@ -1349,31 +1350,13 @@ WHERE
   {if:end_time}
     r.start_time <= {end_time} AND
   {/if}
-
   true
 RETURN {
-  uuid: r.uuid, 
-  startDate: r.start_date,
-  mentions: 1
+	uuid: r.uuid, 
+  startDate: r.start_date, 
+  mentions: CASE WHEN r.uuid in mentioned_ids THEN 1 ELSE 0 END
 } as res
-UNION
-MATCH (r:resource)
-WHERE
-  {if:start_time}
-    r.start_time > {start_time} AND
-  {/if}
-  {if:end_time}
-    r.start_time < {end_time} AND
-  {/if}
-
-  true
-WITH r
-RETURN {
-  uuid: r.uuid, 
-  startDate: r.start_date,
-  mentions: 0
-} as res
-
+ORDER BY r.start_time
 
 // name: save_or_update
 // NOTE: preferred method to modify resource.
