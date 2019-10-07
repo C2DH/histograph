@@ -266,6 +266,7 @@ function service($resource, HgSettings) {
 
   return {
     getAvailableAspects: () => aspectResource.query({}).$promise.then(v => v.map(x => x)),
+    getDefaultAspects: () => aspectResource.query({ aspectId: 'default' }).$promise.then(v => v.map(x => x)),
     getAspectFilters: aspectId => aspectResource.query({ aspectId, resource: 'filters' }).$promise.then(v => v.map(x => x)),
     getAspectData: (aspectId, params) => aspectResource.get(assignIn({ aspectId, resource: 'data' }, params)).$promise.then(v => v.toJSON()),
   }

@@ -122,6 +122,14 @@ angular.module('histograph')
       })
       .catch(e => $log.error(e.message))
 
+    ExplorerService.getDefaultAspects()
+      .then(defaultAspects => {
+        if (isEmpty($scope.params.explorables)) {
+          $scope.params.explorables = defaultAspects
+        }
+      })
+      .catch(e => $log.error(e.message))
+
     function parametersFromUrl() {
       const {
         step,
@@ -350,5 +358,8 @@ angular.module('histograph')
       if (!explorableId) return
       const idx = parseInt(last(explorableId.split('-')), 10)
       $scope.params.explorables.splice(idx, 1)
+      if ($scope.params.filters) {
+        delete $scope.params.filters[explorableId]
+      }
     }
   })
