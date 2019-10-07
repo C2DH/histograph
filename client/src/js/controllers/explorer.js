@@ -186,25 +186,15 @@ angular.module('histograph')
       const data = getReferenceData()
       if (data === undefined) return
 
-      const maxBinsToDisplay = $scope.binsCount
       const binsMeta = get(data, 'meta', [])
 
       const currentBinIndex = $scope.params.step !== undefined
         ? $scope.params.step : binsMeta.length / 2
 
-      const itemsInSelectedBin = get(binsMeta, `${currentBinIndex}.totalResources`)
-      if (!itemsInSelectedBin) return
+      const meta = get(binsMeta, currentBinIndex)
 
-      const binsCountToZoomTo = Math.floor(maxBinsToDisplay / itemsInSelectedBin) || 1
-
-      const firstBinMetaIndex = Math.ceil(currentBinIndex - binsCountToZoomTo / 4)
-      const lastBinMetaIndex = Math.floor(currentBinIndex + binsCountToZoomTo / 4)
-
-      const firstBinMeta = get(binsMeta, firstBinMetaIndex, binsMeta[0])
-      const lastBinMeta = get(binsMeta, lastBinMetaIndex, binsMeta[binsMeta.length - 1])
-
-      if (firstBinMeta && lastBinMeta) {
-        const [from, to] = [firstBinMeta.minStartDate, lastBinMeta.maxStartDate].map(v => v.replace(/T.*$/, ''))
+      if (meta && meta.totalResources > 1) {
+        const [from, to] = [meta.minStartDate, meta.maxStartDate].map(v => v.replace(/T.*$/, ''))
 
         $location.search(angular.extend($location.search(), {
           from,

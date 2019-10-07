@@ -9,7 +9,7 @@ services:
     environment: 
       NEO4J_AUTH: neo4j/neo4jpwd
     volumes:
-      - ~/.neo4j/histograph-memc:/data
+      - ~/.neo4j/histograph:/data
   # histograph:
   #   image: theorm/histograph
   #   command: node server.js
