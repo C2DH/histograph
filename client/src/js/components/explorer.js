@@ -1,4 +1,7 @@
-import { difference, assignIn, get } from 'lodash'
+import {
+  difference, assignIn, get,
+  sum
+} from 'lodash'
 import { Explorer, HeatBubblePlot, BarPlot } from 'd3-explorer'
 import { interpolateRdYlGn } from 'd3-scale-chromatic'
 import { scaleSequential } from 'd3'
@@ -244,8 +247,12 @@ const directive = {
     $scope.$watch('plotIds', updateControlButtonsPositions, true)
     $scope.$watch('plotIds', ids => {
       if (ids === undefined) return
+      const configuration = $scope.configuration || {}
+
+      const unitsList = ids.map(id => get(configuration, `${id}.units`, 1))
+
       // eslint-disable-next-line no-param-reassign
-      element[0].style.height = `${100 * ids.length}px`
+      element[0].style.height = `${sum(unitsList.map(unit => unit * 100))}px`
     }, true)
 
     $scope.$watch(() => $scope.explorer._getWH(), () => {
