@@ -72,6 +72,9 @@ const styles = {
       }
     }
   },
+  selectedGear: {
+    background: '#33ff00 !important'
+  }
 }
 
 /**
@@ -98,13 +101,14 @@ const directive = {
     onBinSelected: '=hiOnBinSelected',
     onLabelClicked: '=hiOnLabelClicked',
     stepIndex: '=hiStepIndex',
+    selectedPlotId: '=hiSelectedPlotId',
     getTooltipContent: '=hiGetTooltipContent',
     onControlClicked: '=hiOnControlClicked',
   },
   /* html */
   template: `
     <div class="{{classes.controls}}">
-      <div ng-repeat="id in plotIds" class="btn btn-default {{id}}">
+      <div ng-repeat="id in plotIds" class="btn btn-default {{id}} {{id === selectedPlotId ? classes.selectedGear : ''}}">
         <i class="fa fa-gear" ng-click="onControlClicked(id)"/>
       </div>
     </div>
@@ -237,22 +241,32 @@ const directive = {
       $scope.explorer.setSelectedBin(index)
     })
 
-    $scope.$watch('plotIds', updateControlButtonsPositions)
+    $scope.$watch('plotIds', updateControlButtonsPositions, true)
+    $scope.$watch('plotIds', ids => {
+      if (ids === undefined) return
+      // eslint-disable-next-line no-param-reassign
+      element[0].style.height = `${100 * ids.length}px`
+    }, true)
+
     $scope.$watch(() => $scope.explorer._getWH(), () => {
       $scope.explorer.render()
     }, true)
+
+    // When explorables are added/removed, the size of the plot is changed.
+    $scope.$watch(
+      () => element[0].getBoundingClientRect().height,
+      () => setTimeout(() => $scope.explorer.render(), 0)
+    )
   }
 }
 
 function service($resource, HgSettings) {
-  const configurationUrl = `${HgSettings.apiBaseUrl}/api/explorer/configuration`
-  const configurationResource = $resource(configurationUrl)
-
   const aspectUrl = `${HgSettings.apiBaseUrl}/api/explorer/aspects/:aspectId/:resource`
   const aspectResource = $resource(aspectUrl)
 
   return {
-    getConfiguration: () => configurationResource.get().$promise.then(v => v.toJSON()),
+    getAvailableAspects: () => aspectResource.query({}).$promise.then(v => v.map(x => x)),
+    getDefaultAspects: () => aspectResource.query({ aspectId: 'default' }).$promise.then(v => v.map(x => x)),
     getAspectFilters: aspectId => aspectResource.query({ aspectId, resource: 'filters' }).$promise.then(v => v.map(x => x)),
     getAspectData: (aspectId, params) => aspectResource.get(assignIn({ aspectId, resource: 'data' }, params)).$promise.then(v => v.toJSON()),
   }

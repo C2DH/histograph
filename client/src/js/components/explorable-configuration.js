@@ -121,7 +121,7 @@ function controller($scope, $log, $location, ExplorerService) {
     if (!config) return
     $scope.label = get(config, 'label')
 
-    ExplorerService.getAspectFilters($scope.plotId)
+    ExplorerService.getAspectFilters(config.aspect)
       .then(filters => {
         $scope.filters = filters
       })
@@ -165,9 +165,8 @@ const template = /* html */ `
 
   <div class="{{classes.row}}">
     <button class="btn btn-default {{classes.removeExplorableButton}}"
-            ng-click="onClose()"
-            ng-disabled="true">
-      <i class="fa fa-times"/> <span>Remove from plot (coming soon)</span>
+            ng-click="onRemoveExplorable(plotId); onClose()">
+      <i class="fa fa-times"/> <span>Remove from plot</span>
     </button>
   </div>
 
@@ -191,6 +190,7 @@ const directive = {
     plotId: '=hiExplorableConfiguration',
     onCloseClicked: '&onClose',
     explorerConfig: '=hiExplorerConfig',
+    onRemoveExplorable: '<onRemoveExplorable'
   },
   template,
   controller: 'ExplorableConfigurationCtrl',
