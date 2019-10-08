@@ -222,8 +222,10 @@ function controller($scope) {
   }, true)
 
   $scope.addOrRemoveMultiSelectionItem = item => {
-    if ($scope.value.indexOf(item) >= 0) {
+    if ($scope.value !== undefined && $scope.value.indexOf(item) >= 0) {
       $scope.value = $scope.value.filter(v => v !== item)
+    } else if ($scope.value === undefined) {
+      $scope.value = [item]
     } else {
       $scope.value.push(item)
     }
