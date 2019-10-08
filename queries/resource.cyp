@@ -1334,7 +1334,7 @@ WITH {
   startDate: r.start_date, 
   endDate: r.end_date,
   nationalities: collect(e.metadata__nationality) 
-} AS result
+} AS result, r
 RETURN result
 ORDER BY r.start_time
 
