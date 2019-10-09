@@ -56,7 +56,6 @@ const validCreateResourcePayload = {
 
 describe('createResourcePayloadToEntityAndAppearanceList', () => {
   it('converts valid payload', () => {
-
     const expectedMergeEntitiesList = [
       {
         entity: {
@@ -65,7 +64,10 @@ describe('createResourcePayloadToEntityAndAppearanceList', () => {
         },
         appearance: {
           languages: ['en'],
-          frequency: 2
+          frequency: 2,
+          context: {
+            en: [[0, 10], [30, 40]]
+          }
         },
         type: 'location'
       },
@@ -76,7 +78,10 @@ describe('createResourcePayloadToEntityAndAppearanceList', () => {
         },
         appearance: {
           languages: ['en'],
-          frequency: 1
+          frequency: 1,
+          context: {
+            en: [[10, 20]]
+          }
         },
         type: 'person',
       }
@@ -142,7 +147,6 @@ describe('createResourcePayloadToEntityAndAppearanceList', () => {
 
 describe('createResourcePayloadToVersionList', () => {
   it('converts valid payload', () => {
-
     const mergeEntitiesList = createResourcePayloadToEntityAndAppearanceList(
       validCreateResourcePayload
     )

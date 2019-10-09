@@ -2,9 +2,10 @@
 const assert = require('assert')
 const { zip } = require('lodash')
 const generateCsv = require('csv-stringify/lib/sync')
+const parseCsv = require('csv-parse/lib/sync')
 
 const {
-  CsvService
+  CsvService, serializerOptions, parserOptions
 } = require('../../../../lib/tools/neo4jImport/csv')
 const { validPayload } = require('./converters.test')
 const {
@@ -39,16 +40,19 @@ describe('CsvService', () => {
     assert.equal(csvLines.length, appearances.length)
 
     const expectedStringRegexes = [
-      /1,1,appears_in,2,en,,0,0,[^,]+,[^,]+,[^,]+,[^,]+/,
-      /2,1,appears_in,1,en,,0,0,[^,]+,[^,]+,[^,]+,[^,]+/,
+      /1,1,appears_in,2,en,5;11;31;37,,0,0,[^,]+,[^,]+,[^,]+,[^,]+/,
+      /2,1,appears_in,1,en,68;74,,0,0,[^,]+,[^,]+,[^,]+,[^,]+/,
     ]
     zip(csvLines, expectedStringRegexes)
       .forEach(([s, regex]) => {
-        const row = generateCsv([s])
+        const row = generateCsv([s], serializerOptions)
         assert.ok(row.match(regex), `"${row}" does not match "${regex}"`)
+
+        const parsedRow = parseCsv(row, parserOptions)[0]
+        assert.deepEqual(parsedRow, s)
       })
 
-    const expectedHeader = ':START_ID(entity),:END_ID(resource),:TYPE,frequency:int,languages:string[],upvote:string[],celebrity:int,score:int,creation_date:string,creation_time:int,last_modification_date:string,last_modification_time:int'
+    const expectedHeader = ':START_ID(entity),:END_ID(resource),:TYPE,frequency:int,languages:string[],context__en:int[],upvote:string[],celebrity:int,score:int,creation_date:string,creation_time:int,last_modification_date:string,last_modification_time:int'
     assert.equal(csvHeader, expectedHeader)
   })
 

@@ -128,7 +128,8 @@ const getExpectedResult = (
         frequency: 2,
         score: 0,
         upvote: [],
-        languages: ['en']
+        languages: ['en'],
+        context__en: [5, 11, 31, 37]
       }
     },
     {
@@ -141,7 +142,8 @@ const getExpectedResult = (
         frequency: 1,
         score: 0,
         upvote: [],
-        languages: ['en']
+        languages: ['en'],
+        context__en: [68, 74]
       }
     }
   ],
