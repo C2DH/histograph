@@ -1,104 +1,33 @@
-// name: get_resource
+// name: get_resource_with_details
 // get resource with its version and comments
 MATCH (res:resource {uuid: {id}})
 WITH res
 OPTIONAL MATCH (res)<-[r_cur:curates]-(u:user {username:{username}})
-WITH res, count(r_cur) as curated_by_user
 OPTIONAL MATCH (res)<-[r_lik:likes]-(u:user {username:{username}})
-WITH res, curated_by_user, count(r_lik)> 0 as loved_by_user
 OPTIONAL MATCH (lover:user)-[:likes]->(res)
-WITH res, curated_by_user, loved_by_user, count(lover) as lovers
 OPTIONAL MATCH (curator:user)-[:curates]->(res)
-WITH res, curated_by_user, loved_by_user, lovers, count(curator) as curators
-
-OPTIONAL MATCH (res)-[r_pla:appears_in]-(pla:`place`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, r_pla, pla
-ORDER BY r_pla.score DESC, r_pla.tfidf DESC, r_pla.frequency DESC
-WITH res, curated_by_user, loved_by_user, curators, lovers, filter(x in collect({  
-      id: pla.uuid,
-      type: 'place',
-      props: pla,
-      rel: r_pla
-    }) WHERE exists(x.id)) as places
-
-OPTIONAL MATCH (res)-[r_loc:appears_in]-(loc:`location`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, r_loc, loc
-ORDER BY r_loc.score DESC, r_loc.tfidf DESC, r_loc.frequency DESC
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, filter(x in collect({  
-      id: loc.uuid,
-      type: 'location',
-      props: loc,
-      rel: r_loc
-    }) WHERE exists(x.id)) as locations
-
-OPTIONAL MATCH (res)-[r_per:appears_in]-(per:`person`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, r_per, per
-ORDER BY r_per.score DESC, r_per.tfidf DESC, r_per.frequency DESC
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, filter(x in collect({
-      id: per.uuid,
-      type: 'person',
-      props: per,
-      rel: r_per
-    }) WHERE exists(x.id)) as persons
-
-OPTIONAL MATCH (res)-[r_org:appears_in]-(org:`organization`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, persons, r_org, org
-ORDER BY r_org.score DESC, r_org.tfidf DESC, r_org.frequency DESC
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, persons, filter(x in collect({  
-      id: org.uuid,
-      type: 'organization',
-      props: org,
-      rel: r_org
-    }) WHERE exists(x.id)) as organizations
-
-OPTIONAL MATCH (res)-[r_soc:appears_in]-(soc:`social_group`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, persons, organizations, r_soc, soc
-ORDER BY r_soc.score DESC, r_soc.tfidf DESC, r_soc.frequency DESC
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, persons, organizations, filter(x in collect({
-      id: soc.uuid,
-      type: 'social_group',
-      props: soc,
-      rel: r_soc
-    }) WHERE exists(x.id)) as social_groups
-
-OPTIONAL MATCH (res)-[r_the:appears_in]-(the:`theme`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, persons, organizations, social_groups, filter(x in collect({
-      id: the.uuid,
-      type: 'theme',
-      props: the,
-      rel: r_the
-    }) WHERE exists(x.id)) as themes
-
-OPTIONAL MATCH (ver)-[:describes]->(res)
-OPTIONAL MATCH (res)-[:belongs_to]->(col)
 OPTIONAL MATCH (com)-[:mentions]->(res)
 OPTIONAL MATCH (inq)-[:questions]->(res)
-
 OPTIONAL MATCH (after:resource)-[:comes_after]->(res)
 OPTIONAL MATCH (res)-[:comes_after]->(before:resource)
+OPTIONAL MATCH (res)-[appearance:appears_in]-(ent:entity)
 
 RETURN {
-  resource: {
-    id: res.uuid,
-    type: last(labels(res)),
-    props: res,
-    curated_by_user: curated_by_user,
-    loved_by_user: loved_by_user,
-    versions: EXTRACT(p in COLLECT(DISTINCT ver)|{name: p.name, id: p.uuid, yaml:p.yaml, language:p.language, type: last(labels(p))}),
-    locations: locations,
-    places: places,
-    persons:   persons,
-    organizations: organizations,
-    social_groups:  social_groups,
-    themes:  themes,
-    //collections: EXTRACT(p in COLLECT(DISTINCT col)|{name: p.name, id: p.uuid, type: 'collection'}),
-    comments: count(distinct com),
-    inquiries: count(distinct inq),
-    lovers: lovers,
-    curators: curators,
-    previous_resource_uuid: before.uuid,
-    next_resource_uuid: after.uuid 
-  }
+  id: res.uuid,
+  resource: res,
+  entities_and_appearances: collect({ 
+    entity: ent, 
+    appearance: appearance, 
+    type: last(labels(ent))
+  }),
+  curated_by_user: count(r_cur),
+  loved_by_user: count(r_lik)> 0,
+  comments: count(distinct com),
+  inquiries: count(distinct inq),
+  lovers: count(lover),
+  curators: count(curator),
+  previous_resource_uuid: before.uuid,
+  next_resource_uuid: after.uuid 
 } AS result
 
 

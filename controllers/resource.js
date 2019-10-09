@@ -6,6 +6,10 @@
   ===
   
 */
+const createError = require('http-errors')
+const { isEmpty, assignIn } = require('lodash')
+const decypher = require('decypher')
+
 var settings   = require('../settings'),
     queries    = require('decypher')('./queries/resource.cyp'),
     parser     = require('../parser'),
@@ -20,13 +24,21 @@ var settings   = require('../settings'),
     Action     = require('../models/action'),
     Entity     = require('../models/entity');
     Resource   = require('../models/resource');
- 
-const createError = require('http-errors')
-const { isEmpty, assignIn } = require('lodash')
+
+/* eslint-enable */
+
 const { asyncHandler } = require('../lib/util/express')
 
 const { executeQuery } = require('../lib/util/neo4j')
-const topicQueries  = require('decypher')('./queries/topic.cyp')
+const { addAnnotations } = require('../lib/logic/resource/annotations')
+
+const topicQueries = decypher('./queries/topic.cyp')
+
+const {
+  getFullResourceWithDetails
+} = require('../lib/logic/db')
+
+/* eslint-disable */
 
 module.exports = function(io){
   // io socket event listener
@@ -67,15 +79,27 @@ module.exports = function(io){
       if(ids.length == 0)
         return res.error(404);
       if(ids.length == 1)
-        Resource.get({id: req.params.id}, req.user, function (err, item) {
-          if(err == helpers.IS_EMPTY)
-            return res.error(404);
-          if(err)
-            return helpers.cypherQueryError(err, res);
-          return res.ok({
-            item: item
-          });
-        })
+        getFullResourceWithDetails(req.params.id, req.user.username)
+          .then(resourceWithDetails => {
+            if (!resourceWithDetails) return res.error(404)
+            const result = assignIn({}, resourceWithDetails, {
+              resource: addAnnotations(resourceWithDetails.resource, resourceWithDetails.entities_and_appearances)
+            })
+            res.ok(result)
+          })
+          .catch(err => {
+            console.error(err.stack)
+            helpers.cypherQueryError(err, res)
+          })
+      // Resource.get({id: req.params.id}, req.user, function (err, item) {
+      //     if(err == helpers.IS_EMPTY)
+      //       return res.error(404);
+      //     if(err)
+      //       return helpers.cypherQueryError(err, res);
+      //     return res.ok({
+      //       item: item
+      //     });
+      //   })
       else
         Resource.getByIds({
           ids: ids
