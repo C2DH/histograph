@@ -42,16 +42,6 @@ const validateTestsValid = {
     },
     schemaUri: 'db/appears_in.json'
   },
-  'db.version': {
-    testJson: {
-      service: 'test-ned',
-      language: 'en',
-      yaml: '...',
-      creation_date: new Date().toISOString(),
-      creation_time: Date.now(),
-    },
-    schemaUri: 'db/version.json'
-  },
   'api.management.create_resource.payload': {
     testJson: {
       resource: {
@@ -150,19 +140,6 @@ const validateTestsInvalid = {
     expectedErrors: [
       ['unknownfield', 'unexpected additional property'],
       ['frequency', 'should be integer']
-    ]
-  },
-  'db.version': {
-    testJson: {
-      language: ['en'],
-      foo: 'bar'
-    },
-    schemaUri: 'db/version.json',
-    expectedErrors: [
-      ['foo', 'unexpected additional property'],
-      ['service', 'missing required property'],
-      ['language', 'should be string'],
-      ['yaml', 'missing required property']
     ]
   },
   'api.management.create_resource.payload': {

@@ -1,5 +1,5 @@
 
-import { get, find, first } from 'lodash'
+import { get, find, head } from 'lodash'
 import marked from 'marked'
 
 angular.module('histograph')
@@ -30,7 +30,7 @@ angular.module('histograph')
             }), 'annotation');
 
             if (!annotation) {
-              annotation = get(first(scope.context.annotations), 'annotation');
+              annotation = get(head(scope.context.annotations), 'annotation');
             }
             // annotation has to be there, otherwise an exception is thrown
             scope.text = annotation[attrs.field];
