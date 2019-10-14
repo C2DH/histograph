@@ -1355,7 +1355,7 @@ angular.module('histograph')
   })
 
   .controller('ResourceContextCtrl', function ($scope, $log, $stateParams, $filter, specials, relatedItems, relatedModel, relatedVizFactory, relatedFactory, socket, EVENTS, $controller) {
-    $scope.currentTab = $scope.item.props.iiif_url ? 'resource-image' : 'related-resource';
+    $scope.currentTab = $scope.item.resource.iiif_url ? 'resource-image' : 'related-resource';
 
     $controller('RelatedItemsCtrl', {
       $scope: $scope,

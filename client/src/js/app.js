@@ -111,7 +111,7 @@ module.exports = angular
     // $translateProvider.useMissingTranslationHandlerLog();
     $translateProvider.useSanitizeValueStrategy('sanitize');
     $translateProvider.useStaticFilesLoader({
-      prefix: 'locale/locale-', // path to translations files
+      prefix: '/locale/locale-', // path to translations files
       suffix: '.json'// suffix, currently- extension of the translations
     });
     $translateProvider.preferredLanguage('en_US');// is applied on first load
@@ -720,7 +720,7 @@ module.exports = angular
           resource: function (ResourceFactory, $stateParams) {
             return ResourceFactory.get({
               id: $stateParams.id
-            }).$promise;
+            }).$promise.then(({ result }) => result);
           },
           // user annotations, if any
           annotations: function (ResourceRelatedFactory, $stateParams) {

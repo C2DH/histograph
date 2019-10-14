@@ -377,6 +377,7 @@ a#header-title {
   cursor: pointer;
   border: 1px solid transparent;
   transition: background .3s ease-out;
+  margin-right: 4px;
 }
 
 .tag.lang{

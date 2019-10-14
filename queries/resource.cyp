@@ -2,6 +2,8 @@
 // get resource with its version and comments
 MATCH (res:resource {uuid: {id}})
 WITH res
+OPTIONAL MATCH (res)-[appearance:appears_in]-(ent:entity)
+WITH res, collect(appearance) as appearances, collect(ent) as entities
 OPTIONAL MATCH (res)<-[r_cur:curates]-(u:user {username:{username}})
 OPTIONAL MATCH (res)<-[r_lik:likes]-(u:user {username:{username}})
 OPTIONAL MATCH (lover:user)-[:likes]->(res)
@@ -10,16 +12,22 @@ OPTIONAL MATCH (com)-[:mentions]->(res)
 OPTIONAL MATCH (inq)-[:questions]->(res)
 OPTIONAL MATCH (after:resource)-[:comes_after]->(res)
 OPTIONAL MATCH (res)-[:comes_after]->(before:resource)
-OPTIONAL MATCH (res)-[appearance:appears_in]-(ent:entity)
 
 RETURN {
   id: res.uuid,
   resource: res,
-  entities_and_appearances: collect({ 
-    entity: ent, 
-    appearance: appearance, 
-    type: last(labels(ent))
-  }),
+  entities_and_appearances: [
+    i IN range(0, size(entities) - 1) | {
+      entity: entities[i], 
+      appearance: appearances[i], 
+      type: last(labels(entities[i]))
+    }
+  ],
+  // entities_and_appearances: collect({ 
+  //   entity: ent, 
+  //   appearance: appearance, 
+  //   type: last(labels(ent))
+  // }),
   curated_by_user: count(r_cur),
   loved_by_user: count(r_lik)> 0,
   comments: count(distinct com),
