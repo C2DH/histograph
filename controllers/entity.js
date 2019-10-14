@@ -573,15 +573,7 @@ module.exports = function(io){
         },
         orderby = form.params.orderby = _t[''+form.params.orderby]; 
      
-      Entity.getRelatedResources(form.params, function (err, items, info) {
-        
-        if(form.params.limit == 1 && items.length)
-          Resource.get({
-            id: items[0].id
-          }, req.user, function (err, item) {
-            helpers.models.getMany(err, res, [item], info, form.params);
-          });
-        else
+      Entity.getRelatedResources(form.params, function (err, items, info) {        
           helpers.models.getMany(err, res, items, info, form.params);
       });
     },

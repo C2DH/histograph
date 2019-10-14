@@ -289,19 +289,10 @@ WITH u_rel, res, locations, persons, organizations, collect({
       rel: r_soc
     })[0..5] as social_groups
 
-{if:with}
-WITH u_rel, res, locations, persons, organizations, social_groups
-  OPTIONAL MATCH (res)--(ann:annotation) 
-  WITH u_rel, res, locations, persons, organizations, social_groups, collect(ann) as annotations
-{/if}
-
 RETURN {
   id: res.uuid,
   type: 'resource',
   props: res,
-  {if:with}
-    annotations: annotations,
-  {/if}
   persons:     persons,
   organizations: organizations,
   locations:    locations,

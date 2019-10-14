@@ -1,5 +1,5 @@
 // name: get_resource_with_details
-// get resource with its version and comments
+// get resource with its comments
 MATCH (res:resource {uuid: {id}})
 WITH res
 OPTIONAL MATCH (res)-[appearance:appears_in]-(ent:entity)
@@ -154,19 +154,11 @@ WITH res, locations, persons, organizations, social_groups, filter(x in collect(
       rel: r_the
     }) WHERE exists(x.id))[0..5] as themes
 
-{if:with}
-  OPTIONAL MATCH (res)--(ann:annotation) 
-  WITH res, collect(ann) as annotations, locations, persons, organizations, themes, social_groups
-{/if}
-{unless:with}
-  WITH res, [] as annotations, locations, persons, organizations, themes, social_groups
-{/unless}
-
+WITH res, locations, persons, organizations, themes, social_groups
 RETURN {
   id: res.uuid,
   type: 'resource',
   props: res,
-  annotations: annotations,
   persons:     persons,
   themes:     themes,
   organizations: organizations,
@@ -182,7 +174,7 @@ ORDER BY resource.props.start_time ASC
 
 
 // name: count_resources
-// count resources having a version, with current filters
+// count resources with current filters
 {if:ids}
 // UUID match
 MATCH (r:resource)
@@ -244,30 +236,6 @@ RETURN {
   count_items: count(res),
   total_items: total_items
 } // count per type
-
-
-
-// name: get_resources_by_ids
-// get resources with number of comments, if any
-MATCH (res:resource)<-[:appears_in]-()
-WHERE res.uuid in {ids}
-WITH DISTINCT res
-    OPTIONAL MATCH (ver)-[:describes]->(res)
-    OPTIONAL MATCH (ent)-[:appears_in]->(res)
-    OPTIONAL MATCH (res)-[:belongs_to]->(col)
-    OPTIONAL MATCH (com)-[:mentions]->(res)
-    OPTIONAL MATCH (inq)-[:questions]->(res)
-  WITH ver, res, ent, col, com, inq, {
-      id: res.uuid,
-      props: res,
-      versions: EXTRACT(p in COLLECT(DISTINCT ver)|{name: p.name, id: p.uuid, yaml:p.yaml, language:p.language, type: last(labels(p))}),
-      entities: EXTRACT(p in COLLECT(DISTINCT ent)|{name: p.name, id: p.uuid, type: last(labels(p)), props: p}),
-      collections: EXTRACT(p in COLLECT(DISTINCT col)|{name: p.name, id: p.uuid, type: 'collection'}),
-      comments: count(distinct com),
-      inquiries: count(distinct inq)
-    } AS result
-  RETURN result
-
 
 // name: count_related_resources
 // get top 100 similar resources sharing the same persons, orderd by time proximity if this info is available

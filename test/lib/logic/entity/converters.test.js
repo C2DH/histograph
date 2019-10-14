@@ -1,11 +1,9 @@
 /* eslint-env mocha */
 const assert = require('assert')
 const { omit } = require('lodash')
-const YAML = require('yamljs')
 
 const {
-  createResourcePayloadToEntityAndAppearanceList,
-  createResourcePayloadToVersionList
+  createResourcePayloadToEntityAndAppearanceList
 } = require('../../../../lib/logic/entity/converters')
 
 const validCreateResourcePayload = {
@@ -142,36 +140,5 @@ describe('createResourcePayloadToEntityAndAppearanceList', () => {
     } catch (e) {
       assert.equal(e.message, 'JSON validation errors: "entitiesLocations[0].entityIndex": missing required property')
     }
-  })
-})
-
-describe('createResourcePayloadToVersionList', () => {
-  it('converts valid payload', () => {
-    const mergeEntitiesList = createResourcePayloadToEntityAndAppearanceList(
-      validCreateResourcePayload
-    )
-
-    const expectedVersions = [
-      {
-        language: 'en',
-        service: 'unknown',
-        yaml: YAML.stringify([
-          { id: mergeEntitiesList[0].uuid, context: { left: 0, right: 10 } },
-          { id: mergeEntitiesList[0].uuid, context: { left: 30, right: 40 } },
-          { id: mergeEntitiesList[1].uuid, context: { left: 10, right: 20 } },
-        ])
-      }
-    ]
-
-    const versions = createResourcePayloadToVersionList(
-      validCreateResourcePayload, mergeEntitiesList
-    )
-
-    const variableFields = ['creation_date', 'creation_time']
-
-    assert.deepEqual(
-      versions.map(v => omit(v, variableFields)),
-      expectedVersions
-    )
   })
 })

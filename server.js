@@ -324,7 +324,7 @@ apiRouter.route('/resource/topics/:set/:index')
   .get(ctrl.resource.getTopicDetails)
   .put(ctrl.resource.updateTopicDetails)
 
-apiRouter.route('/resource/:id([\\d,a-zA-Z\\-_]+)')
+apiRouter.route('/resource/:id([\\da-zA-Z\\-_]+)')
   .get(ctrl.resource.getItem)
 apiRouter.route('/resource/:id([\\da-zA-Z_\\-]+)/related/resource')
   .get(ctrl.resource.getRelatedItems)
