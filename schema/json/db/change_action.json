@@ -65,8 +65,6 @@
   "required": [
     "type",
     "uuid",
-    "initiatedBy",
-    "createdAt",
-    "totalVote"
+    "initiatedBy"
   ]
 }
