@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://c2dh.uni.lu/histograph/change_actions/link-entity.json",
+  "title": "Link entity action",
+  "description": "Link entity to a resource, optionally specifying annotation context",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "entity": {
+      "$ref": "http://c2dh.uni.lu/histograph/change_actions/common.json#/definitions/entityIdentifier"
+    },
+    "resource": {
+      "$ref": "http://c2dh.uni.lu/histograph/change_actions/common.json#/definitions/resourceIdentifier"
+    },
+    "context": {
+      "$ref": "http://c2dh.uni.lu/histograph/db/appears_in.json#/properties/context"
+    }
+  },
+  "required": [
+    "entity",
+    "resource"
+  ]
+}
