@@ -143,8 +143,8 @@ describe('createAction', () => {
               // existing `appears_in`
               return [toNeo4jAppearance({
                 context: {
-                  en: [10, 20],
-                  fr: [4, 8]
+                  en: [[10, 20]],
+                  fr: [[4, 8]]
                 },
                 languages: ['en', 'fr']
               })]
@@ -177,7 +177,7 @@ describe('createAction', () => {
       } = await createAction('link-entity', details, 'test user', 1)
       assert.equal(performed, true)
       assert.deepEqual(action, fromNeo4jChangeAction(savedAction))
-      assert.deepEqual(action.meta.context, { en: [[2, 5]] })
+      assert.deepEqual(action.meta.context, details.context)
 
       assert.deepEqual(results, [
         ['Entity (123) is linked to resource (456)', true]
