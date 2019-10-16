@@ -187,4 +187,54 @@ describe('createAction', () => {
       clearRequireCache()
     }
   })
+
+  it('creates, performs and updates "change-entity-type" action', async () => {
+    try {
+      let queryCounter = 0
+      let savedAction
+      const entityIdentifier = { name: 'Test Entity', type: 'location', slug: 'e1' }
+
+      mock(Neo4jModulePath, {
+        async executeQuery(query, params) {
+          queryCounter += 1
+          switch (queryCounter) {
+            case 1:
+              return [entityIdentifier]
+            case 2:
+              savedAction = {
+                ...params.action,
+                createdAt: new Date().toISOString()
+              }
+              return [savedAction]
+            case 3:
+              return [{ uuid: '123' }]
+            case 4:
+              savedAction = {
+                ...savedAction,
+                performedAt: new Date().toISOString()
+              }
+              return [savedAction]
+            default:
+              return undefined
+          }
+        }
+      })
+
+      const { createAction } = mock.reRequire('../../../../lib/logic/actions')
+
+      const {
+        action,
+        performed,
+        results
+      } = await createAction('change-entity-type', { entityUuid: 'e1', newType: 'person' }, 'test user', 1)
+      assert.equal(performed, true)
+      assert.deepEqual(action, fromNeo4jChangeAction(savedAction))
+      assert.deepEqual(results, [
+        ['Entity (123) type has been changed from "location" to "person"', true]
+      ])
+    } finally {
+      mock.stop(Neo4jModulePath)
+      clearRequireCache()
+    }
+  })
 })

@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://c2dh.uni.lu/histograph/change_actions/change-entity-type.json",
+  "title": "Change entity type action",
+  "description": "Change entity type",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "entity": {
+      "$ref": "http://c2dh.uni.lu/histograph/change_actions/common.json#/definitions/entityIdentifier"
+    },
+    "newType": {
+      "$ref": "http://c2dh.uni.lu/histograph/change_actions/common.json#/definitions/entityIdentifier/properties/type"
+    }
+  },
+  "required": [
+    "entity",
+    "newType"
+  ]
+}

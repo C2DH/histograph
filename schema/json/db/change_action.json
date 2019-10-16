@@ -11,7 +11,8 @@
       "type": "string",
       "enum": [
         "unlink-entity",
-        "link-entity"
+        "link-entity",
+        "change-entity-type"
       ]
     },
     "uuid": {
