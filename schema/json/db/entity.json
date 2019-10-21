@@ -56,6 +56,27 @@
         "nationality": {
           "type": "string",
           "description": "Nationality if the entity is a person"
+        },
+        "alternative_names": {
+          "type": "array",
+          "description": "Alternative names of the entity",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sex": {
+          "type": "string"
+        },
+        "birth_time": {
+          "type": "string"
+        },
+        "death_time": {
+          "type": "string"
+        },
+        "external_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "A URL with information about the entity"
         }
       }
     },
