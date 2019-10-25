@@ -12,7 +12,8 @@
       "enum": [
         "unlink-entity",
         "link-entity",
-        "change-entity-type"
+        "change-entity-type",
+        "merge-entities"
       ]
     },
     "uuid": {

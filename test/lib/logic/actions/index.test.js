@@ -237,4 +237,60 @@ describe('createAction', () => {
       clearRequireCache()
     }
   })
+
+  it('creates, performs and updates "merge-entities" action', async () => {
+    try {
+      let queryCounter = 0
+      let savedAction
+      const oldEntitiesIdentifier = [
+        { name: 'Test Entity', type: 'location', slug: 'e1' },
+        { name: 'Test Entity 2', type: 'location', slug: 'e2' },
+      ]
+      const newEntityIdentifier = { name: 'New Test Entity', type: 'location', slug: 'e3' }
+
+      mock(Neo4jModulePath, {
+        async executeQuery(query, params) {
+          queryCounter += 1
+          switch (queryCounter) {
+            case 1: // get old entities identifiers
+              return oldEntitiesIdentifier
+            case 2: // get new entity identifier
+              return [newEntityIdentifier]
+            case 3: // save action
+              savedAction = {
+                ...params.action,
+                createdAt: new Date().toISOString()
+              }
+              return [savedAction]
+            case 4: // perform merge
+              return [{ count: 5 }]
+            case 5: // mark action complete
+              savedAction = {
+                ...savedAction,
+                performedAt: new Date().toISOString()
+              }
+              return [savedAction]
+            default:
+              return undefined
+          }
+        }
+      })
+
+      const { createAction } = mock.reRequire('../../../../lib/logic/actions')
+
+      const {
+        action,
+        performed,
+        results
+      } = await createAction('merge-entities', { originalEntityUuidList: ['e1', 'e2'], newEntityUuid: 'e3' }, 'test user', 1)
+      assert.equal(performed, true)
+      assert.deepEqual(action, fromNeo4jChangeAction(savedAction))
+      assert.deepEqual(results, [
+        ['5 updates have been performed while changing slugs "e1, e2" and types "location, location" into entity e3 (location)', true]
+      ])
+    } finally {
+      mock.stop(Neo4jModulePath)
+      clearRequireCache()
+    }
+  })
 })
