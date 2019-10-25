@@ -23,6 +23,44 @@ angular.module('histograph')
   .factory('OptionalFeaturesService', function ($resource, HgSettings) {
     return $resource(`${HgSettings.apiBaseUrl}/api/settings/optional-features`, {}, {})
   })
+  .factory('ActionsService', function ($resource, HgSettings) {
+    const resource = $resource(`${HgSettings.apiBaseUrl}/api/actions/:id/:aspect`, {}, {
+      createNewAction: { method: 'POST', isArray: false },
+    })
+
+    return {
+      unlinkEntity: (entityUuid, resourceUuid) => {
+        const payload = {
+          type: 'unlink-entity',
+          parameters: { entityUuid, resourceUuid }
+        }
+        return resource.createNewAction(payload).$promise
+      },
+      linkEntity: (entityUuid, resourceUuid, context, contextLocation) => {
+        const payload = {
+          type: 'link-entity',
+          parameters: {
+            entityUuid, resourceUuid, context, contextLocation
+          }
+        }
+        return resource.createNewAction(payload).$promise
+      },
+      changeEntityType: (entityUuid, oldType, newType) => {
+        const payload = {
+          type: 'change-entity-type',
+          parameters: { entityUuid, oldType, newType }
+        }
+        return resource.createNewAction(payload).$promise
+      },
+      mergeEntities: (originalEntityUuidList, newEntityUuid) => {
+        const payload = {
+          type: 'merge-entities',
+          parameters: { originalEntityUuidList, newEntityUuid }
+        }
+        return resource.createNewAction(payload).$promise
+      }
+    }
+  })
   /*
     Get a list of resource
   */

@@ -28,6 +28,8 @@ const ctrl = requireAll({
   }
 })
 
+app.set('settings', settings)
+
 const clientRouter = express.Router()
 const apiRouter = express.Router()
 apiRouter.use(auth.checkJwt)
@@ -478,9 +480,8 @@ apiRouter.route('/suggest/viaf')
 apiRouter.route('/suggest/dbpedia')
   .get(ctrl.suggest.dbpedia)
 
-const explorerRoutes = require('./lib/endpoints/public/explorer')
-
-apiRouter.use('/explorer/', explorerRoutes)
+apiRouter.use('/explorer/', require('./lib/endpoints/public/explorer'))
+apiRouter.use('/actions/', require('./lib/endpoints/public/actions'))
 
 apiRouter.route(/\/.+/)
   .get((req, res, next) => {

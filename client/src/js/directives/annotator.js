@@ -395,7 +395,7 @@ Annotator.Plugin.HelloWorld = function (element, options) {
         })
         .subscribe('annotationEditorShown', function (editor, annotation) {
           editor = editor;
-          console.log('The annotation:  has just been annotationEditorShown!', arguments, annotator);
+          console.log('The annotation:  has just been annotationEditorShown!', arguments, annotator, annotation);
 
           if (typeof options.annotationEditorShown === 'function') options.annotationEditorShown(annotation, annotator)
         })

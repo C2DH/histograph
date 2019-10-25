@@ -11,7 +11,7 @@ angular.module('histograph')
     usage
     <div reporter language="<$scope.language>language" context="<$scope.item>item"></span>
   */
-  .directive('reporter', function ($log, $timeout, socket, $rootScope, SuggestFactory) {
+  .directive('reporter', function ($log, $timeout, $state, socket, $rootScope, SuggestFactory, ActionsService) {
     return {
       restrict: 'EA',
       templateUrl: 'templates/partials/helpers/reporter.html',
@@ -120,6 +120,7 @@ angular.module('histograph')
           Select correct type
         */
         $scope.selectReplacement = function (type, solution) {
+          console.log('scope.selectReplacement', type, solution)
           if ($scope.isLocked) return;
           if (type == 'type') {
             if (solution != $scope.entity.type) {
@@ -132,6 +133,15 @@ angular.module('histograph')
           }
         };
 
+        function getAction(type, solution, entity) {
+          switch (type) {
+            case 'type':
+              return ActionsService.changeEntityType(entity.id, entity.type, solution)
+            default:
+              return Promise.reject(new Error(`Unknown type: ${type}`));
+          }
+        }
+
         /*
           Raise an issue or agree with a previously created one.
           Cfr. downvote issue for undo.
@@ -141,11 +151,16 @@ angular.module('histograph')
           $log.log(':: reporter  -~> raiseIssue() type:', type, '- solution:', solution);
           $scope.isLocked = true;
           $scope.cancelQuestion();
-          $rootScope.raiseIssue($scope.entity, null, type, solution, function () {
-            $scope.isLocked = false;
-            //
-            if (type == 'mergeable') $scope.downvote();
-          });
+          getAction(type, solution, $scope.entity)
+            .then(result => {
+              const msg = result.performed
+                ? 'Action has been performed successfully'
+                : 'Action is waiting for votes';
+              $log.info(msg);
+              $state.reload();
+            })
+            .catch(e => { $log.error(e.message); })
+            .finally(() => { $scope.isLocked = false });
         };
 
         /*
@@ -215,17 +230,16 @@ angular.module('histograph')
           $scope.isLocked = true;
           // debugger
           $log.log(':: reporter -> merge() -~> raiseIssue() type: merge - entity:', $scope.entity.props.name, '- with:', $scope.entity.alias.props.name);
-          // merge two entities: add (or upvote the entity) and downvote the current entity
-          $rootScope.raiseIssue($scope.entity, null, 'mergeable', $scope.entity.alias.id, function () {
-            // downvote and upvote
-            if (!$scope.resource) {
-              $scope.isLocked = false;
-              $scope.cancelQuestion();
-            } else {
-              $scope.isLocked = false;
-              $scope.mergeInContext($scope.entity, $scope.entity.alias);
-            }
-          });
+          ActionsService.mergeEntities([$scope.entity.id], $scope.entity.alias.id)
+            .then(result => {
+              const msg = result.performed
+                ? 'Merge has been performed successfully'
+                : 'Merge is waiting for votes';
+              $log.info(msg);
+              $state.go('entity.resources', { id: $scope.entity.alias.id });
+            })
+            .catch(e => { $log.error(e.message); })
+            .finally(() => { $scope.isLocked = false });
         };
 
         /*

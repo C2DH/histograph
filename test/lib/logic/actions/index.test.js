@@ -120,6 +120,81 @@ describe('createAction', () => {
     }
   })
 
+  it('creates, performs and updates "link-entity" action with context and location', async () => {
+    try {
+      let queryCounter = 0
+      let savedAction
+      const resourceIdentifier = { name: 'Test Resource', slug: 'r1' }
+      const entityIdentifier = { name: 'Test Entity', type: 'location', slug: 'e1' }
+
+      const testContext = [2, 5]
+      const testResourceTitle = 'A test title'
+      const separatorSize = 2
+
+      mock(Neo4jModulePath, {
+        async executeQuery(query, params) {
+          queryCounter += 1
+          switch (queryCounter) {
+            case 1:
+              return [{ resourceIdentifier, entityIdentifier }]
+            case 2:
+              return [{
+                title: {
+                  en: testResourceTitle
+                }
+              }]
+            case 3:
+              savedAction = {
+                ...params.action,
+                createdAt: new Date().toISOString()
+              }
+              return [savedAction]
+            case 4:
+              // existing `appears_in`
+              return []
+            case 5:
+              assert.deepEqual(
+                params.appearance.context__en,
+                testContext.map(v => v + testResourceTitle.length + separatorSize)
+              )
+              return [{ entityUuid: '123', resourceUuid: '456', appearanceId: 123 }]
+            case 6:
+              savedAction = {
+                ...savedAction,
+                performedAt: new Date().toISOString()
+              }
+              return [savedAction]
+            default:
+              return undefined
+          }
+        }
+      })
+
+      const { createAction } = mock.reRequire('../../../../lib/logic/actions')
+
+      const details = {
+        entityUuid: 'e1',
+        resourceUuid: 'r1',
+        context: { en: [testContext] },
+        contextLocation: 'caption'
+      }
+
+      const {
+        action,
+        performed,
+        results
+      } = await createAction('link-entity', details, 'test user', 1)
+      assert.equal(performed, true)
+      assert.deepEqual(action, fromNeo4jChangeAction(savedAction))
+      assert.deepEqual(results, [
+        ['Entity (123) is linked to resource (456)', true]
+      ])
+    } finally {
+      mock.stop(Neo4jModulePath)
+      clearRequireCache()
+    }
+  })
+
   it('creates, performs and updates "link-entity" action when link already exists', async () => {
     try {
       let queryCounter = 0
@@ -207,7 +282,7 @@ describe('createAction', () => {
               }
               return [savedAction]
             case 3:
-              return [{ uuid: '123' }]
+              return [{ uuid: '123', slug: 'e123' }]
             case 4:
               savedAction = {
                 ...savedAction,
@@ -230,7 +305,7 @@ describe('createAction', () => {
       assert.equal(performed, true)
       assert.deepEqual(action, fromNeo4jChangeAction(savedAction))
       assert.deepEqual(results, [
-        ['Entity (123) type has been changed from "location" to "person"', true]
+        ['Entity (e123) type has been changed from "location" to "person"', true]
       ])
     } finally {
       mock.stop(Neo4jModulePath)
@@ -286,7 +361,7 @@ describe('createAction', () => {
       assert.equal(performed, true)
       assert.deepEqual(action, fromNeo4jChangeAction(savedAction))
       assert.deepEqual(results, [
-        ['5 updates have been performed while changing slugs "e1, e2" and types "location, location" into entity e3 (location)', true]
+        ['5 resources have been updated while changing slugs "e1, e2" and types "location, location" into entity e3 (location)', true]
       ])
     } finally {
       mock.stop(Neo4jModulePath)
