@@ -1,4 +1,4 @@
-<div class="tabs" ng-if="item.props.iiif_url">
+<div class="tabs" ng-if="item.resource.iiif_url">
   <div class="tab" ng-class="currentTab === 'resource-image' ? 'selected' : ''" ng-click="selectTab('resource-image')">
     Resource image
   </div>
@@ -6,10 +6,9 @@
     Related resources
   </div>              
 </div>
-
 <div class="resource context" ng-class="currentTab === 'resource-image' ? 'fullwidth' : ''">
   <div ng-if="currentTab === 'resource-image'" class="resource-image">
-    <div iiif-image="item.props.iiif_url" class="iiif-image-container"></div>
+    <div iiif-image="item.resource.iiif_url" class="iiif-image-container"></div>
   </div>
   <div ng-if="currentTab !== 'resource-image'" class="related-resources">
     <div class="related-resources-container">
