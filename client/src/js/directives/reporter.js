@@ -163,6 +163,25 @@ angular.module('histograph')
             .finally(() => { $scope.isLocked = false });
         };
 
+        $scope.unlinkEntity = () => {
+          if (!$scope.entity.id || !$scope.resource.id) {
+            $log.error(`Either entity Id (${$scope.entity.id}) or resource Id (${$scope.resource.id}) is not provided`);
+            return;
+          }
+          $scope.isLocked = true;
+          $scope.cancelQuestion();
+          ActionsService.unlinkEntity($scope.entity.id, $scope.resource.id)
+            .then(result => {
+              const msg = result.performed
+                ? 'Action has been performed successfully'
+                : 'Action is waiting for votes';
+              $log.info(msg);
+              $state.reload();
+            })
+            .catch(e => { $log.error(e.message); })
+            .finally(() => { $scope.isLocked = false });
+        }
+
         /*
           Downvote an entity in a context.
           $scope.resource should be set, cfr. popit directive
@@ -236,7 +255,7 @@ angular.module('histograph')
                 ? 'Merge has been performed successfully'
                 : 'Merge is waiting for votes';
               $log.info(msg);
-              $state.go('entity.resources', { id: $scope.entity.alias.id });
+              $state.reload();
             })
             .catch(e => { $log.error(e.message); })
             .finally(() => { $scope.isLocked = false });
