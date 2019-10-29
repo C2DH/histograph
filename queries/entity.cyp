@@ -360,7 +360,7 @@ MATCH (ent:entity {uuid: {id}})
 WITH ent
 MATCH
   (ent)-[r:appears_in]->(res:resource){if:with}<-[:appears_in]-(ent2){/if}
-  WHERE r.score > -2
+  WHERE true
   {if:with}
     AND ent2.uuid in {with}
   {/if}
@@ -431,7 +431,7 @@ WHERE ent.uuid = {entity_id} AND res.uuid = {resource_id}
 
 // name:count_related_resources
 MATCH (ent: entity {uuid: {id}})-[r:appears_in]->(res:resource){if:with}<-[:appears_in]-(ent2){/if}
-WHERE r.score > -2
+WHERE true
   {if:with}
     AND ent2.uuid in {with}
   {/if}
@@ -514,7 +514,7 @@ LIMIT {limit}
 // name: get_related_entities_graph
 // monopartite graph of entities
 MATCH (n:entity {uuid: {id}})-[r:appears_in]->(t:resource)
-  WHERE r.score > -1
+  WHERE true
   {if:start_time}
     AND t.start_time >= {start_time}
   {/if}
@@ -530,11 +530,11 @@ MATCH (n:entity {uuid: {id}})-[r:appears_in]->(t:resource)
 WITH t
 {if:with}
   MATCH (t)<-[r2:appears_in]-(ent2:entity {status:1})
-  WHERE ent2.uuid in {with} AND r2.score > -1
+  WHERE ent2.uuid in {with}
   WITH t
 {/if}
 MATCH (p1:{:entity} {status:1})-[r1:appears_in]->(t)<-[r2:appears_in]-(p2:{:entity} {status:1})
-WHERE id(p1) > id(p2) AND r1.score > -2 AND r2.score > -2
+WHERE id(p1) > id(p2)
 WITH p1, p2, count(t) as w 
 WITH p1, p2, w
 ORDER BY w DESC
@@ -622,7 +622,7 @@ MATCH (ent:entity)
 WITH ent
 MATCH (ent)-[r:appears_in]->(res:resource)
   WITH ent, res
-  WHERE r.score > -2
+  WHERE true
   {if:start_time}
     AND res.start_time >= {start_time}
   {/if}
@@ -637,7 +637,7 @@ MATCH (ent)-[r:appears_in]->(res:resource)
   {/if}
 WITH ent, res
   MATCH (ent1:{:entity})-[r:appears_in]->(res)
-  WHERE ent1.score > -1 AND ent1.uuid <> {id}
+  WHERE ent1.uuid <> {id}
   {if:with}
     AND ent1.uuid IN {with}
   {/if}
@@ -661,7 +661,7 @@ MATCH (ent:entity)
 WITH ent
 MATCH (ent)-[r:appears_in]->(res:resource)
 WITH ent, res
-  WHERE r.score > -2
+  WHERE true
   {if:start_time}
     AND res.start_time >= {start_time}
   {/if}
@@ -676,7 +676,7 @@ WITH ent, res
   {/if}
 WITH ent, res
   MATCH (ent1:{:entity})-[r:appears_in]->(res)
-  WHERE ent1.score > -1 AND ent1 <> ent
+  WHERE ent1 <> ent
   {if:with}
     AND ent1.uuid IN {with}
   {/if}

@@ -64,7 +64,7 @@ WITH p1
   LIMIT {limit}
 WITH p1
 MATCH (p1)-[x:appears_in]->(res:resource)<-[y:appears_in]-(p2:{:entity})
- WHERE id(p1) < id(p2) AND x.score > -2 AND y.score > -2
+ WHERE id(p1) < id(p2)
  WITH x, y, p1,p2
 
  WITH  SUM(toFloat(x.tf * y.tf)) AS xyDotProduct,
@@ -89,10 +89,9 @@ RETURN count(p1) as total_count
 
 // name: count_computate_jaccard_distance
 MATCH (p1:{:entity})-[r1:appears_in]->(res:resource)
-WHERE p1.score > -2 AND r1.score > -2
 WITH p1, res
 MATCH (res)<-[r2:appears_in]-(p2:{:entity})
-WHERE id(p1) < id(p2) AND p2.score > -2 AND r2.score > -2
+WHERE id(p1) < id(p2)
 WITH p1, p2, count(*) as intersection
 WHERE intersection > 2
 RETURN count(*) as total_count
@@ -103,17 +102,15 @@ RETURN count(*) as total_count
 // usage:
 // $ node scripts/manage.js --task=common.cypher.query --cypher=similarity/computate_jaccard_distance --limit=10 --offset=0 --entity=person
 MATCH (p1:{:entity})
-WHERE p1.score > -2
 WITH p1
 SKIP {offset}
 LIMIT {limit}
 WITH p1
 MATCh (p1)-[r1:appears_in]->(res:resource)
-WHERE r1.score > -2
 WITH p1, res // res where p1 is
 
 MATCH (res)<-[r2:appears_in]-(p2:{:entity})
-WHERE id(p1) <> id(p2) AND p2.score > -2 AND r2.score > -2
+WHERE id(p1) <> id(p2)
 WITH p1, p2, count(DISTINCT res) as intersections // count res. group by p2
 WHERE intersections > 2                  // filter ... ?
 WITH p1, p2, intersections

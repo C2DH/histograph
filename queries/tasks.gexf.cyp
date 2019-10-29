@@ -1,7 +1,7 @@
 // name: get_precoputated_entity_bipartite_graph
 // just for precomputated links (jaccard distance)
 MATCH (p1:{:entity})-[r:appear_in_same_document]-(p2:{:entity})
-WHERE id(p1) < id(p2) AND p1.score > -1 AND p2.score > -1
+WHERE id(p1) < id(p2)
 WITH p1,p2,r
 ORDER BY r.intersections DESC
 LIMIT {limit}
@@ -50,8 +50,6 @@ MATCH (p1:{:entity})-[r1:appears_in]->(res:resource)<-[r2:appears_in]-(p2:{:enti
     AND res.type in {type}
   {/if}
   
-  AND p1.score > -1
-  AND p2.score > -1
 WITH p1, p2, res
 ORDER BY r1.tfidf DESC, r2.tfidf DESC
 // limit here?
@@ -87,7 +85,7 @@ WITH res
 {unless:with}
 MATCH (p1:{:entityA})-[r1:appears_in]->(res:resource)<-[r2:appears_in]-(p2:{:entityB})
 {/unless}
-  WHERE p1.score > -1 AND p2.score > -1
+  WHERE true
   {if:start_time}
     AND res.start_time >= {start_time}
   {/if}

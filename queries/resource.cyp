@@ -110,7 +110,6 @@ SKIP {offset}
 LIMIT {limit}
 WITH res
 OPTIONAL MATCH (res)-[r_loc:appears_in]->(loc:`location` {status:1})
-WHERE r_loc.score > -2
 WITH res, r_loc, loc
 ORDER BY r_loc.score DESC, r_loc.tfidf DESC, r_loc.frequency DESC
 WITH res,  filter(x in collect({  
@@ -120,7 +119,6 @@ WITH res,  filter(x in collect({
       rel: r_loc
     }) WHERE exists(x.id))[0..5] as locations   
 OPTIONAL MATCH (res)<-[r_per:appears_in]-(per:`person` {status:1})
-WHERE r_per.score > -2
 WITH res, locations, r_per, per
 ORDER BY  r_per.score DESC, r_per.tfidf DESC, r_per.frequency DESC
 WITH res, locations,  filter(x in collect({  
@@ -130,7 +128,6 @@ WITH res, locations,  filter(x in collect({
       rel: r_per
     }) WHERE exists(x.id))[0..5] as persons
 OPTIONAL MATCH (res)<-[r_org:appears_in]-(org:`organization` {status:1})
-WHERE org.score > -2
 WITH res, locations, persons,  filter(x in collect({    
       id: org.uuid,
       type: 'organization',
@@ -138,7 +135,6 @@ WITH res, locations, persons,  filter(x in collect({
       rel: r_org
     }) WHERE exists(x.id))[0..5] as organizations
 OPTIONAL MATCH (res)<-[r_soc:appears_in]-(soc:`social_group` {status:1})
-WHERE soc.score > -2
 WITH res, locations, persons, organizations,  filter(x in collect({  
       id: soc.uuid,
       type: 'social_group',
@@ -146,7 +142,6 @@ WITH res, locations, persons, organizations,  filter(x in collect({
       rel: r_soc
     }) WHERE exists(x.id))[0..5] as social_groups
 OPTIONAL MATCH (res)<-[r_the:appears_in]-(the:`theme` {status:1})
-WHERE the.score > -2
 WITH res, locations, persons, organizations, social_groups, filter(x in collect({    
       id: the.uuid,
       type: 'theme',
@@ -243,7 +238,6 @@ MATCH (res:resource)
   WHERE res.uuid = {id} 
 WITH res
 MATCH (res)<-[r1:appears_in]-(ent:entity)
-WHERE r1.score > -1 AND ent.score > -1
 WITH res, r1, ent
   ORDER BY r1.tfidf DESC
   LIMIT 9
@@ -283,7 +277,6 @@ RETURN {
 // name: get_related_resources
 // top 20 entities attached to the person
 MATCH (res1:resource {uuid: {id}})<-[r1:appears_in]-(ent:entity)
-WHERE r1.score > -1 AND ent.score > -1
 WITH res1, r1, ent
   ORDER BY r1.score DESC, r1.tfidf DESC
   LIMIT 9
@@ -326,7 +319,6 @@ WITH res1, res2, count(*) as intersection
 {/unless}
 WITH res1, res2, intersection
 OPTIONAL MATCH (res2)<-[r_per:appears_in]-(per:`person`)
-WHERE per.score > -2
 WITH res1, res2, intersection, r_per, per
 ORDER BY  r_per.score DESC, r_per.tfidf DESC, r_per.frequency DESC
 WITH res1, res2, intersection, filter(x in collect({  
@@ -682,7 +674,7 @@ WITH res
 {unless:with}
 MATCH (p1:{:entity} {status:1})-[r1:appears_in]->(res:resource)<-[r2:appears_in]-(p2:{:entity} {status:1})
 {/unless}
-  WHERE id(p1) < id(p2) AND r1.score > -2 AND r2.score > -2
+  WHERE id(p1) < id(p2)
   {if:start_time}
     AND res.start_time >= {start_time}
   {/if}
@@ -728,7 +720,7 @@ WITH res
 {unless:with}
 MATCH (p1:{:entityA} {status:1})-[r1:appears_in]->(res:resource)<-[r2:appears_in]-(p2:{:entityB} {status:1})
 {/unless}
-  WHERE r1.score > -2 AND r2.score > -2
+  WHERE true
   {if:start_time}
     AND res.start_time >= {start_time}
   {/if}
@@ -772,7 +764,7 @@ WITH r1, r2, res
   LIMIT 100
 WITH res
 MATCH (p1:{:entity})-[:appears_in]->(res)<-[:appears_in]-(p2:{:entity})
- WHERE p1.score > -1 AND p2.score > -1
+ WHERE true
 WITH p1, p2, count(DISTINCT res) as w
 RETURN {
     source: {
@@ -794,7 +786,7 @@ LIMIT 500
 
 // name: get_related_resources_bipartite_graph
 MATCH (res1:resource {uuid: {id}})<-[r1:appears_in]-(ent:entity)-[r2:appears_in]->(res2:resource)
-  WHERE ent.score > -1
+  WHERE true
     {if:mimetype}
     AND res2.mimetype IN {mimetype}
     {/if}
@@ -856,7 +848,7 @@ LIMIT 250
 // name: get_related_resources_graph
 //
 MATCH (res1:resource {uuid: {id}})<-[r1:appears_in]-(ent:entity)-[r2:appears_in]->(res2:resource)
-  WHERE ent.score > -1
+  WHERE true
     {if:mimetype}
     AND res2.mimetype IN {mimetype}
     {/if}
@@ -991,7 +983,7 @@ ORDER BY tm ASC
 // name: get_related_resources_timeline
 //
 MATCH (res:resource)<-[:appears_in]-(ent:entity)
-WHERE res.uuid = {id} AND ent.score > -1
+WHERE res.uuid = {id}
 WITH ent
 {if:with}
   MATCH (ent2:entity)
@@ -1121,7 +1113,6 @@ ORDER BY r.tfidf DESC
 // get related nodes that are connected with the entity. test with
 // > node scripts/manage.js --task=common.cypher.query --cypher=resource/count_related_entities --id=N1frQNKD2g --limit=10 --entity=person --offset=0
 MATCH (n:resource {uuid:{id}})<-[r1:appears_in]-(ent:{:entity})
-  WHERE r1.score > -1 AND ent.score > -1
 RETURN COUNT(DISTINCT ent) as count_items
 
 

@@ -332,7 +332,7 @@ WHERE u:user
   {/if}
 WITH res
 MATCH (entA:person)-[r1:appears_in]->(res)<-[r2:appears_in]-(entB:person)
-WHERE id(entA) < id(entB) AND r1.score > -1 AND r2.score > -1 AND entA.score > -1 AND entB.score > -1
+WHERE id(entA) < id(entB)
 WITH entA, entB, count(res) as w, min(r1.tf + r2.tf) as minf
 WHERE w > 1
 WITH entA, entB, w, minf
