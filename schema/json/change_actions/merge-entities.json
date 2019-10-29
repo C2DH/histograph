@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://c2dh.uni.lu/histograph/change_actions/merge-entities.json",
+  "title": "Merge entities into another entity",
+  "description": "Unlink a list of entities from resources and link another entity instead",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "originalEntities": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "slugs": {
+          "type": "array",
+          "items": {
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/slug"
+          }
+        },
+        "names": {
+          "type": "array",
+          "items": {
+            "$ref": "http://c2dh.uni.lu/histograph/db/entity.json#/properties/name"
+          }
+        },
+        "types": {
+          "type": "array",
+          "items": {
+            "$ref": "http://c2dh.uni.lu/histograph/api/management/create_resource/payload.json#/properties/entities/items/properties/type"
+          }
+        }
+      }
+    },
+    "newEntity": {
+      "$ref": "http://c2dh.uni.lu/histograph/change_actions/common.json#/definitions/entityIdentifier"
+    }
+  },
+  "required": [
+    "originalEntities",
+    "newEntity"
+  ]
+}

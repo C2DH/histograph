@@ -131,7 +131,7 @@ const itemTemplate = /* html */ `
     </span>
 
     <span ng-if='resource.persons.length' class='tags'> — <i translate='resource.people.mentioned'></i>:
-      <span ng-repeat="tag in resource.persons" ng-include='"templates/partials/entity-tag.html"' ng-init='item=resource'></span>  
+      <span ng-repeat="tag in resource.persons" ng-include='"templates/partials/entity-tag-lite.html"' ng-init='item=resource'></span>  
     </span>
 
   </div>

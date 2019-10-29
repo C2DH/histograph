@@ -289,19 +289,10 @@ WITH u_rel, res, locations, persons, organizations, collect({
       rel: r_soc
     })[0..5] as social_groups
 
-{if:with}
-WITH u_rel, res, locations, persons, organizations, social_groups
-  OPTIONAL MATCH (res)--(ann:annotation) 
-  WITH u_rel, res, locations, persons, organizations, social_groups, collect(ann) as annotations
-{/if}
-
 RETURN {
   id: res.uuid,
   type: 'resource',
   props: res,
-  {if:with}
-    annotations: annotations,
-  {/if}
   persons:     persons,
   organizations: organizations,
   locations:    locations,
@@ -341,7 +332,7 @@ WHERE u:user
   {/if}
 WITH res
 MATCH (entA:person)-[r1:appears_in]->(res)<-[r2:appears_in]-(entB:person)
-WHERE id(entA) < id(entB) AND r1.score > -1 AND r2.score > -1 AND entA.score > -1 AND entB.score > -1
+WHERE id(entA) < id(entB)
 WITH entA, entB, count(res) as w, min(r1.tf + r2.tf) as minf
 WHERE w > 1
 WITH entA, entB, w, minf

@@ -85,11 +85,11 @@
     <div ng-if='question=="downvote"' class='question'>
       <div class='answers'>
         <div class=''>
-          <button class='btn btn-line-white btn-block' ng-if='resource' ng-click='downvote()' translate translate-values='{type: "{{entity.type}}"}'>popit.fix.not.mentioned</button>
+          <button class='btn btn-line-white btn-block' ng-if='resource' ng-click='unlinkEntity()' translate translate-values='{type: "{{entity.type}}"}'>popit.fix.not.mentioned</button>
           <button class='btn btn-line-white btn-block' ng-click='askQuestion("wrongtype", $event)' translate='popit.fix.wrong.type' translate-values='{type: "{{entity.type}}"}'></button>
           <button class='btn btn-line-white btn-block' ng-click='askQuestion("contribute", $event)' translate>popit.fix.typo</button>
-          <button ng-if='resource' class='btn btn-line-white btn-block' ng-click='askQuestion("wrong", $event)' translate>popit.fix.remove</button>
-          <button ng-if='!resource' class='btn btn-line-white btn-block' ng-click='askQuestion("wrong", $event)' translate>popit.fix.remove</button>
+          <!-- <button ng-if='resource' class='btn btn-line-white btn-block' ng-click='askQuestion("wrong", $event)' translate>popit.fix.remove</button> -->
+          <!-- <button ng-if='!resource' class='btn btn-line-white btn-block' ng-click='askQuestion("wrong", $event)' translate>popit.fix.remove</button> -->
           <button class='btn btn-line-white obscure btn-block' ng-click='cancelQuestion($event)' translate>button.back</button>
         </div>
       </div>

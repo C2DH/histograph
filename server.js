@@ -28,6 +28,8 @@ const ctrl = requireAll({
   }
 })
 
+app.set('settings', settings)
+
 const clientRouter = express.Router()
 const apiRouter = express.Router()
 apiRouter.use(auth.checkJwt)
@@ -324,7 +326,7 @@ apiRouter.route('/resource/topics/:set/:index')
   .get(ctrl.resource.getTopicDetails)
   .put(ctrl.resource.updateTopicDetails)
 
-apiRouter.route('/resource/:id([\\d,a-zA-Z\\-_]+)')
+apiRouter.route('/resource/:id([\\da-zA-Z\\-_]+)')
   .get(ctrl.resource.getItem)
 apiRouter.route('/resource/:id([\\da-zA-Z_\\-]+)/related/resource')
   .get(ctrl.resource.getRelatedItems)
@@ -478,9 +480,8 @@ apiRouter.route('/suggest/viaf')
 apiRouter.route('/suggest/dbpedia')
   .get(ctrl.suggest.dbpedia)
 
-const explorerRoutes = require('./lib/endpoints/public/explorer')
-
-apiRouter.use('/explorer/', explorerRoutes)
+apiRouter.use('/explorer/', require('./lib/endpoints/public/explorer'))
+apiRouter.use('/actions/', require('./lib/endpoints/public/actions'))
 
 apiRouter.route(/\/.+/)
   .get((req, res, next) => {

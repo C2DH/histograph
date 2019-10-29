@@ -118,6 +118,7 @@ require('./controllers/user.js')
 require('./controllers/explorer.js')
 require('./controllers/topicResources.js')
 require('./controllers/loginCallback.js')
+require('./controllers/changes-history.js')
 
 // modal controllers. templates in templates/modal
 require('./controllers/modals/contribute.js')

@@ -2,9 +2,10 @@
 const assert = require('assert')
 const { zip } = require('lodash')
 const generateCsv = require('csv-stringify/lib/sync')
+const parseCsv = require('csv-parse/lib/sync')
 
 const {
-  CsvService
+  CsvService, serializerOptions, parserOptions
 } = require('../../../../lib/tools/neo4jImport/csv')
 const { validPayload } = require('./converters.test')
 const {
@@ -25,7 +26,7 @@ describe('CsvService', () => {
     const stringRegex = '1,resource,about-foo,[^,]+,"Foo, Belval",text/plain,en,1546300800,2019-01-01T00:00:00Z,201901,2019,1546387199,2019-01-01T23:59:59Z,201901,2019,"Foo, Belval",A test page about Foo,"Content of a test page \n about Foo.",external-text,[^,]+,[^,]+,[^,]+,[^,]+'
     assert.ok(row.match(stringRegex), `"${row}" does not match "${stringRegex}"`)
 
-    const expectedHeader = ':ID(resource),:LABEL,slug:string,uuid:string,name:string,mimetype:string,languages:string[],start_time:int,start_date:string,start_month:float,start_year:float,end_time:int,end_date:string,end_month:float,end_year:float,title_en:string,caption_en:string,content_en:string,type:string,creation_date:string,creation_time:int,last_modification_date:string,last_modification_time:int'
+    const expectedHeader = ':ID(resource),:LABEL,slug:string,uuid:string,name:string,mimetype:string,languages:string[],start_time:long,start_date:string,start_month:float,start_year:float,end_time:long,end_date:string,end_month:float,end_year:float,title_en:string,caption_en:string,content_en:string,type:string,creation_date:string,creation_time:long,last_modification_date:string,last_modification_time:long'
     assert.equal(csvHeader, expectedHeader)
   })
 
@@ -39,16 +40,19 @@ describe('CsvService', () => {
     assert.equal(csvLines.length, appearances.length)
 
     const expectedStringRegexes = [
-      /1,1,appears_in,2,en,,0,0,[^,]+,[^,]+,[^,]+,[^,]+/,
-      /2,1,appears_in,1,en,,0,0,[^,]+,[^,]+,[^,]+,[^,]+/,
+      /1,1,appears_in,2,en,5;11;31;37,,0,0,[^,]+,[^,]+,[^,]+,[^,]+/,
+      /2,1,appears_in,1,en,68;74,,0,0,[^,]+,[^,]+,[^,]+,[^,]+/,
     ]
     zip(csvLines, expectedStringRegexes)
       .forEach(([s, regex]) => {
-        const row = generateCsv([s])
+        const row = generateCsv([s], serializerOptions)
         assert.ok(row.match(regex), `"${row}" does not match "${regex}"`)
+
+        const parsedRow = parseCsv(row, parserOptions)[0]
+        assert.deepEqual(parsedRow, s)
       })
 
-    const expectedHeader = ':START_ID(entity),:END_ID(resource),:TYPE,frequency:int,languages:string[],upvote:string[],celebrity:int,score:int,creation_date:string,creation_time:int,last_modification_date:string,last_modification_time:int'
+    const expectedHeader = ':START_ID(entity),:END_ID(resource),:TYPE,frequency:long,languages:string[],context__en:long[],upvote:string[],celebrity:long,score:long,creation_date:string,creation_time:long,last_modification_date:string,last_modification_time:long'
     assert.equal(csvHeader, expectedHeader)
   })
 

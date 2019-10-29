@@ -1,7 +1,7 @@
 /* eslint-env browser */
 import {
   assignIn, get, isEmpty, isEqual,
-  isArray, clone, without, last
+  isArray, clone, last
 } from 'lodash'
 import moment from 'moment'
 import { withStyles, theme } from '../styles'

@@ -51,6 +51,31 @@
       "description": "TODO: Some other score",
       "type": "integer"
     },
+    "context": {
+      "description": "Locations in text where the entity appears. One context per language",
+      "type": "object",
+      "propertyNames": {
+        "description": "Every key is a ISO 639-1 code",
+        "pattern": "^[a-z]{2}$"
+      },
+      "patternProperties": {
+        "^.*$": { 
+          "description": "Every value of the language code is a list of (<start>, <end>) locations.",
+          "type": "array",
+          "items": {
+            "description": "An item of the context array is a pair of indices. The first index is the first character of the entity. The last index is the next character after the last character of the entity. (same as in JavaScript String#slice). Locations are calculated based on the following text: '<resource_title>. <resource_caption>. <resource_content>'. Parts are joined by '. ' (a two characters separator).",
+            "type": "array",
+            "minLength": 2,
+            "maxLength": 2,
+            "items": { "type": "integer" }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "examples": [
+        "{ en: [[5, 7], [136, 189], [234, 236]] }"
+      ]
+    },
     "creation_date": {
       "description": "Resource creation ISO timestamp",
       "type": "string",

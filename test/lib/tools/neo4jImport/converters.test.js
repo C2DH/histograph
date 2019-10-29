@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 const assert = require('assert')
 const { omit } = require('lodash')
-const YAML = require('yamljs')
 const {
   createResourcePayloadToEntitiesAndRelationships,
   createResourcePayloadListToEntitiesAndRelationships
@@ -60,8 +59,7 @@ const getExpectedResult = (
   entityUuids,
   {
     resourceStartId = 0,
-    entityStartId = 0,
-    versionStartId = 0
+    entityStartId = 0
   } = {}
 ) => ({
   resource: [
@@ -128,7 +126,8 @@ const getExpectedResult = (
         frequency: 2,
         score: 0,
         upvote: [],
-        languages: ['en']
+        languages: ['en'],
+        context__en: [5, 11, 31, 37]
       }
     },
     {
@@ -141,33 +140,9 @@ const getExpectedResult = (
         frequency: 1,
         score: 0,
         upvote: [],
-        languages: ['en']
+        languages: ['en'],
+        context__en: [68, 74]
       }
-    }
-  ],
-  version: [
-    {
-      id: versionStartId + 1,
-      labels: ['version', 'annotation'],
-      spaces: { id: 'version' },
-      properties: {
-        language: 'en',
-        service: 'unknown',
-        yaml: YAML.stringify([
-          { id: entityUuids[0], context: { left: 5, right: 11 } },
-          { id: entityUuids[0], context: { left: 31, right: 37 } },
-          { id: entityUuids[1], context: { left: 68, right: 74 } },
-        ])
-      }
-    }
-  ],
-  describes: [
-    {
-      startId: versionStartId + 1,
-      endId: resourceStartId + 1,
-      spaces: { startId: 'version', endId: 'resource' },
-      type: 'describes',
-      properties: {}
     }
   ]
 })
@@ -186,7 +161,7 @@ describe('createResourcePayloadToEntitiesAndRelationships', () => {
     const result = createResourcePayloadToEntitiesAndRelationships(validPayload)
 
     const expectedResult = getExpectedResult(result.entity.map(e => e.properties.uuid))
-    const testFields = ['resource', 'entity', 'appears_in', 'version', 'describes']
+    const testFields = ['resource', 'entity', 'appears_in']
 
     testFields.forEach(k => {
       assert.deepEqual(result[k].map(v => omit(v, variableFields)), expectedResult[k])
@@ -204,15 +179,14 @@ describe('createResourcePayloadToEntitiesAndRelationships', () => {
 
     const result = createResourcePayloadToEntitiesAndRelationships(validPayload, {}, {
       resource: 10,
-      entity: 123,
-      version: 456
+      entity: 123
     })
 
     const expectedResult = getExpectedResult(
       result.entity.map(e => e.properties.uuid),
-      { resourceStartId: 10, entityStartId: 123, versionStartId: 456 }
+      { resourceStartId: 10, entityStartId: 123 }
     )
-    const testFields = ['resource', 'entity', 'appears_in', 'version', 'describes']
+    const testFields = ['resource', 'entity', 'appears_in']
 
     testFields.forEach(k => {
       assert.deepEqual(result[k].map(v => omit(v, variableFields)), expectedResult[k])
@@ -235,21 +209,20 @@ describe('createResourcePayloadToEntitiesAndRelationships', () => {
       },
       {
         resource: 10,
-        entity: 123,
-        version: 456
+        entity: 123
       }
     )
 
     const expectedResult = getExpectedResult(
       result.entity.map(e => e.properties.uuid),
-      { resourceStartId: 10, entityStartId: 123, versionStartId: 456 }
+      { resourceStartId: 10, entityStartId: 123 }
     )
     expectedResult.entity[0].id = 789
     expectedResult.entity[1].id -= 1
     expectedResult.appears_in[0].startId = 789
     expectedResult.appears_in[1].startId -= 1
 
-    const testFields = ['resource', 'entity', 'appears_in', 'version', 'describes']
+    const testFields = ['resource', 'entity', 'appears_in']
 
     testFields.forEach(k => {
       assert.deepEqual(result[k].map(v => omit(v, variableFields)), expectedResult[k])
@@ -276,7 +249,7 @@ describe('createResourcePayloadListToEntitiesAndRelationships', () => {
     } = createResourcePayloadListToEntitiesAndRelationships([validPayload])
 
     const expectedResult = getExpectedResult(results.entity.map(e => e.properties.uuid))
-    const testFields = ['resource', 'entity', 'appears_in', 'version', 'describes']
+    const testFields = ['resource', 'entity', 'appears_in']
 
     testFields.forEach(k => {
       assert.deepEqual(results[k].map(v => omit(v, variableFields)), expectedResult[k])
@@ -289,8 +262,7 @@ describe('createResourcePayloadListToEntitiesAndRelationships', () => {
 
     assert.deepEqual(lastIds, {
       entity: 2,
-      resource: 1,
-      version: 1
+      resource: 1
     })
   })
 })

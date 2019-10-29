@@ -18,6 +18,7 @@ export function withStyles(angularScope, styles) {
 }
 
 export const theme = {
+  units: (x) => `${x}em`,
   colours: {
     background: {
       dark: {

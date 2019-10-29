@@ -2,7 +2,9 @@
   "cSpell.words": [
     "Explorable",
     "decypher",
+    "explorables",
     "histograph",
-    "promisify"
+    "promisify",
+    "slugify"
   ]
 }

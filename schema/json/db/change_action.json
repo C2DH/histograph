@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://c2dh.uni.lu/histograph/db/change_action.json",
+  "title": "Change Action",
+  "description": "A pending (`pending_change_action`) or performed action (`change_action`) that changes data in DB",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "description": "Unique type of the action.",
+      "type": "string",
+      "enum": [
+        "unlink-entity",
+        "link-entity",
+        "change-entity-type",
+        "merge-entities"
+      ]
+    },
+    "uuid": {
+      "description": "Unique ID of the action",
+      "type": "string",
+      "pattern": "^[^\\s]+$",
+      "examples": [
+        "whE35HfSR4"
+      ]
+    },
+    "initiatedBy": {
+      "description": "Username of the initiator",
+      "type": "string",
+      "examples": [
+        "@User One"
+      ]
+    },
+    "createdAt": {
+      "description": "UTC timestamp when the action was created",
+      "type": "string",
+      "format": "date-time"
+    },
+    "performedAt": {
+      "description": "UTC timestamp when the action was executed",
+      "type": "string",
+      "format": "date-time"
+    },
+    "totalVote": {
+      "description": "Total vote for the action. When total vote reaches threshold (configured per HG instance), action is executed.",
+      "type": "number"
+    },
+    "votedFor": {
+      "description": "Usernames of those who voted for it.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "votedAgainst": {
+      "description": "Usernames of those who voted against it.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "meta": {
+      "description": "Metadata of the action. Depends on action 'type'",
+      "type": "object"
+    }
+  },
+  "required": [
+    "type",
+    "uuid",
+    "initiatedBy"
+  ]
+}

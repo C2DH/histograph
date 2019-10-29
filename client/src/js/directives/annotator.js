@@ -1,15 +1,7 @@
 
-
+import { get, find, head } from 'lodash'
 import marked from 'marked'
 
-/**
- * @ngdoc overview
- * @name histograph
- * @description
- * # histograph
- *
- * Main module of the application. require marked
- */
 angular.module('histograph')
   /*
     usage
@@ -19,73 +11,44 @@ angular.module('histograph')
     return {
       restrict: 'A',
       scope: {
-        // marked: '=',
         context: '=',
         language: '='
       },
       template: '<span marked="text" context="context"></span>',
       link(scope, element, attrs) {
-        // scope.text = ''
-        // console.log('::lookup', scope.context.type)
+        const fallbackLanguage = 'en'
 
-        const render = function (text) { // cutat
-          if (scope.context.type == 'theme') {
-            console.log('::lookup', 'theme', text, typeof text)
-          }
-          if (typeof text !== 'string') return text;
-          if (isNaN(attrs.cutAt)) return text;// $sce.trustAsHtml(text);
-          // trim the string to the maximum length
-          let t = text.substr(0, cutAt);
-          // re-trim if we are in the middle of a word
-          if (text.length > cutAt) t = `${t.substr(0, Math.min(t.length, t.lastIndexOf(' ')))} ...`;
-          // if there is a cut at, we will strip the html
-          if (scope.context.type == 'theme') {
-            console.log('::lookup final', t)
-          }
-          return t;
-        };
-
-        scope.textify = function () {
-          if (!scope.context) {
-            console.warn('directive lookup without any context')
-            return ''
-          }
-          let content;
+        scope.$watch('language', language => {
+          // eslint-disable-next-line no-param-reassign
+          if (language === undefined) language = fallbackLanguage
 
           // look for annotations
           if (scope.context.annotations && scope.context.annotations.length) {
             // get the correct annotation based on field and language
-            let annotation = _.get(_.find(scope.context.annotations, {
-              language: scope.language
+            let annotation = get(find(scope.context.annotations, {
+              language
             }), 'annotation');
 
             if (!annotation) {
-              annotation = _.get(_.first(scope.context.annotations), 'annotation');
+              annotation = get(head(scope.context.annotations), 'annotation');
             }
             // annotation has to be there, otherwise an exception is thrown
-            content = annotation[attrs.field];
+            scope.text = annotation[attrs.field];
+            return
           }
 
-          if (!content) {
-            content = scope.context.props[`${attrs.field}_${scope.language}`]
-
-            if (!content) {
-              for (const i in scope.context.props.languages) {
-                content = scope.context.props[`${attrs.field}_${scope.context.props.languages[i]}`];
-                if (content) break;
-              }
-            }
-          }
-
-          if (!content) {
-            content = scope.context.props[attrs.field]
-          }
-
-          if (content) scope.text = render(content);
-        }
-
-        scope.$watch('language', function (language) {
-          scope.textify();
+          // paths of the old resource representation (`props`) and new (no `props`, top level)
+          const paths = [
+            `${attrs.field}.${language}`,
+            `props.${attrs.field}_${language}`,
+            `${attrs.field}.${fallbackLanguage}`,
+            `props.${attrs.field}_${fallbackLanguage}`,
+          ]
+          const content = paths.reduce((c, path) => {
+            if (c !== undefined) return c
+            return get(scope.context, path)
+          }, undefined)
+          if (content !== undefined) scope.text = content
         });
       }
     }
@@ -193,7 +156,6 @@ angular.module('histograph')
         const renderer = new marked.Renderer();
 
 
-        const annotable = false;
         // chenge how marked interpred link for this special directive only
         renderer.link = function (href, title, text) {
           const localEntitiesIds = href.split(',');
@@ -202,7 +164,7 @@ angular.module('histograph')
           let localEntities = [];
 
           localEntities = entities.filter(function (d) {
-            return localEntitiesIds.indexOf(`${d.id}`) !== -1;
+            return localEntitiesIds.indexOf(`${d.entity.uuid}`) !== -1;
           })
 
           // it has been abandoned... sad
@@ -433,7 +395,7 @@ Annotator.Plugin.HelloWorld = function (element, options) {
         })
         .subscribe('annotationEditorShown', function (editor, annotation) {
           editor = editor;
-          console.log('The annotation:  has just been annotationEditorShown!', arguments, annotator);
+          console.log('The annotation:  has just been annotationEditorShown!', arguments, annotator, annotation);
 
           if (typeof options.annotationEditorShown === 'function') options.annotationEditorShown(annotation, annotator)
         })

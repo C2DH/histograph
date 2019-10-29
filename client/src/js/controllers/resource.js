@@ -1,5 +1,11 @@
 /* eslint-env browser */
 /* globals angular */
+
+function getEntitiesOfType(resource, entityType) {
+  return resource.entities_and_appearances
+    .filter(({ type }) => type === entityType)
+}
+
 /**
  * @ngdoc function
  * @name histograph.controller:indexCtrl
@@ -11,7 +17,7 @@ angular.module('histograph')
   .controller('ResourceCtrl', function ($rootScope, $scope, $log, $stateParams, $filter, resource, annotations, ResourceRelatedVizFactory, ResourceRelatedFactory, socket, EVENTS) {
     $log.debug('ResourceCtrl ready', annotations);
 
-    $scope.notes = annotations.result.items;
+    $scope.notes = [] //annotations.result.items;
     /*
       set see also title
     */
@@ -222,14 +228,14 @@ angular.module('histograph')
     // $scope.isFavItem = resource.result.item.filter(function(d) {
     //   return d.curators.length && _.find(d.curators, {}
     // }).length
-    $scope.isFavItem = resource.result.item.loved_by_user;
+    $scope.isFavItem = resource.loved_by_user
 
     $log.log('ResourceCtrl', resource);
 
     if (resource) {
       $scope.setCurrentResourceRange([
-        resource.result.item.props.start_time * 1000,
-        resource.result.item.props.end_time * 1000,
+        resource.resource.start_time * 1000,
+        resource.resource.end_time * 1000,
       ])
     } else {
       $scope.setCurrentResourceRange()
@@ -238,9 +244,9 @@ angular.module('histograph')
     // merge all versions (simply concat annotations and join them with entity URI if any matches identification)
 
     let yamls = [];
-    resource.result.item.positionings.forEach(function (v) {
-      if (typeof v.yaml === 'object') yamls = yamls.concat(v.yaml);
-    });
+    // resource.result.item.positionings.forEach(function (v) {
+    //   if (typeof v.yaml === 'object') yamls = yamls.concat(v.yaml);
+    // });
 
 
     $scope.mergedVersion = {
@@ -263,7 +269,7 @@ angular.module('histograph')
       }), { context: 'picture' })
     );
 
-    $scope.currentVersion = resource.result.item.positionings[0];// $scope.mergedVersion;
+    // $scope.currentVersion = resource.result.item.positionings[0];// $scope.mergedVersion;
 
     // get theaccepted version
     //
@@ -273,8 +279,14 @@ angular.module('histograph')
     /**
       on load
     */
-    $scope.item = angular.extend({ type: 'resource' }, resource.result.item);
-    $scope.resource = angular.extend({ type: 'resource' }, resource.result.item);
+    $scope.item = angular.extend({ type: 'resource' }, resource);
+    $scope.resource = angular.extend({ type: 'resource' }, resource);
+
+    $scope.item.themes = getEntitiesOfType(resource, 'theme')
+    $scope.item.persons = getEntitiesOfType(resource, 'person')
+    $scope.item.organizations = getEntitiesOfType(resource, 'organization')
+    $scope.item.locations = getEntitiesOfType(resource, 'location')
+    $scope.item.social_groups = getEntitiesOfType(resource, 'social_group')
 
     // load timeline
     $scope.syncTimeline();

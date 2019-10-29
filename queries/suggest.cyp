@@ -469,7 +469,7 @@ LIMIT {limit}
   WITH res
 {/if}
 MATCH (n:entity)-[r1:appears_in]->{if:center}(res){/if}{unless:center}(res:resource){/unless}
-WHERE n.uuid IN {ids} AND r1.score > -2
+WHERE n.uuid IN {ids}
 {if:start_time}
   AND res.start_time >= {start_time}
 {/if}
@@ -534,7 +534,6 @@ LIMIT {limit}
 
 WITH res
 OPTIONAL MATCH (per:person)-[r_per:appears_in]->(res)
-WHERE per.score > -1
 WITH res, per, r_per
 ORDER BY r_per.score DESC, r_per.tfidf DESC
 WITH res, collect({

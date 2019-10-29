@@ -116,7 +116,7 @@
       "additionalProperties": false,
       "items": {
         "type": "object",
-        "description": "Location of the entity in resource's '<resource_title>. <resource_caption>. <resource_content>' string (joined by '. ').",
+        "description": "Location of the entity in resource's '<resource_title>. <resource_caption>. <resource_content>' string (joined by '. ', two characters).",
         "properties": {
           "entityIndex": {
             "type": "integer",

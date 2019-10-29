@@ -73,5 +73,3 @@ $ node scripts/manage.js --task=entity.tfidf
 Once the script has calculated the tfidf value, entity nodes are enriched with the `df` value (document frequency) namely the number of docs where the entity appears and the `specificity` value, normalizing the df value to the total number of document. The tf and the tfidf values are then stored as relationship properties.
 
 
-
-Each resource has one ore more `annotation` node (a subtype of `version`) where a yaml field contain starting and ending position of entities; moreover, a `resource` can have a 

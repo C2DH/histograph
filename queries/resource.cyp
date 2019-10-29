@@ -1,104 +1,41 @@
-// name: get_resource
-// get resource with its version and comments
+// name: get_resource_with_details
+// get resource with its comments
 MATCH (res:resource {uuid: {id}})
 WITH res
+OPTIONAL MATCH (res)-[appearance:appears_in]-(ent:entity)
+WITH res, collect(appearance) as appearances, collect(ent) as entities
 OPTIONAL MATCH (res)<-[r_cur:curates]-(u:user {username:{username}})
-WITH res, count(r_cur) as curated_by_user
 OPTIONAL MATCH (res)<-[r_lik:likes]-(u:user {username:{username}})
-WITH res, curated_by_user, count(r_lik)> 0 as loved_by_user
 OPTIONAL MATCH (lover:user)-[:likes]->(res)
-WITH res, curated_by_user, loved_by_user, count(lover) as lovers
 OPTIONAL MATCH (curator:user)-[:curates]->(res)
-WITH res, curated_by_user, loved_by_user, lovers, count(curator) as curators
-
-OPTIONAL MATCH (res)-[r_pla:appears_in]-(pla:`place`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, r_pla, pla
-ORDER BY r_pla.score DESC, r_pla.tfidf DESC, r_pla.frequency DESC
-WITH res, curated_by_user, loved_by_user, curators, lovers, filter(x in collect({  
-      id: pla.uuid,
-      type: 'place',
-      props: pla,
-      rel: r_pla
-    }) WHERE exists(x.id)) as places
-
-OPTIONAL MATCH (res)-[r_loc:appears_in]-(loc:`location`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, r_loc, loc
-ORDER BY r_loc.score DESC, r_loc.tfidf DESC, r_loc.frequency DESC
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, filter(x in collect({  
-      id: loc.uuid,
-      type: 'location',
-      props: loc,
-      rel: r_loc
-    }) WHERE exists(x.id)) as locations
-
-OPTIONAL MATCH (res)-[r_per:appears_in]-(per:`person`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, r_per, per
-ORDER BY r_per.score DESC, r_per.tfidf DESC, r_per.frequency DESC
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, filter(x in collect({
-      id: per.uuid,
-      type: 'person',
-      props: per,
-      rel: r_per
-    }) WHERE exists(x.id)) as persons
-
-OPTIONAL MATCH (res)-[r_org:appears_in]-(org:`organization`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, persons, r_org, org
-ORDER BY r_org.score DESC, r_org.tfidf DESC, r_org.frequency DESC
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, persons, filter(x in collect({  
-      id: org.uuid,
-      type: 'organization',
-      props: org,
-      rel: r_org
-    }) WHERE exists(x.id)) as organizations
-
-OPTIONAL MATCH (res)-[r_soc:appears_in]-(soc:`social_group`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, persons, organizations, r_soc, soc
-ORDER BY r_soc.score DESC, r_soc.tfidf DESC, r_soc.frequency DESC
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, persons, organizations, filter(x in collect({
-      id: soc.uuid,
-      type: 'social_group',
-      props: soc,
-      rel: r_soc
-    }) WHERE exists(x.id)) as social_groups
-
-OPTIONAL MATCH (res)-[r_the:appears_in]-(the:`theme`)
-WITH res, curated_by_user, loved_by_user, curators, lovers, places, locations, persons, organizations, social_groups, filter(x in collect({
-      id: the.uuid,
-      type: 'theme',
-      props: the,
-      rel: r_the
-    }) WHERE exists(x.id)) as themes
-
-OPTIONAL MATCH (ver)-[:describes]->(res)
-OPTIONAL MATCH (res)-[:belongs_to]->(col)
 OPTIONAL MATCH (com)-[:mentions]->(res)
 OPTIONAL MATCH (inq)-[:questions]->(res)
-
 OPTIONAL MATCH (after:resource)-[:comes_after]->(res)
 OPTIONAL MATCH (res)-[:comes_after]->(before:resource)
 
 RETURN {
-  resource: {
-    id: res.uuid,
-    type: last(labels(res)),
-    props: res,
-    curated_by_user: curated_by_user,
-    loved_by_user: loved_by_user,
-    versions: EXTRACT(p in COLLECT(DISTINCT ver)|{name: p.name, id: p.uuid, yaml:p.yaml, language:p.language, type: last(labels(p))}),
-    locations: locations,
-    places: places,
-    persons:   persons,
-    organizations: organizations,
-    social_groups:  social_groups,
-    themes:  themes,
-    //collections: EXTRACT(p in COLLECT(DISTINCT col)|{name: p.name, id: p.uuid, type: 'collection'}),
-    comments: count(distinct com),
-    inquiries: count(distinct inq),
-    lovers: lovers,
-    curators: curators,
-    previous_resource_uuid: before.uuid,
-    next_resource_uuid: after.uuid 
-  }
+  id: res.uuid,
+  resource: res,
+  entities_and_appearances: [
+    i IN range(0, size(entities) - 1) | {
+      entity: entities[i], 
+      appearance: appearances[i], 
+      type: last(labels(entities[i]))
+    }
+  ],
+  // entities_and_appearances: collect({ 
+  //   entity: ent, 
+  //   appearance: appearance, 
+  //   type: last(labels(ent))
+  // }),
+  curated_by_user: count(r_cur),
+  loved_by_user: count(r_lik)> 0,
+  comments: count(distinct com),
+  inquiries: count(distinct inq),
+  lovers: count(lover),
+  curators: count(curator),
+  previous_resource_uuid: before.uuid,
+  next_resource_uuid: after.uuid 
 } AS result
 
 
@@ -173,7 +110,6 @@ SKIP {offset}
 LIMIT {limit}
 WITH res
 OPTIONAL MATCH (res)-[r_loc:appears_in]->(loc:`location` {status:1})
-WHERE r_loc.score > -2
 WITH res, r_loc, loc
 ORDER BY r_loc.score DESC, r_loc.tfidf DESC, r_loc.frequency DESC
 WITH res,  filter(x in collect({  
@@ -183,7 +119,6 @@ WITH res,  filter(x in collect({
       rel: r_loc
     }) WHERE exists(x.id))[0..5] as locations   
 OPTIONAL MATCH (res)<-[r_per:appears_in]-(per:`person` {status:1})
-WHERE r_per.score > -2
 WITH res, locations, r_per, per
 ORDER BY  r_per.score DESC, r_per.tfidf DESC, r_per.frequency DESC
 WITH res, locations,  filter(x in collect({  
@@ -193,7 +128,6 @@ WITH res, locations,  filter(x in collect({
       rel: r_per
     }) WHERE exists(x.id))[0..5] as persons
 OPTIONAL MATCH (res)<-[r_org:appears_in]-(org:`organization` {status:1})
-WHERE org.score > -2
 WITH res, locations, persons,  filter(x in collect({    
       id: org.uuid,
       type: 'organization',
@@ -201,7 +135,6 @@ WITH res, locations, persons,  filter(x in collect({
       rel: r_org
     }) WHERE exists(x.id))[0..5] as organizations
 OPTIONAL MATCH (res)<-[r_soc:appears_in]-(soc:`social_group` {status:1})
-WHERE soc.score > -2
 WITH res, locations, persons, organizations,  filter(x in collect({  
       id: soc.uuid,
       type: 'social_group',
@@ -209,7 +142,6 @@ WITH res, locations, persons, organizations,  filter(x in collect({
       rel: r_soc
     }) WHERE exists(x.id))[0..5] as social_groups
 OPTIONAL MATCH (res)<-[r_the:appears_in]-(the:`theme` {status:1})
-WHERE the.score > -2
 WITH res, locations, persons, organizations, social_groups, filter(x in collect({    
       id: the.uuid,
       type: 'theme',
@@ -217,19 +149,11 @@ WITH res, locations, persons, organizations, social_groups, filter(x in collect(
       rel: r_the
     }) WHERE exists(x.id))[0..5] as themes
 
-{if:with}
-  OPTIONAL MATCH (res)--(ann:annotation) 
-  WITH res, collect(ann) as annotations, locations, persons, organizations, themes, social_groups
-{/if}
-{unless:with}
-  WITH res, [] as annotations, locations, persons, organizations, themes, social_groups
-{/unless}
-
+WITH res, locations, persons, organizations, themes, social_groups
 RETURN {
   id: res.uuid,
   type: 'resource',
   props: res,
-  annotations: annotations,
   persons:     persons,
   themes:     themes,
   organizations: organizations,
@@ -245,7 +169,7 @@ ORDER BY resource.props.start_time ASC
 
 
 // name: count_resources
-// count resources having a version, with current filters
+// count resources with current filters
 {if:ids}
 // UUID match
 MATCH (r:resource)
@@ -308,37 +232,12 @@ RETURN {
   total_items: total_items
 } // count per type
 
-
-
-// name: get_resources_by_ids
-// get resources with number of comments, if any
-MATCH (res:resource)<-[:appears_in]-()
-WHERE res.uuid in {ids}
-WITH DISTINCT res
-    OPTIONAL MATCH (ver)-[:describes]->(res)
-    OPTIONAL MATCH (ent)-[:appears_in]->(res)
-    OPTIONAL MATCH (res)-[:belongs_to]->(col)
-    OPTIONAL MATCH (com)-[:mentions]->(res)
-    OPTIONAL MATCH (inq)-[:questions]->(res)
-  WITH ver, res, ent, col, com, inq, {
-      id: res.uuid,
-      props: res,
-      versions: EXTRACT(p in COLLECT(DISTINCT ver)|{name: p.name, id: p.uuid, yaml:p.yaml, language:p.language, type: last(labels(p))}),
-      entities: EXTRACT(p in COLLECT(DISTINCT ent)|{name: p.name, id: p.uuid, type: last(labels(p)), props: p}),
-      collections: EXTRACT(p in COLLECT(DISTINCT col)|{name: p.name, id: p.uuid, type: 'collection'}),
-      comments: count(distinct com),
-      inquiries: count(distinct inq)
-    } AS result
-  RETURN result
-
-
 // name: count_related_resources
 // get top 100 similar resources sharing the same persons, orderd by time proximity if this info is available
 MATCH (res:resource)
   WHERE res.uuid = {id} 
 WITH res
 MATCH (res)<-[r1:appears_in]-(ent:entity)
-WHERE r1.score > -1 AND ent.score > -1
 WITH res, r1, ent
   ORDER BY r1.tfidf DESC
   LIMIT 9
@@ -378,7 +277,6 @@ RETURN {
 // name: get_related_resources
 // top 20 entities attached to the person
 MATCH (res1:resource {uuid: {id}})<-[r1:appears_in]-(ent:entity)
-WHERE r1.score > -1 AND ent.score > -1
 WITH res1, r1, ent
   ORDER BY r1.score DESC, r1.tfidf DESC
   LIMIT 9
@@ -421,7 +319,6 @@ WITH res1, res2, count(*) as intersection
 {/unless}
 WITH res1, res2, intersection
 OPTIONAL MATCH (res2)<-[r_per:appears_in]-(per:`person`)
-WHERE per.score > -2
 WITH res1, res2, intersection, r_per, per
 ORDER BY  r_per.score DESC, r_per.tfidf DESC, r_per.frequency DESC
 WITH res1, res2, intersection, filter(x in collect({  
@@ -777,7 +674,7 @@ WITH res
 {unless:with}
 MATCH (p1:{:entity} {status:1})-[r1:appears_in]->(res:resource)<-[r2:appears_in]-(p2:{:entity} {status:1})
 {/unless}
-  WHERE id(p1) < id(p2) AND r1.score > -2 AND r2.score > -2
+  WHERE id(p1) < id(p2)
   {if:start_time}
     AND res.start_time >= {start_time}
   {/if}
@@ -823,7 +720,7 @@ WITH res
 {unless:with}
 MATCH (p1:{:entityA} {status:1})-[r1:appears_in]->(res:resource)<-[r2:appears_in]-(p2:{:entityB} {status:1})
 {/unless}
-  WHERE r1.score > -2 AND r2.score > -2
+  WHERE true
   {if:start_time}
     AND res.start_time >= {start_time}
   {/if}
@@ -867,7 +764,7 @@ WITH r1, r2, res
   LIMIT 100
 WITH res
 MATCH (p1:{:entity})-[:appears_in]->(res)<-[:appears_in]-(p2:{:entity})
- WHERE p1.score > -1 AND p2.score > -1
+ WHERE true
 WITH p1, p2, count(DISTINCT res) as w
 RETURN {
     source: {
@@ -889,7 +786,7 @@ LIMIT 500
 
 // name: get_related_resources_bipartite_graph
 MATCH (res1:resource {uuid: {id}})<-[r1:appears_in]-(ent:entity)-[r2:appears_in]->(res2:resource)
-  WHERE ent.score > -1
+  WHERE true
     {if:mimetype}
     AND res2.mimetype IN {mimetype}
     {/if}
@@ -951,7 +848,7 @@ LIMIT 250
 // name: get_related_resources_graph
 //
 MATCH (res1:resource {uuid: {id}})<-[r1:appears_in]-(ent:entity)-[r2:appears_in]->(res2:resource)
-  WHERE ent.score > -1
+  WHERE true
     {if:mimetype}
     AND res2.mimetype IN {mimetype}
     {/if}
@@ -1086,7 +983,7 @@ ORDER BY tm ASC
 // name: get_related_resources_timeline
 //
 MATCH (res:resource)<-[:appears_in]-(ent:entity)
-WHERE res.uuid = {id} AND ent.score > -1
+WHERE res.uuid = {id}
 WITH ent
 {if:with}
   MATCH (ent2:entity)
@@ -1216,7 +1113,6 @@ ORDER BY r.tfidf DESC
 // get related nodes that are connected with the entity. test with
 // > node scripts/manage.js --task=common.cypher.query --cypher=resource/count_related_entities --id=N1frQNKD2g --limit=10 --entity=person --offset=0
 MATCH (n:resource {uuid:{id}})<-[r1:appears_in]-(ent:{:entity})
-  WHERE r1.score > -1 AND ent.score > -1
 RETURN COUNT(DISTINCT ent) as count_items
 
 
