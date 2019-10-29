@@ -1310,6 +1310,11 @@ module.exports = angular
         templateUrl: 'templates/login-callback.html',
         controller: 'LoginCallbackCtrl'
       })
+      .state('changes-history', {
+        url: '/changes-history',
+        templateUrl: 'templates/changes-history.html',
+        controller: 'ChangesHistoryCtrl'
+      })
   })
   .config(function ($httpProvider, jwtOptionsProvider, jwtInterceptorProvider, HgSettingsProvider) {
     // eslint-disable-next-line no-param-reassign

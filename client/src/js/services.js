@@ -58,6 +58,9 @@ angular.module('histograph')
           parameters: { originalEntityUuidList, newEntityUuid }
         }
         return resource.createNewAction(payload).$promise
+      },
+      getPerformedActions: (skip = 0, limit = 50) => {
+        return resource.query({ skip, limit }).$promise;
       }
     }
   })

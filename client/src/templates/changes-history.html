@@ -1,0 +1,21 @@
+<div class="{{classes.container}}">
+  <h4 class="h4">Actions history</h4>
+  <div class="{{classes.listContainer}}">
+    <ul class="list-group">
+      <li class="list-group-item" ng-repeat="a in actions">
+        <div class="{{classes.action}}">
+          <div class="{{classes.label}}">
+            <div>{{getLabel(a)}}</div>
+          </div>
+          <div class="{{classes.meta}}">
+            <div>{{getTimestamp(a)}} by</div>
+            <div>{{getUsername(a)}}</div>              
+          </div>  
+        </div>
+      </li>
+      <li class="list-group-item">
+        <button class="btn {{classes.loadMoreBtn}}" ng-click="loadMoreItems()">Load more</button>
+      </li>
+      </ul>
+  </div>
+</div>
