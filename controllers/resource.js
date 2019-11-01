@@ -128,6 +128,18 @@ module.exports = function(io){
         form.params.fullTextQuery = keywords.map(kw => `"${kw}"`).join(' AND ')
       }
 
+      /*
+        Neo4j can't work with a query where both IDs are the same.
+        Here we modify the request for the scenario when only
+        one item is requested and use the `ids` parameter instead.
+      */
+      const { from_uuid, to_uuid } = form.params
+      if (from_uuid === to_uuid && typeof from_uuid === 'string') {
+        form.params.ids = [from_uuid]
+        delete form.params.from_uuid
+        delete form.params.to_uuid
+      }
+
       Resource.getMany(form.params, function (err, items, info) {
         if(err)
           console.log(err)
