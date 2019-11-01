@@ -1,7 +1,7 @@
 /* eslint-env browser */
 import {
   assignIn, get, isEmpty, isEqual,
-  isArray, clone, last
+  isArray, clone, last, omitBy, isUndefined
 } from 'lodash'
 import moment from 'moment'
 import { withStyles, theme } from '../styles'
@@ -73,6 +73,18 @@ const styles = {
       marginRight: '0.3em'
     }
   },
+  scaleToggle: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: [[0, '1em']],
+    '& span': {
+      margin: [[0, '.3em']]
+    },
+    '& input': {
+      margin: [[0, '.3em']]
+    },
+  }
 }
 
 function toQueryParameters(o = {}) {
@@ -116,6 +128,8 @@ angular.module('histograph')
 
     $scope.availableAspects = []
 
+    $scope.maxScaledIds = []
+
     ExplorerService.getAvailableAspects()
       .then(aspects => {
         $scope.availableAspects = aspects
@@ -139,6 +153,7 @@ angular.module('histograph')
         filters,
         editPlotId,
         explorables,
+        scaleKw,
       } = $location.search()
       const parsedFilters = isEmpty(filters) ? undefined : JSON.parse(atob(filters))
       const parsedExplorables = isEmpty(explorables) ? [] : explorables.split(',')
@@ -151,16 +166,19 @@ angular.module('histograph')
         topicId,
         filters: parsedFilters,
         editPlotId,
-        explorables: parsedExplorables
+        explorables: parsedExplorables,
+        scaleKeywordPlots: scaleKw
       }
     }
 
     const parametersToUrl = (replace = false) => {
       const { filters, explorables } = $scope.params
-      const queryParams = assignIn({}, $scope.params, {
+      const queryParams = omitBy(assignIn({}, $scope.params, {
         filters: isEmpty(filters) ? undefined : btoa(JSON.stringify(filters)),
-        explorables: isEmpty(explorables) ? undefined : explorables.join(',')
-      })
+        explorables: isEmpty(explorables) ? undefined : explorables.join(','),
+        scaleKw: $scope.params.scaleKeywordPlots ? true : undefined,
+        scaleKeywordPlots: undefined
+      }), isUndefined)
       const l = $location.search(assignIn({}, $location.search(), queryParams))
       if (replace) l.replace()
     }
@@ -173,6 +191,7 @@ angular.module('histograph')
     $scope.$watch('params.filters', () => parametersToUrl(true), true)
     $scope.$watch('params.editPlotId', () => parametersToUrl())
     $scope.$watch('params.explorables', () => parametersToUrl(true), true)
+    $scope.$watch('params.scaleKeywordPlots', () => parametersToUrl())
     parametersFromUrl()
 
     $scope.setBinsCount = val => {
@@ -346,6 +365,8 @@ angular.module('histograph')
           if (aspectConfig !== undefined) acc[`${id}-${idx}`] = aspectConfig
           return acc
         }, {})
+
+        $scope.maxScaledIds = Object.keys($scope.explorerConfig).filter(k => k.startsWith('keywordPresenceFrequency-'))
       },
       true
     )
@@ -358,4 +379,11 @@ angular.module('histograph')
         delete $scope.params.filters[explorableId]
       }
     }
+
+    $scope.$watch(() => ({
+      isOn: $scope.params.scaleKeywordPlots,
+      ids: $scope.maxScaledIds
+    }), ({ isOn, ids }) => {
+      $scope.availableMaxScaledIds = isOn ? ids : []
+    }, true);
   })

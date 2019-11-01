@@ -32,12 +32,14 @@
            hi-selected-plot-id="params.editPlotId"
            hi-get-tooltip-content="getTooltipContent"
            hi-on-control-clicked="configureExplorable"
+           hi-plots-ids-max-scaled="availableMaxScaledIds"
            class="{{classes.explorerGraph}}">
       </div>
   
       <!-- Graph footer -->
       <div class="{{classes.graphFooter}}">
         <div class="{{classes.graphFooterSection}}">
+          <!-- add button -->
           <div class="dropdown">
             <div class="btn-group" uib-dropdown is-open="false">
               <button id="add-explorable-{{uid}}" type="button" class="btn btn-default btn-line" uib-dropdown-toggle>
@@ -49,6 +51,12 @@
                 </li>
               </ul>
             </div>
+          </div>
+          
+          <!-- toggle scaling -->
+          <div class="{{classes.scaleToggle}}">
+            <input type="checkbox" ng-model="params.scaleKeywordPlots">
+            <span>Scale keywords to maximum</span>
           </div>
         </div>
         <div class="{{classes.graphFooterSection}}">
