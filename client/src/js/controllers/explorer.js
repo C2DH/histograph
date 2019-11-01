@@ -93,7 +93,7 @@ const EmptyResourceResponse = {
 
 angular.module('histograph')
   .controller('ExplorerCtrl', function (
-    $scope, $log, $location, $compile,
+    $scope, $log, $location,
     ResourceFactory,
     ExplorerService
   ) {
@@ -283,16 +283,12 @@ angular.module('histograph')
       if (selectedMeta === undefined) {
         $scope.resourcesSearchParams = undefined
       } else {
-        $scope.resourcesSearchParams = selectedMeta.totalResources === 1
-          ? {
-            id: selectedMeta.firstResourceUuid,
-          }
-          : {
-            from_uuid: selectedMeta.firstResourceUuid,
-            to_uuid: selectedMeta.lastResourceUuid,
-            from: selectedMeta.minStartDate.replace(/T.*$/, ''),
-            to: moment(clone(selectedMeta.maxEndDate)).add(1, 'days').toISOString().replace(/T.*$/, ''),
-          }
+        $scope.resourcesSearchParams = {
+          from_uuid: selectedMeta.firstResourceUuid,
+          to_uuid: selectedMeta.lastResourceUuid,
+          from: selectedMeta.minStartDate.replace(/T.*$/, ''),
+          to: moment(clone(selectedMeta.maxEndDate)).add(1, 'days').toISOString().replace(/T.*$/, ''),
+        }
       }
     }, true)
 
