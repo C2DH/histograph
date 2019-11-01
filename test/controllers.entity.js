@@ -1,3 +1,5 @@
+/* eslint-disable */
+/* eslint-env mocha */
 /*
   
   Test entity ctrl via REST API
@@ -45,7 +47,7 @@ after(function () {
   session.destroy();
 });
 
-describe('controller:entity before', function() {
+describe.skip('controller:entity before', function() {
   it('should delete MARVIN, if any', function (done) {
     User.remove(generator.user.marvin(), function (err) {
       if(err)
@@ -149,7 +151,7 @@ describe('controller:entity before', function() {
 });
   
 
-describe('controller:entity basics', function() {
+describe.skip('controller:entity basics', function() {
   it('should get a specific entity', function (done) {
     session
       .get('/api/entity/' + __entity.id)
@@ -164,7 +166,7 @@ describe('controller:entity basics', function() {
   });
 });
 
-describe('controller:entity related items', function() {
+describe.skip('controller:entity related items', function() {
   it('should get ONE COMPLETE related item' , function (done) {
     session
       .get('/api/entity/' + __entity.id +'/related/resource?limit=1')
@@ -354,7 +356,7 @@ describe('controller:entity related items', function() {
   });
 });
 
-describe('controller:entity related issues', function() {
+describe.skip('controller:entity related issues', function() {
   it('should create an issue on entity type, without a solution of course...' , function (done) {
     session
       .post('/api/entity/' + __entity.id +'/related/issue')
@@ -528,7 +530,7 @@ describe('controller:entity related issues', function() {
 });
 
 
-describe('controller:entity after', function() {
+describe.skip('controller:entity after', function() {
   it('should delete the resource A', function (done) {
     Resource.remove(__resource, function (err) {
       if(err)

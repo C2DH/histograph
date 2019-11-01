@@ -457,7 +457,7 @@ module.exports = {
       entities.push(ent);
     }
 
-    console.log(entities)
+    // console.log(entities)
     if(!next)
       return entities;
 

@@ -1,3 +1,6 @@
+/* eslint-disable */
+/* eslint-env mocha */
+
 /*
   
   Testing validator
@@ -9,6 +12,7 @@
 
 var validator = require('../validator.js'),
     should    = require('should');
+const _ = require('lodash')
    
    
 
