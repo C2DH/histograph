@@ -1,3 +1,5 @@
+/* eslint-disable */
+/* eslint-env mocha */
 /*
   
   Test user ctrl via REST API
@@ -35,7 +37,7 @@ var __user,
     __inquiry,
     __comment;
 
-describe('controllers: create a new user', function() {
+describe.skip('controllers: create a new user', function() {
   it('should remove the user with email world@globetrotter.it', function (done) {
     neo4j.query('MATCH (n:user {username:{username}}) OPTIONAL MATCH (n)-[r]-() DELETE n, r', {
       username: 'hello-world'
@@ -117,7 +119,7 @@ describe('controllers: create a new user', function() {
 })
 
 
-describe('controllers: auth failed', function() {
+describe.skip('controllers: auth failed', function() {
 
   it('should NOT authenticate the user because of wrong credentials', function (done) {
     session
@@ -167,7 +169,7 @@ describe('controllers: auth failed', function() {
 })
 
 
-describe('controllers: authenticate the user, succeed', function() {
+describe.skip('controllers: authenticate the user, succeed', function() {
   it('should change the activation key, via cypher (uncrypted, just for test purposes)', function (done) {
     neo4j.query('MATCH(n:user {email:{email}}) SET n.activation = {key} RETURN n', {
       email: 'world@globetrotter.it',
@@ -224,7 +226,7 @@ describe('controllers: authenticate the user, succeed', function() {
 
 
 
-describe('controllers: get resource items available to the user', function() {
+describe.skip('controllers: get resource items available to the user', function() {
   var generator = require('../generator')({
                   suffix: 'controllers'
                 }),
@@ -594,7 +596,7 @@ describe('controllers: get resource items available to the user', function() {
 //   });
 // });
 
-describe('controllers: play with entities', function() {
+describe.skip('controllers: play with entities', function() {
   var Entity = require('../models/entity')
   it('should create a brand new entity, by using links_wiki', function (done) {
     Entity.create({
@@ -714,7 +716,7 @@ describe('controllers: play with entities', function() {
 })
 
 
-describe('controllers: delete the user and their relationships', function() {
+describe.skip('controllers: delete the user and their relationships', function() {
   it('should remove the comments created by the hello-world user', function (done) {
     neo4j.query('MATCH (n:user {username:{username}})-[r]-(com:comment)-[r2:mentions]-() DELETE com, r2, r', {
       username: 'hello-world'
@@ -756,7 +758,7 @@ describe('controllers: delete the user and their relationships', function() {
 
 
 
-describe('controllers: test cypher error message: ', function() {
+describe.skip('controllers: test cypher error message: ', function() {
   it('should fail miserably on InvalidSyntax', function (done) {
     neo4j.query('MATCH (x:y{z:{w}}) RETURN n', function (err) {
       should.exist(err);

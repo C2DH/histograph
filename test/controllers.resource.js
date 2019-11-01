@@ -1,3 +1,5 @@
+/* eslint-disable */
+/* eslint-env mocha */
 /*
   
   Test resource ctrl via REST API
@@ -41,7 +43,7 @@ after(function () {
 
 
 
-describe('controller:resource before', function() {
+describe.skip('controller:resource before', function() {
   it('should delete MARVIN, if any', function (done) {
     User.remove(generator.user.marvin(), function (err) {
       if(err)
@@ -104,7 +106,7 @@ describe('controller:resource before', function() {
 });
 
 
-describe('controller:resource', function() {
+describe.skip('controller:resource', function() {
   it('should get a specific resource', function (done) {
     session
       .get('/api/resource/' + __resourceA.id)
@@ -152,7 +154,7 @@ describe('controller:resource', function() {
   });
 })
 
-describe('controller:resource (related users)', function() {
+describe.skip('controller:resource (related users)', function() {
   it('should create a curates relationship between the resource and the user', function (done) {
     session
       .post('/api/resource/'+ __resourceA.id +'/related/user')
@@ -188,7 +190,7 @@ describe('controller:resource (related users)', function() {
 });
 
 
-describe('controller:resource (related entities)', function() {
+describe.skip('controller:resource (related entities)', function() {
   
   it('should get the list of related entities', function (done) {
     session
@@ -205,7 +207,7 @@ describe('controller:resource (related entities)', function() {
 
 
 
-describe('controller:resource (related resources)', function() {
+describe.skip('controller:resource (related resources)', function() {
   it('should show a list of 10 related '+ settings.types.resources[0] +', if any', function (done) {
     session
       .get('/api/resource/'+ __resourceA.id +'/related/resource?limit=13&type=' + settings.types.resources[0])
@@ -374,7 +376,7 @@ describe('controller:resource (related resources)', function() {
 
 
 
-describe('controller:resource after', function() {
+describe.skip('controller:resource after', function() {
   it('should delete the resource A', function (done) {
     Resource.remove({
       id: __resourceA.id

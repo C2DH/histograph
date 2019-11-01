@@ -1,3 +1,5 @@
+/* eslint-disable */
+/* eslint-env mocha */
 /*
   
   Testing services
@@ -17,7 +19,7 @@ var settings = require('../settings'),
     _        = require('lodash'),
     should  = require('should');
     
-describe('services: geonames', function() {
+describe.skip('services: geonames', function() {
   it('should connect to the Geonames endpoint, if available, and return some results', function (done) {
     this.timeout(15000)
     if(!settings.geonames ||_.isEmpty(settings.geonames.username)) {
@@ -37,7 +39,7 @@ describe('services: geonames', function() {
   });
 });
 
-describe('services: geocoding', function() {
+describe.skip('services: geocoding', function() {
   it('should connect to the geocoding endpoint, if available, and return some results fo reverse geocoding activity', function (done) {
     this.timeout(15000)
     if(!settings.geocoding ||_.isEmpty(settings.geocoding.key)) {

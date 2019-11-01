@@ -1,11 +1,5 @@
-/*
-  
-  Testing helpers (markdown parsing mechanism)
-  ===
-
-*/
-'use strict';
-
+/* eslint-env mocha */
+/* Testing helpers (markdown parsing mechanism) */
 
 var helpers = require('../helpers.js'),
     should  = require('should');
@@ -46,7 +40,7 @@ describe('helpers: socialtags', function() {
       text: tweet
     }, function (err, entities) {
       var annotated = parser.annotate(tweet, entities);
-      console.log(annotated)
+      // console.log(annotated)
       should.equal(annotated, 'Siamo pronti per metterci in cammino sulla [#Francigena](), verso il [#Giubileo]() da [#Siena]() a [#Roma]()! [@radiofrancigena]()  [#ciccio]()')
       done();
     });

@@ -1,3 +1,5 @@
+/* eslint-disable */
+/* eslint-env mocha */
 /*
   
   Test Collection model
@@ -26,7 +28,7 @@ var __user,
     __entity,
     __entityB;
 
-describe('model:entity init', function() {
+describe.skip('model:entity init', function() {
   
   it('should delete the user', function (done) {
     User.remove(generator.user.guest(), function (err) {
@@ -73,7 +75,7 @@ describe('model:entity init', function() {
 
 
 
-describe('model:entity ', function() {
+describe.skip('model:entity ', function() {
   
 
   it('should create a brand new entity, by using links_wiki', function (done) {
@@ -206,7 +208,7 @@ describe('model:entity ', function() {
   });
 });
 
-describe('model:entity upvote downvote the entity', function() {
+describe.skip('model:entity upvote downvote the entity', function() {
   it('should upvote the entity correctly', function (done) {
     Entity.update(__entity, {
       upvoted_by: __user.username
@@ -245,7 +247,7 @@ describe('model:entity upvote downvote the entity', function() {
   });
 });
 
-describe('model:entity upvote downvote and create relationship', function() {
+describe.skip('model:entity upvote downvote and create relationship', function() {
   it('should return an error since the USER does not exist', function (done) {
     Entity.updateRelatedResource(__entity, __resource, __entity, {
       action: 'upvote'
@@ -305,7 +307,7 @@ describe('model:entity upvote downvote and create relationship', function() {
   });
 });
 
-describe('model:entity after', function() {
+describe.skip('model:entity after', function() {
   it('should delete the resource', function (done) {
     Resource.remove(__resource, function (err) {
       if(err)

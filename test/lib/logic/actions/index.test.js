@@ -13,7 +13,12 @@ const clearRequireCache = () => Object.keys(require.cache).forEach(key => {
   delete require.cache[key]
 })
 
+
 describe('createAction', () => {
+  before(() => {
+    clearRequireCache()
+  })
+
   it('creates, performs and updates "unlink-entity" action', async () => {
     try {
       let queryCounter = 0
