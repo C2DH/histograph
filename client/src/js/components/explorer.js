@@ -1,12 +1,15 @@
 import {
   difference, assignIn, get,
-  sum
+  sum, max, flatten, includes
 } from 'lodash'
 import { Explorer, HeatBubblePlot, BarPlot } from 'd3-explorer'
 import { interpolateRdYlGn } from 'd3-scale-chromatic'
 import { scaleSequential } from 'd3'
 import { withStyles } from '../styles'
 
+function getMaxValue(datum, ids) {
+  return ids.reduce((maxVal, id) => max([maxVal, max(flatten(get(datum[id], 'data', [])))]), 0)
+}
 
 function getColourLinear({ val, mean, std }) {
   const linearScale = scaleSequential(interpolateRdYlGn)
@@ -107,6 +110,7 @@ const directive = {
     selectedPlotId: '=hiSelectedPlotId',
     getTooltipContent: '=hiGetTooltipContent',
     onControlClicked: '=hiOnControlClicked',
+    plotsIdsScaledToMax: '=hiPlotsIdsMaxScaled',
   },
   /* html */
   template: `
@@ -229,10 +233,32 @@ const directive = {
     $scope.$watch('data', datum => {
       if (!datum) return
 
+      const maxScaledPlotsIds = get($scope, 'plotsIdsScaledToMax', [])
+      const maxValue = getMaxValue(datum, maxScaledPlotsIds)
+
       Object.keys(datum).forEach(id => {
         const { data, labels = [] } = $scope.data[id]
         $scope.explorer.setData(id, data)
         $scope.explorer.setLabels(id, labels)
+        $scope.explorer.setMaxValue(
+          id,
+          includes(maxScaledPlotsIds, id) ? maxValue : undefined
+        )
+      })
+    }, true)
+
+    $scope.$watch('plotsIdsScaledToMax', () => {
+      const { data } = $scope
+      if (!data) return
+
+      const maxScaledPlotsIds = get($scope, 'plotsIdsScaledToMax', [])
+      const maxValue = getMaxValue(data, maxScaledPlotsIds)
+
+      Object.keys(data).forEach(id => {
+        $scope.explorer.setMaxValue(
+          id,
+          includes(maxScaledPlotsIds, id) ? maxValue : undefined
+        )
       })
     }, true)
 
