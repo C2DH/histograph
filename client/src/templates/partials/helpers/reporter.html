@@ -31,8 +31,7 @@
         <span translate>button.confirm</span>
         <span ng-if='entity.upvotes.length' class='number'>{{entity.upvotes.length}}</span>
       </button>
-      <!-- RK: untagging is not supported: what is it supposed to do? -->
-      <!-- <button ng-click='discardvote()' class='btn btn-line-white' ng-if='entity.isRemoveable && resource.id' translate=''>button.untag</button> -->
+      <button ng-click='discardvote()' class='btn btn-line-white' ng-if='entity.isRemoveable && resource.id' translate=''>button.untag</button>
     </div>
   </div>
 
@@ -154,8 +153,8 @@
               <li role="menuitem" ng-if='entity.type != "location"'><a ng-click='selectReplacement("type", "location")' translate>popit.fix.spotcorrecttype.type.location</a></li>
               <li role="menuitem"><a ng-click='selectReplacement("type", "organization")' translate>popit.fix.spotcorrecttype.type.organization</a></li>
               <li role="menuitem"><a ng-click='selectReplacement("type", "theme")'translate>popit.fix.spotcorrecttype.type.theme</a></li>
-
-              <li role="menuitem"><a ng-click='askQuestion("wrong")' translate>popit.fix.spotcorrecttype.type.irrelevant</a></li>
+              <!-- RK: untagging is not supported: what is it supposed to do? -->
+              <!-- <li role="menuitem"><a ng-click='askQuestion("wrong")' translate>popit.fix.spotcorrecttype.type.irrelevant</a></li> -->
             </ul>
           </div>
         </div>
