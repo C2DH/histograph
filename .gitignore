@@ -23,3 +23,8 @@ __*
 TODO
 *.gdf
 *.gexf
+
+
+!docker/docker-compose.yml
+!docker/config/nginx.conf
+docker/*

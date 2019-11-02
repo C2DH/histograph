@@ -1,11 +1,16 @@
-/* eslint-disable no-console */
-const createIndexes = require('./tasks/setup')[0]
+const { execute } = require('../lib/pipelines/setup')
+const { getLogger } = require('../lib/util/log')
 
-createIndexes({}, err => {
-  if (err) {
-    console.error(err.stack)
-    return process.exit(1)
-  }
-  console.log('Done')
-  return process.exit(0)
-})
+const log = getLogger()
+
+if (require.main === module) {
+  execute()
+    .then(() => {
+      log.info('Setup done')
+      process.exit(0)
+    })
+    .catch(e => {
+      log.error(e.stack)
+      process.exit(1)
+    })
+}

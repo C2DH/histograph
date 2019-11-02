@@ -2,21 +2,50 @@ version: '3'
 services:
   neo4j:
     image: neo4j
-    ports:
-      - 7474:7474
-      - 7473:7473
-      - 7687:7687
     environment: 
       NEO4J_AUTH: neo4j/neo4jpwd
+      # Memory configuration tweaks:
+      # NEO4J_dbms_memory_heap_initial_size: 15g
+      # NEO4J_dbms_memory_heap_max_size: 15g
+      # NEO4J_dbms_memory_pagecache_size: 15g
     volumes:
-      - ~/.neo4j/histograph:/data
-  # histograph:
-  #   image: theorm/histograph
-  #   command: node server.js
-  #   depends_on:
-  #     - neo4j
-  #   ports:
-  #     - 8000:8000
-  #   volumes:
-  #     - ~/.histograph/contents:/histograph/contents
-  #     - ./settings.js:/histograph/settings.js
+      - ~/data/neo4j:/data
+  histograph:
+    restart: always
+    image: theorm/histograph
+    command: node server.js
+    depends_on:
+      - neo4j
+    volumes:
+      - ~/data/histograph-contents:/histograph/contents
+      - ./config/histograph.js:/histograph/settings.js
+  nginx:
+    restart: always
+    image: nginx:1.17-alpine
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - histograph
+      - iipsrv
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+  iipsrv:
+    # NOTE: IIIF server is optional. If you need to serve images, change
+    # 'restart' from 'no' to 'always' and remove the `entrypoint` entry.
+    restart: no
+    image: theorm/iipsrv
+    expose:
+      - 80
+    volumes:
+      - ./data/iipsrv_images:/data/images
+    entrypoint: ["echo", "IIIF server disabled"]
+  histograph_init:
+    restart: no
+    image: theorm/histograph
+    command: node scripts/init.js
+    depends_on:
+      - neo4j
+    volumes:
+      - ~/data/histograph-contents:/histograph/contents
+      - ./config/histograph.js:/histograph/settings.js
