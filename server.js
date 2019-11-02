@@ -3,9 +3,7 @@ const compress = require('compression')
 const bodyParser = require('body-parser')
 const _ = require('lodash')
 const socketIo = require('socket.io')
-const fs = require('fs')
 const path = require('path')
-const morgan = require('morgan')
 const requireAll = require('require-all')
 
 const auth = require('./auth')
@@ -35,17 +33,11 @@ const apiRouter = express.Router()
 apiRouter.use(auth.checkJwt)
 apiRouter.use(auth.getUserProfile)
 
-log.info('title:', settings.title)
-log.info('logs: ', settings.paths.accesslog)
 log.info('env:  ', env)
 log.info('port: ', settings.port)
 log.info('media:', settings.paths.media)
 
 app.use(compress())
-app.use(morgan('combined', {
-  stream: fs.createWriteStream(settings.paths.accesslog, { flags: 'a' })
-}))
-
 app.use(express.static('./client/dist'))
 
 if (env !== 'production') {

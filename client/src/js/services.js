@@ -20,9 +20,6 @@ angular.module('histograph')
       }
     };
   })
-  .factory('OptionalFeaturesService', function ($resource, HgSettings) {
-    return $resource(`${HgSettings.apiBaseUrl}/api/settings/optional-features`, {}, {})
-  })
   .factory('ActionsService', function ($resource, HgSettings) {
     const resource = $resource(`${HgSettings.apiBaseUrl}/api/actions/:id/:aspect`, {}, {
       createNewAction: { method: 'POST', isArray: false },

@@ -26,9 +26,6 @@ describe('core:settings', function() {
   it('should check that settings sections are correctly set :D', function (done) {
     should.exist(settings.paths)
     should.exist(settings.paths.cache)
-    should.exist(settings.disambiguation)
-    should.exist(settings.disambiguation.fields)
-    should.exist(settings.disambiguation.services)
     done()
   });
 });

@@ -18,7 +18,7 @@ angular.module('histograph')
     ResourceRelatedFactory, SuggestFactory, cleanService,
     VisualizationFactory, EntityExtraFactory, EntityRelatedExtraFactory,
     localStorageService, EntityRelatedFactory, EVENTS, VIZ, MESSAGES,
-    ORDER_BY, SETTINGS, currentUserPromise, OptionalFeaturesService, $window,
+    ORDER_BY, SETTINGS, currentUserPromise, $window,
     HgSettings, ResourceVizFactory, AuthService) {
     $scope.apiBaseUrl = HgSettings.apiBaseUrl
 
@@ -66,12 +66,6 @@ angular.module('histograph')
         VisualizationFactory.resource(VIZ.TIMELINE).then(function (res) {
           $scope.contextualTimeline = res.data.result.timeline;
         });
-
-        OptionalFeaturesService.get().$promise
-          .then(val => {
-            $scope.optionalFeatures = val
-          })
-          .catch(e => $log.error(e))  
       })
 
     // current viewpoint (view mode)

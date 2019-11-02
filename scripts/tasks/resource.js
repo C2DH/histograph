@@ -423,7 +423,7 @@ var task = {
       COLUMNS.concat(
         _.flatten(
           languages.map(function (language) {
-            return _.flatten(settings.disambiguation.fields.concat(['url']).map(function (field) {
+            return _.flatten(['title', 'caption', 'content', 'url'].map(function (field) {
               return field + '_' + language;
             }));
           })
@@ -585,7 +585,7 @@ var task = {
     }
     var text = Resource.getText(_.first(options.records), {
       language: options.language,
-      fields: settings.disambiguation.fields
+      fields: ['title', 'caption', 'content', 'url']
     });
     console.log(text);
     callback(null, options);

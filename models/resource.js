@@ -123,7 +123,7 @@ module.exports = {
         }
         
         // recover content from disambiguation field section, as a list (antd not as a string)
-        content = settings.disambiguation.fields.map(function (field){
+        content = ['title', 'caption', 'content'].map(function (field){
           var c = module.exports.getText(resource, {
             fields: [field],
             language: annotation.language
@@ -133,7 +133,7 @@ module.exports = {
           return c;
         });
 
-        if(params && params.with && _.last(settings.disambiguation.fields) == 'url')   {
+        if(params && params.with && _.last(['title', 'caption', 'content']) == 'url')   {
           // for the NON URL fields, just do the same as before
           // console.log('content', resource.title_en, annotation.language)
           var fulltext = content.pop(),

@@ -40,12 +40,12 @@ module.exports = {
         
     encrypted = helpers.encrypt(user.password, {
       from: 'signup.encrypted',
-      secret: settings.secret.salt
+      secret: 'xxx'
     });
 
     activation = helpers.encrypt(user.email, {
       from: 'signup.activation',
-      secret: settings.secret.activation, 
+      secret: 'xxx', 
       iterations: 23,
       length: 128,
       digest: 'sha1'
@@ -83,7 +83,7 @@ module.exports = {
 
       _user.isValid = helpers.comparePassword(user.password, _user.props.password, {
         from: 'localstrategy',
-        secret: settings.secret.salt, 
+        secret: 'xxx', 
         salt: _user.props.salt
       });
 
