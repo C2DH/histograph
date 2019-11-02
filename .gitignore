@@ -27,4 +27,7 @@ TODO
 
 !docker/docker-compose.yml
 !docker/config/nginx.conf
+!docker/data/.gitkeep
+!docker/data/histograph-content/.gitkeep
+!docker/data/neo4j/.gitkeep
 docker/*
