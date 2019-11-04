@@ -1,25 +1,9 @@
 
 import {
-  get, find, head,
-  includes
+  get, find, head
 } from 'lodash'
 import marked from 'marked'
-
-function resolveLanguage(context, language, fallbackLanguage) {
-  const supportedLanguages = ['languages', 'props.languages']
-    .reduce((lang, key) => {
-      if (lang !== undefined) return lang
-      return get(context, key)
-    }, undefined)
-
-  const languagesPriorityList = [
-    language,
-    fallbackLanguage,
-    head(supportedLanguages)
-  ].filter(l => includes(supportedLanguages, l))
-
-  return head(languagesPriorityList)
-}
+import { resolveLanguage } from '../utils'
 
 angular.module('histograph')
   /*

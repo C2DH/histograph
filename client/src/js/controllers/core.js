@@ -19,7 +19,7 @@ angular.module('histograph')
     VisualizationFactory, EntityExtraFactory, EntityRelatedExtraFactory,
     localStorageService, EntityRelatedFactory, EVENTS, VIZ, MESSAGES,
     ORDER_BY, SETTINGS, currentUserPromise, $window,
-    HgSettings, ResourceVizFactory, AuthService) {
+    HgSettings, ResourceVizFactory, AuthService, CorpusSettings) {
     $scope.apiBaseUrl = HgSettings.apiBaseUrl
 
     $log.log('CoreCtrl ready', $location);
@@ -43,7 +43,7 @@ angular.module('histograph')
     $scope.trails = [];
 
     // the global timeline of resource presence.
-    $scope.timeline;
+    $scope.timeline = undefined
 
     // playlist of nodes ... :D
     $scope.playlist = [];
@@ -193,7 +193,7 @@ angular.module('histograph')
     $scope.syncTimeline = params => {
       if (isEmpty(params)) return $scope.setTimeline([])
       return ResourceVizFactory
-        .get(angular.extend({ viz: 'timeline' }, params)).$promise
+        .get(angular.extend({ viz: 'timeline', language: $scope.language }, params)).$promise
         .then(res => $scope.setTimeline(res.result.timeline))
         .catch(e => $log.error(`Could not load timeline: ${e.message}`))
     }
@@ -216,6 +216,10 @@ angular.module('histograph')
       $scope.language = lang
     }
 
+    CorpusSettings.get().$promise
+      .then(({ defaultLanguage }) => {
+        if (defaultLanguage) $scope.setLanguage(defaultLanguage)
+      })
 
     /*
       sorting order handlers.
@@ -291,13 +295,14 @@ angular.module('histograph')
 
 
     $scope.suggest = function (query) {
-      if (query.trim().length < 2) return;
+      if (query.trim().length < 2) return undefined;
       // $log.log('CoreCtrl -> suggest', query);
       $scope.query = `${query}`
       $scope.freeze = 'sigma'
       return $http.get(`${HgSettings.apiBaseUrl}/api/suggest`, {
         params: {
-          query: query
+          query: query,
+          language: $scope.language
         }
       }).then(function (response) {
         // console.log(response)
@@ -1266,6 +1271,7 @@ angular.module('histograph')
         model: relatedModel,
         viz: 'graph',
         limit: 100,
+        language: $scope.language
       }, $stateParams, $scope.params), function (res) {
         $scope.unlock('graph');
         if ($stateParams.ids) {

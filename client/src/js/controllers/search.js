@@ -5,7 +5,7 @@
  * # SearchCtrl
  */
 angular.module('histograph')
-  .controller('SearchCtrl', function ($scope, $log, $stateParams, socket, SuggestFactory, stats, EVENTS) {
+  .controller('SearchCtrl', function ($scope, $log, $stateParams, stats) {
     $log.debug('SearchCtrl ready, query "', $stateParams.query, '" matches', stats);
 
     $scope.query = $stateParams.query

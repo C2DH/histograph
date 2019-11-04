@@ -1,6 +1,6 @@
 // name: lucene_query
 //
-CALL db.index.fulltext.queryNodes({resource_index}, {resource_query})
+CALL db.index.fulltext.queryNodes({fullTextIndex}, {resource_query})
 YIELD node as n
 WITH n
 LIMIT {limit}
@@ -280,7 +280,7 @@ RETURN {
 
 // name: count
 // global facets for a specific query
-CALL db.index.fulltext.queryNodes({resource_index}, {resource_query})
+CALL db.index.fulltext.queryNodes({fullTextIndex}, {resource_query})
 YIELD node as res
 WITH res
 RETURN {
@@ -302,7 +302,7 @@ RETURN {
 
 // name: count_resources
 // get resources by query
-CALL db.index.fulltext.queryNodes({resource_index}, {query})
+CALL db.index.fulltext.queryNodes({fullTextIndex}, {query})
 YIELD node as res
 WITH res
 {?res:start_time__gt}
@@ -324,7 +324,7 @@ RETURN {
 
 // name: get_resources
 // get resources by query
-CALL db.index.fulltext.queryNodes({resource_index}, {query})
+CALL db.index.fulltext.queryNodes({fullTextIndex}, {query})
 YIELD node as res
 WITH res
 {?res:start_time__gt}
@@ -371,7 +371,7 @@ RETURN {
 
 // name: get_matching_entities_count
 // get resources by query, will suggest other enpoint too
-CALL db.index.fulltext.queryNodes({resource_index}, {query})
+CALL db.index.fulltext.queryNodes({fullTextIndex}, {query})
 YIELD node as n
 WHERE 'entity' in labels(n)
 WITH last(labels(n)) as group, count(n) as count_items
@@ -383,7 +383,7 @@ RETURN {
 
 // name: get_matching_entities
 // get resources by query
-CALL db.index.fulltext.queryNodes({resource_index}, {query})
+CALL db.index.fulltext.queryNodes({fullTextIndex}, {query})
 YIELD node as n
 WHERE {entity} in labels(n)
 WITH (n)
@@ -402,7 +402,7 @@ LIMIT {limit}
 
 // name: get_matching_resources_graph
 // e.g. START m=node:node_auto_index('full_search:*goerens*')
-CALL db.index.fulltext.queryNodes({resource_index}, {query})
+CALL db.index.fulltext.queryNodes({fullTextIndex}, {query})
 YIELD node as res
 {if:with}
   MATCH(res)<-[:appears_in]-(ent:entity)

@@ -330,8 +330,8 @@ module.exports =  function(io){
       var resource_query,
           entity_query;
 
-      const language = 'en'
-          
+      const { language = 'en' } = req.query
+
       var form = validator.request(req, {
             limit: 5,
             offset: 0,
@@ -356,7 +356,7 @@ module.exports =  function(io){
         entity_query: entity_query,
         limit: form.params.limit,
         language: form.params.language,
-        resource_index: `text_${language}`
+        fullTextIndex: `text_${language}`
       }, function (err, items) {
         if (err) {
           
@@ -381,7 +381,7 @@ module.exports =  function(io){
       var resource_query,
           entity_query;
 
-      const language = 'en'
+      const { language = 'en' } = req.query
           
       var form = validator.request(req, {
             limit: 20,
@@ -399,8 +399,7 @@ module.exports =  function(io){
       neo4j.query(queries.count, {
         resource_query: resource_query,
         entity_query: entity_query,
-        resource_index: `text_${language}`
-        
+        fullTextIndex: `text_${language}`        
       }, function (err, groups) {
         if (err) {
           
@@ -426,7 +425,7 @@ module.exports =  function(io){
             limit: 20,
             offset: 0,
             entity: 'person',
-            resource_index: 'name'
+            fullTextIndex: 'name'
           }, {
             fields: [
               // validator.SPECIALS.entity
@@ -458,12 +457,12 @@ module.exports =  function(io){
      * RK: Confirming - it is used.
      */
     getResources: function (req, res) {
-      const language = 'en'
+      const { language = 'en' } = req.query
 
       var form = validator.request(req, {
             limit: 20,
             offset: 0,
-            resource_index: `text_${language}`
+            fullTextIndex: `text_${language}`
           }, {
             
           });
@@ -490,15 +489,14 @@ module.exports =  function(io){
      * RK: Confirming - it is used.
      */
     getResourcesGraph: function (req, res) {
-
-      const language = 'en'
+      const { language = 'en' } = req.query
 
       var query = '',
           form = validator.request(req, {
             limit: 20,
             offset: 0,
             query: '',
-            resource_index: `text_${language}`
+            fullTextIndex: `text_${language}`
           });
 
       if(!form.isValid)

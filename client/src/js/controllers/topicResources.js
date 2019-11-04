@@ -84,7 +84,13 @@ function controller($scope, $stateParams, $location, ResourceFactory) {
 
   $scope.$watch('searchParams', $scope.syncTimeline, true)
 
-  $scope.loadResources = (...params) => ResourceFactory.get(...params).$promise
+  $scope.loadResources = params => {
+    const p = {
+      language: $scope.language,
+      ...params
+    }
+    return ResourceFactory.get(p).$promise
+  }
 }
 
 angular.module('histograph').controller('TopicResourcesCtrl', controller)

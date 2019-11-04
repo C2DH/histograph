@@ -77,7 +77,8 @@ angular.module('histograph')
       relatedVizFactory.get(angular.extend({
         model,
         viz: 'graph',
-        limit: 100
+        limit: 100,
+        language: $scope.language
       }, $stateParams, $scope.params), function (res) {
         $scope.setGraph(res.result.graph)
       });

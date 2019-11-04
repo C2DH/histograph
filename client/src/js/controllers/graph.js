@@ -20,6 +20,7 @@ angular.module('histograph')
         model: relatedModel,
         viz: 'graph',
         limit: 100,
+        language: $scope.language
       }, $stateParams, $scope.params), function (res) {
         $scope.unlock('graph');
         if ($stateParams.ids) {

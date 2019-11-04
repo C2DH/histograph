@@ -126,6 +126,8 @@ module.exports = function(io){
       if (form.params.keywords) {
         const keywords = form.params.keywords.split(',').map(decodeURIComponent)
         form.params.fullTextQuery = keywords.map(kw => `"${kw}"`).join(' AND ')
+        const { language = 'en' } = req.query
+        form.params.fullTextIndex = `text_${language}`
       }
 
       /*
@@ -634,6 +636,8 @@ module.exports = function(io){
       if (form.params.keywords) {
         const keywords = form.params.keywords.split(',').map(decodeURIComponent)
         form.params.fullTextQuery = keywords.map(kw => `"${kw}"`).join(' AND ')
+        const { language = 'en' } = req.query
+        form.params.fullTextIndex = `text_${language}`
       }
         
       Resource.getTimeline(form.params, function (err, timeline) {

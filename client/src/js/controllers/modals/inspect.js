@@ -8,7 +8,7 @@
  *
  */
 angular.module('histograph')
-  .controller('InspectModalCtrl', function ($scope, $log, $uibModalInstance, entity, relatedFactory, relatedModel, EntityRelatedExtraFactory, SuggestFactory, language, user, core, socket) {
+  .controller('InspectModalCtrl', function ($scope, $log, $uibModalInstance, entity, relatedFactory, relatedModel, EntityRelatedExtraFactory, language, user, core, socket) {
     $log.debug('InspectModalCtrl ready', entity.result.item, core.user);
 
     $scope.entity = entity.result.item;

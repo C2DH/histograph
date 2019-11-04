@@ -1169,10 +1169,13 @@ module.exports = angular
           ]
         },
         resolve: {
-          stats: function (SuggestFactory, $stateParams) {
-            return SuggestFactory.getStats({
-              query: $stateParams.query
-            }).$promise;
+          stats: function (SuggestFactory, CorpusSettings, $stateParams) {
+            return CorpusSettings.get().$promise
+              .then(({ defaultLanguage }) => defaultLanguage || 'en')
+              .then(language => SuggestFactory.getStats({
+                query: $stateParams.query,
+                language
+              }).$promise)
           },
           currentUser: function (currentUserPromise) {
             return currentUserPromise

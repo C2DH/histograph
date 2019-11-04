@@ -2,7 +2,7 @@ import {
   get, identity, isUndefined,
   assignIn, isString, isEmpty,
   isArray, clone, includes,
-  concat, uniq, isNil
+  concat, uniq, isNil, head
 } from 'lodash'
 
 import lucene from 'lucene'
@@ -121,4 +121,20 @@ export function formatSolrQuery(items, operator) {
   return items
     .map(item => (item.match(spaceRegex) ? `"${item}"` : item))
     .join(` ${operator} `)
+}
+
+export function resolveLanguage(context, language, fallbackLanguage) {
+  const supportedLanguages = ['languages', 'props.languages']
+    .reduce((lang, key) => {
+      if (lang !== undefined) return lang
+      return get(context, key)
+    }, undefined)
+
+  const languagesPriorityList = [
+    language,
+    fallbackLanguage,
+    head(supportedLanguages)
+  ].filter(l => includes(supportedLanguages, l))
+
+  return head(languagesPriorityList)
 }
