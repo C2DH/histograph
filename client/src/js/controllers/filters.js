@@ -169,12 +169,13 @@ angular.module('histograph')
     $scope.typeaheadSuggest = function (q, type) {
       $log.log('FiltersCtrl -> typeahead()', q, type);
       // suggest only stuff from 2 chars on
-      if (q.trim().length < 2) return;
+      if (q.trim().length < 2) return undefined;
 
       return SuggestFactory.get({
         m: type,
         query: q,
-        limit: 10
+        limit: 10,
+        language: $scope.language,
       }).$promise.then(function (res) {
         if (res.status != 'ok') return [];
         return [{ type: 'default' }].concat(res.result.items)

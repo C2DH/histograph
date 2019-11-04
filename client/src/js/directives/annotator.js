@@ -1,6 +1,9 @@
 
-import { get, find, head } from 'lodash'
+import {
+  get, find, head
+} from 'lodash'
 import marked from 'marked'
+import { resolveLanguage } from '../utils'
 
 angular.module('histograph')
   /*
@@ -20,7 +23,11 @@ angular.module('histograph')
 
         scope.$watch('language', language => {
           // eslint-disable-next-line no-param-reassign
-          if (language === undefined) language = fallbackLanguage
+          language = resolveLanguage(scope.context, language, fallbackLanguage)
+          if (language === undefined) {
+            // eslint-disable-next-line no-console
+            console.warn('Unexpected state: could not find language for context', scope.context)
+          }
 
           // look for annotations
           if (scope.context.annotations && scope.context.annotations.length) {

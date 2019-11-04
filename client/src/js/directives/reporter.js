@@ -310,7 +310,7 @@ angular.module('histograph')
 
           if (q.trim().length < 2) {
             $scope.query = '';
-            return;
+            return undefined
           }
 
           $scope.query = q.trim();
@@ -318,9 +318,10 @@ angular.module('histograph')
           return SuggestFactory.get({
             m: type,
             query: q,
-            limit: 10
+            limit: 10,
+            language: $scope.language
           }).$promise.then(function (res) {
-            if (res.status != 'ok') return [];
+            if (res.status !== 'ok') return [];
             return res.result.items
           });
         }

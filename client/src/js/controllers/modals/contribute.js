@@ -117,7 +117,8 @@ angular.module('histograph')
       return SuggestFactory.get({
         m: type,
         query: q,
-        limit: 10
+        limit: 10,
+        language: $scope.language
       }).$promise.then(function (res) {
         if (res.status !== 'ok') { return []; }
         return res.result.items

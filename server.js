@@ -165,8 +165,12 @@ apiRouter.route('/another')
     res.ok({ message: 'hooray! another!' })
   })
 
-apiRouter.route('/settings/optional-features')
-  .get((req, res) => res.json(settings.optionalFeatures))
+apiRouter.route('/corpus-settings')
+  .get((req, res) => {
+    res.json({
+      defaultLanguage: settings.defaultLanguage || 'en'
+    })
+  })
 
 // face recognition tests
 apiRouter.route('/alchemyapi/image-face-tags')

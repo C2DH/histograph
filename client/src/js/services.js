@@ -316,6 +316,10 @@ angular.module('histograph')
     });
   })
 
+  .factory('CorpusSettings', function ($resource, HgSettings) {
+    return $resource(`${HgSettings.apiBaseUrl}/api/corpus-settings`);
+  })
+
   /*
     Socket.io service, thqnks to http://briantford.com/blog/angular-socket-io
   */

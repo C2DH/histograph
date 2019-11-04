@@ -1,5 +1,5 @@
 /* eslint-env browser */
-/* globals angular */
+import { resolveLanguage } from '../utils'
 
 function getEntitiesOfType(resource, entityType) {
   return resource.entities_and_appearances
@@ -16,6 +16,8 @@ angular.module('histograph')
   // eslint-disable-next-line prefer-arrow-callback, func-names
   .controller('ResourceCtrl', function ($rootScope, $scope, $log, $stateParams, $filter, resource, annotations, ResourceRelatedVizFactory, ResourceRelatedFactory, socket, EVENTS) {
     $log.debug('ResourceCtrl ready', annotations);
+
+    $scope.language = resolveLanguage(resource.resource, $scope.language)
 
     $scope.notes = [] //annotations.result.items;
     /*
@@ -49,7 +51,8 @@ angular.module('histograph')
       ResourceRelatedVizFactory.get(angular.extend({
         model: 'resource',
         id: $stateParams.id,
-        viz: 'timeline'
+        viz: 'timeline',
+        language: $scope.language
       }, $stateParams, $scope.params), function (res) {
         // if(res.result.titmeline)
         $scope.setTimeline(res.result.timeline)

@@ -55,7 +55,7 @@ WITH NULL AS ids
 
 {if:fullTextQuery}
 // match full text query
-CALL db.index.fulltext.queryNodes('text_en', {fullTextQuery})
+CALL db.index.fulltext.queryNodes({fullTextIndex}, {fullTextQuery})
 YIELD node AS res
 WHERE ids IS NULL OR id(res) IN ids
 WITH DISTINCT collect(id(res)) AS ids
@@ -182,7 +182,7 @@ WITH NULL AS ids
 
 {if:fullTextQuery}
 // match full text query
-CALL db.index.fulltext.queryNodes('text_en', {fullTextQuery})
+CALL db.index.fulltext.queryNodes({fullTextIndex}, {fullTextQuery})
 YIELD node AS res
 WHERE ids IS NULL OR id(res) IN ids
 WITH DISTINCT collect(id(res)) AS ids
@@ -931,7 +931,7 @@ WITH NULL AS ids
 
 {if:fullTextQuery}
 // match full text query
-CALL db.index.fulltext.queryNodes('text_en', {fullTextQuery})
+CALL db.index.fulltext.queryNodes({fullTextIndex}, {fullTextQuery})
 YIELD node AS res
 WHERE ids IS NULL OR id(res) IN ids
 WITH DISTINCT collect(id(res)) AS ids
@@ -1235,7 +1235,7 @@ RETURN result
 ORDER BY r.start_time
 
 // name: find_keyword_frequency_aspect
-CALL db.index.fulltext.queryNodes("text_en", {keyword}) 
+CALL db.index.fulltext.queryNodes({fullTextIndex}, {keyword}) 
 YIELD node as r 
 WITH collect(r.uuid) as mentioned_ids
 MATCH (r:resource) 
