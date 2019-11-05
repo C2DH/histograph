@@ -11,12 +11,17 @@ echo "
   a single document in Histograph. Chapters are stored in files, one
   file per chapter. 
   
-  *This is a custom step. Depending on your corpus
+  ***This is a custom step. Depending on your corpus
   you will most likely need to write your own script for creating
-  documents.*
+  documents.***
 
   2) Chapters are converted to Histograph 'resource' JSON objects.
-  These objects are stored in a single file, one line per JSON.
+  Entities are extracted and disambiguated at this point. Resource 
+  objects are stored in a single file, one line per JSON.
+
+  ***Depending on the corpus size and NER/NED model used this
+  step may take a lot of time to complete. You may consider to
+  run it in parallel potentially in a GPU enabled environment.***
 
   3) Resources are converted into Neo4j CSV files that can be 
   understood by the Neo4j import tool.
