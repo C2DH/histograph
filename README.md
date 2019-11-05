@@ -1,11 +1,6 @@
-Histograph
-===
+# Histograph
 
-
-HG is the new Histograph, a **node-express**application aiming at providing digital humanities specialists with an online *collaborative* environment.
-Connections between **people**, **documents** and **images** are stored in a [Neo4j](http://neo4j.com/) graph database.
-
-	git clone https://github.com/CVCEeu-dh/histograph.git
+Histograph is a text content exploration tool for digital humanities specialists.
 
 ## installation
 Once cloned,
@@ -178,3 +173,26 @@ Just set the correct parameters in the google analytics section of the `settings
       account: 'UA-XXXXXXXXX-1',
       domainName: 'example.com'
   	}
+
+
+# Ingesting data and preparing database
+
+## Preparing resources
+*TODO: link to hg_c2dhnerd_worker*
+
+## Converting resources to Neo4j CSV files
+
+```shell
+docker run --name hg_csvs --rm -it \
+  -v <directory_where_csv_files_will_be_written>:/csv_files \
+  -v <path_to_corpus_jsons_file>:/histograph_corpus.jsons \
+  --entrypoint node \
+  theorm/histograph \
+  lib/tools/neo4jImport/index.js /csv_files /histograph_corpus.jsons
+```
+
+## Creating database from CSV files
+
+```shell
+./scripts/tools/load-csv-into-db.sh <csv_file_directory> <database_directory>
+```

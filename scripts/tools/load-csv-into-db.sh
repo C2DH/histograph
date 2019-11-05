@@ -10,7 +10,7 @@ print_help_and_exit() {
   if [ -n "$1" ]; then
     echo "Error: $1"
   fi
-  echo "Usage: $SCRIPT_PATH <CSV Files Root Directory> <DB Root Directory> <Tag>"
+  echo "Usage: $SCRIPT_PATH <CSV Files Root Directory> <DB Root Directory>"
   exit 1
 }
 
@@ -24,8 +24,6 @@ DB_ROOT=`realpath $DB_ROOT`
 echo "Reading file from '$CSV_ROOT' and writing to database in '$DB_ROOT'"
 
 RESOURCE_FILES=$(find $CSV_ROOT/resource -type f | xargs -L1 -I{} basename "{}" | xargs -L1 -I{} echo "/csvs/resource/{},")
-# RESOURCE_FILES=$(find $CSV_ROOT/resource -type f -exec echo '/csvs/resource/{},' \;)
-# APPEARS_IN_FILES=$(find $CSV_ROOT/appears_in -type f -printf '/csvs/appears_in/%f,')
 APPEARS_IN_FILES=$(find $CSV_ROOT/appears_in -type f | xargs -L1 -I{} basename "{}" | xargs -L1 -I{} echo "/csvs/appears_in/{},")
 
 $DOCKER_EXEC \

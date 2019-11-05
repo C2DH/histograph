@@ -13,5 +13,6 @@ run:
 
 run-db:
 	docker run -it \
+	  -e NEO4J_AUTH="neo4j/neo4jpwd" \
 		-p 7474:7474 -p 7473:7473 -p 7687:7687 \
-		-v ~/.neo4j/histograph:/data neo4j
+		-v $(HOME)/.neo4j/histograph:/data neo4j

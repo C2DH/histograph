@@ -24,3 +24,5 @@ COPY . .
 RUN mkdir logs
 
 COPY --from=webapp_builder /webapp/dist client/dist
+
+ENTRYPOINT [ "node", "server.js" ]
