@@ -9,7 +9,10 @@ echo "
 
   1) First the book is split into chapters. Every chapter will represent
   a single document in Histograph. Chapters are stored in files, one
-  file per chapter. 
+  file per chapter. File names contain some metadata associated with
+  the document: document timestamp and document title. 
+  See 'tools/resource_creator/README.md' for more information about
+  the format of the filename.
   
   ***This is a custom step. Depending on your corpus
   you will most likely need to write your own script for creating
