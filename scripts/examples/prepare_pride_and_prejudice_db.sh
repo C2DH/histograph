@@ -5,7 +5,7 @@ echo "
   It uses 'Pride and Prejudice' book as an example of a corpus.
   
   There are several steps in the process. The first one is corpus
-  specific. All the other ones are the same for any corpus.
+  specific. The rest is the same for any corpus.
 
   1) First the book is split into chapters. Every chapter will represent
   a single document in Histograph. Chapters are stored in files, one
@@ -14,17 +14,22 @@ echo "
   See 'tools/resource_creator/README.md' for more information about
   the format of the filename.
   
-  ***This is a custom step. Depending on your corpus
+  ***
+  This is a custom step. Depending on your corpus
   you will most likely need to write your own script for creating
-  documents.***
+  documents.
+  ***
 
   2) Chapters are converted to Histograph 'resource' JSON objects.
   Entities are extracted and disambiguated at this point. Resource 
   objects are stored in a single file, one line per JSON.
 
-  ***Depending on the corpus size and NER/NED model used this
+  ***
+  Depending on the corpus size and NER/NED model used this
   step may take a lot of time to complete. You may consider to
-  run it in parallel potentially in a GPU enabled environment.***
+  run it in parallel potentially in a GPU enabled environment.
+  At uni.lu this step is usually performed on one or more HPC nodes (https://hpc.uni.lu/)
+  ***
 
   3) Resources are converted into Neo4j CSV files that can be 
   understood by the Neo4j import tool.
@@ -56,7 +61,7 @@ print_help_and_exit() {
 [ -d "$WORK_DIR" ] || print_help_and_exit "Work directory $WORK_DIR does not exist"
 
 download_corpus() {
-  # TODO: Download from Project Gutenberg
+  curl https://www.gutenberg.org/files/1342/1342-0.txt -o $WORK_DIR/$CORPUS_FILENAME 
   echo "Corpus downloaded into $WORK_DIR/$CORPUS_FILENAME"
 }
 

@@ -1,16 +1,17 @@
+# Python 3 required
 import sys, re
 import datetime
 
 file_name = sys.argv[1]
 output_directory = sys.argv[2]
 
-CHAPTER_PATTERN = r'^Chapter\s+\d+$'
-APPENDIX_PATTERN = r'^End of the Project Gutenberg EBook .*$'
+CHAPTER_PATTERN = r'^\s{,6}Chapter\s+\d+$'
+APPENDIX_PATTERN = r'^\s*End of the Project Gutenberg EBook .*$'
 
-date = datetime.datetime(1900, 1, 1)
+date = datetime.datetime(1812, 1, 1)
 
 def normalise_chapter_label(line):
-  return line.replace(' ', '_').replace('\n', '')
+  return line.strip().replace(' ', '_').replace('\n', '')
 
 with open(file_name, encoding='utf-8', mode='r') as f:
   chapter_accumulator = []
@@ -28,4 +29,4 @@ with open(file_name, encoding='utf-8', mode='r') as f:
       chapter_accumulator = []
       date += datetime.timedelta(days = 30) 
     else:
-      chapter_accumulator.append(line)
+      chapter_accumulator.append(line.strip() + ' ')

@@ -42,7 +42,6 @@ services:
   iipsrv:
     restart: always
     image: theorm/iipsrv
-    expose:
     volumes:
       - ./data/iipsrv_images:/data/images
   histograph_init:
