@@ -47,7 +47,7 @@ services:
   histograph_init:
     restart: on-failure
     image: theorm/histograph
-    entrypoint: /bin/sh -c "node scripts/init.js"
+    entrypoint: /bin/sh -c "node scripts/init.js && node scripts/manage.js --task entity.jaccard --entity person"
     depends_on:
       - neo4j
     volumes:
