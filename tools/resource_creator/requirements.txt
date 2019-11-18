@@ -2,7 +2,7 @@ dateparser==0.7.2
 https://github.com/iamthebot/cld3/archive/master.zip#egg=cld3
 https://github.com/C2DH/c2dh_nerd/archive/master.zip#egg=c2dh_nerd
 # C2DH Nerd requirements:
-# torch==1.2.0 - already installed
+# torch==1.2.0 - already installed in docker
 flair==0.4.3
 spacy==2.1.4
 diskcache==3.1.1

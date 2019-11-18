@@ -50,6 +50,8 @@ CSV_DIR="csv"
 DB_DIR="db"
 JSONS_FILENAME="resources.jsons"
 
+work_dir_abs_path=$(realpath $WORK_DIR)
+
 print_help_and_exit() {
   if [ -n "$1" ]; then
     echo "Error: $1"
@@ -77,11 +79,14 @@ split_corpus_into_chapters() {
 prepare_json_resources() {
   echo "2. Preparing resource JSON objects"
 
-  PYTHONPATH=~/sandbox/c2dh/c2dh-nerd:~/sandbox/c2dh/projects_code/hg-nerd-worker python \
-    -m hg_nerd_worker \
-    --path $WORK_DIR/$CHAPTERS_DIR \
-    --outpath $WORK_DIR/$JSONS_FILENAME \
-    --language en --skip-validation
+docker run --name hg_resource_creator --rm -it \
+  -v $work_dir_abs_path/$CHAPTERS_DIR:/chapters \
+  -v $work_dir_abs_path:/jsons \
+  theorm/histograph-resource-creator \
+  python -m hg_resource_creator \
+  --path /chapters \
+  --outpath /jsons/$JSONS_FILENAME \
+  --language en --skip-validation --ner-method spacy_small_en
   echo "Prepared resources in file $WORK_DIR/$JSONS_FILENAME \n"
 }
 

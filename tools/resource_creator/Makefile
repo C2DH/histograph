@@ -1,2 +1,2 @@
 build:
-	docker build -t histograph-resource-creator .
+	docker build -t theorm/histograph-resource-creator .
