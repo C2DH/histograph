@@ -19,7 +19,6 @@ services:
   histograph:
     restart: always
     image: theorm/histograph
-    command: node server.js
     environment:
       NODE_ENV: production
       PORT: 8000
@@ -43,14 +42,12 @@ services:
   iipsrv:
     restart: always
     image: theorm/iipsrv
-    expose:
-      - 80
     volumes:
       - ./data/iipsrv_images:/data/images
   histograph_init:
     restart: on-failure
     image: theorm/histograph
-    command: node scripts/init.js
+    entrypoint: /bin/sh -c "node scripts/init.js && node scripts/manage.js --task entity.jaccard --entity person"
     depends_on:
       - neo4j
     volumes:

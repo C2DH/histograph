@@ -233,9 +233,10 @@ async.waterfall([
   if(err) {
     console.warn(err);
     console.log(clc.blackBright('\n task'), clc.whiteBright(options.task), clc.redBright('exit with error'));
-  } else
+    process.exit(1)
+  } else {
     console.log(clc.blackBright('\n task'), clc.whiteBright(options.task), clc.cyanBright('completed'));
-  
-  console.log("\n\n")
+    process.exit(0)
+  }  
 });
 
