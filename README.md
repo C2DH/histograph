@@ -17,9 +17,9 @@ Histograph web app will be accessible on `http://localhost/`. If you are using H
 
 # Ingesting data
 
-Histograph is barely useful without data. Data ingestion is a multi step process. We have provided a sample script that executes all steps of the process using _Pride and prejudice_ book as a toy corpus. The script is well documented and can be used as a starting point for developing a custom ingestion pipeline.
+Histograph is barely useful without data. Data ingestion is a multi step process. We have provided a sample script that executes all steps of the process using _War and Peace_ book as a toy corpus. The script is well documented and can be used as a starting point for developing a custom ingestion pipeline.
 
-The script is located in `scripts/examples/prepare_pride_and_prejudice_db.sh`. It can be run as follows:
+The script is located in `scripts/examples/prepare_war_and_peace_db.sh`. It can be run as follows:
 
 ```shell
 scripts/examples/prepare_pride_and_prejudice_db.sh ~/tmp_dir
@@ -27,7 +27,7 @@ scripts/examples/prepare_pride_and_prejudice_db.sh ~/tmp_dir
 
 Where `tmp_dir` is a temporary directory where the pipeline process stores temporary files and the new Histograph database.
 
-If the script is completed without errors a `tmp_dir/db` directory will be created. The content of this directory can be moved to `docker/data/neo4j` directory. Histograph can then be restarted using the command from the previous section. 
+If the script is completed without errors a `tmp_dir/db` directory will be created. The content of this directory can be moved to `docker/data/neo4j` directory to be available for the `docker-compose` set-up. Histograph can then be restarted using the command from the previous section. 
 
 # Architecture
 

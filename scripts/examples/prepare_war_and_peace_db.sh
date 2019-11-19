@@ -2,7 +2,7 @@
 
 echo "
   This is an example of a Histograph data ingestion pipeline.
-  It uses 'Pride and Prejudice' book as an example of a corpus.
+  It uses 'War and Peace' book as an example of a corpus.
   
   There are several steps in the process. The first one is corpus
   specific. The rest is the same for any corpus.
@@ -44,7 +44,7 @@ SCRIPT_REAL_PATH=$(realpath $SCRIPT_PATH)
 SCRIPT_BASE_PATH=$(dirname $SCRIPT_REAL_PATH)
 WORK_DIR=$1
 
-CORPUS_FILENAME="pride_and_prejudice.txt"
+CORPUS_FILENAME="war_and_peace.txt"
 CHAPTERS_DIR="chapters"
 CSV_DIR="csv"
 DB_DIR="db"
@@ -63,7 +63,7 @@ print_help_and_exit() {
 [ -d "$WORK_DIR" ] || print_help_and_exit "Work directory $WORK_DIR does not exist"
 
 download_corpus() {
-  curl https://www.gutenberg.org/files/1342/1342-0.txt -o $WORK_DIR/$CORPUS_FILENAME 
+  curl http://www.gutenberg.org/files/2600/2600-0.txt -o $WORK_DIR/$CORPUS_FILENAME 
   echo "Corpus downloaded into $WORK_DIR/$CORPUS_FILENAME"
 }
 
