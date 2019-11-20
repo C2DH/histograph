@@ -30,8 +30,14 @@ app.set('settings', settings)
 
 const clientRouter = express.Router()
 const apiRouter = express.Router()
-apiRouter.use(auth.checkJwt)
-apiRouter.use(auth.getUserProfile)
+
+if (process.env.NOAUTH === '1') {
+  log.warn('Authentication disabled!')
+  apiRouter.use(auth.getAnonymousUserProfile)
+} else {
+  apiRouter.use(auth.checkJwt)
+  apiRouter.use(auth.getUserProfile)
+}
 
 log.info('env:  ', env)
 log.info('port: ', settings.port)

@@ -1356,7 +1356,9 @@ module.exports = angular
     // eslint-disable-next-line no-param-reassign
     jwtInterceptorProvider.tokenGetter.$inject = ['AuthService']
 
-    $httpProvider.interceptors.push('jwtInterceptor');
+    if (process.env.NOAUTH !== '1') {
+      $httpProvider.interceptors.push('jwtInterceptor');
+    }
   })
   .config(function (angularAuth0Provider) {
     angularAuth0Provider.init({

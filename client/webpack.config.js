@@ -31,6 +31,7 @@ module.exports = (env, options) => {
     new webpack.DefinePlugin({
       'process.env': {
         LOGLEVEL: JSON.stringify(isDevMode ? 'DEBUG' : 'INFO'),
+        NOAUTH: JSON.stringify(process.env.NOAUTH)
       }
     }),
     new MiniCssExtractPlugin({
