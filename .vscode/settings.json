@@ -6,6 +6,7 @@
     "explorables",
     "histograph",
     "promisify",
+    "resample",
     "slugify"
   ]
 }

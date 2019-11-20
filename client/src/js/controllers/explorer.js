@@ -270,7 +270,7 @@ angular.module('histograph')
       allPlotsIds.forEach(id => {
         const { language } = $scope
         const queryParams = assignIn({
-          bins, from, to, language
+          bins, from, to, language, method: 'count'
         }, toQueryParameters(filters[id]))
         const previousQueryParams = $scope.previousQueryParams[id]
         if (isEqual(queryParams, previousQueryParams)) return
