@@ -1240,11 +1240,11 @@ YIELD node as r
 WITH collect(r.uuid) as mentioned_ids
 MATCH (r:resource) 
 WHERE
-  {if:start_time}
-    r.start_time >= {start_time} AND
+  {if:fromTime}
+    r.start_time >= {fromTime} AND
   {/if}
-  {if:end_time}
-    r.start_time <= {end_time} AND
+  {if:toTime}
+    r.start_time <= {toTime} AND
   {/if}
   true
 RETURN {
