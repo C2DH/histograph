@@ -128,20 +128,18 @@ angular.module('histograph')
       Ids can be resoruce or other.
     */
     $scope.loadFiltersItems = function () {
-      // collect ids
-      if (!$scope.filters.with) {
-        $scope.filterItems.with = [];
-      } else {
-        _.each(angular.copy($scope.filters), function (d, key) {
-          if (key === 'with' || key === 'without') {
-            SuggestFactory.getUnknownNodes({
-              ids: d
-            }, function (res) {
-              $scope.filterItems[key] = res.result.items;
-            })
-          }
-        });
-      }
+      if (!$scope.filters.with) $scope.filterItems.with = []
+      if (!$scope.filters.without) $scope.filterItems.without = []
+
+      _.each(angular.copy($scope.filters), function (d, key) {
+        if (key === 'with' || key === 'without') {
+          SuggestFactory.getUnknownNodes({
+            ids: d
+          }, function (res) {
+            $scope.filterItems[key] = res.result.items;
+          })
+        }
+      });
     };
 
     /*
@@ -149,11 +147,7 @@ angular.module('histograph')
     */
     $scope.loadFilters = function () {
       const candidates = $location.search();
-
-
       const filters = {};
-
-
       const qs = [];
       // handle 'type' and mimetype (pseudo-array)
       for (const i in candidates) {

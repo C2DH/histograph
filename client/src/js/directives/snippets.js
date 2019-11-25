@@ -211,6 +211,16 @@ angular.module('histograph')
           });
         };
 
+        scope.hideNode = item => {
+          if (!item) return
+
+          scope.$parent.addFilter({
+            key: 'without',
+            value: item.id
+          });
+          scope.hide()
+        }
+
         /*
           display node or edge egonetwork
 

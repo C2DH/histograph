@@ -361,8 +361,8 @@ module.exports = angular
               name: 'entity.graph',
               label: 'graph of related people'
             }, {
-              name: 'entity.graph.themes',
-              label: 'graph of related themes'
+              name: 'entity.locationsgraph',
+              label: 'graph of related locations'
             }, {
               name: 'entity.persons',
               label: 'related people'
@@ -413,6 +413,7 @@ module.exports = angular
             type: 'in documents of type',
             relatedTo: 'which mentions',
             notRelatedTo: 'related to anyone',
+            excluding: 'excluding',
             from: 'from',
             to: 'to'
           },
@@ -435,16 +436,17 @@ module.exports = angular
           }
         }
       })
-      .state('entity.graph.theme', {
-        url: '/theme',
+      .state('entity.locationsgraph', {
+        url: '/gloc',
         template: '<div></div>',
         controller: 'GraphCtrl',
         grammar: {
-          label: 'graph of related themes',
+          label: 'graph of related locations',
           connector: {
             type: 'in documents of type',
             relatedTo: 'which mentions',
             notRelatedTo: 'related to anyone',
+            excluding: 'excluding',
             from: 'from',
             to: 'to'
           },
@@ -460,7 +462,7 @@ module.exports = angular
             ]
           },
           relatedModel: function () {
-            return 'theme'
+            return 'location'
           },
           relatedVizFactory: function (EntityRelatedVizFactory) {
             return EntityRelatedVizFactory
