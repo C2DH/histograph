@@ -75,6 +75,11 @@ angular.module('histograph')
         $scope.filterItems.with.splice(index, 1);
       }
 
+      if (key === 'without') {
+        const index = _.map($scope.filterItems.without, 'id').indexOf(value);
+        $scope.filterItems.without.splice(index, 1);
+      }
+
 
       if (aliveFilters.length === 0) $location.search(key, null);
       else $location.search(key, aliveFilters.join(','));
@@ -83,6 +88,8 @@ angular.module('histograph')
     $scope.addFilterFromTypeahead = function ($item, $model, $label) {
       $scope.addFilter('with', $item.id);
     }
+
+    $scope.addExcludeFromTypeahead = item => $scope.addFilter('without', item.id)
 
     /*
       Add filter and take care of putting the right args in location.search object.
@@ -126,7 +133,7 @@ angular.module('histograph')
         $scope.filterItems.with = [];
       } else {
         _.each(angular.copy($scope.filters), function (d, key) {
-          if (key === 'with') {
+          if (key === 'with' || key === 'without') {
             SuggestFactory.getUnknownNodes({
               ids: d
             }, function (res) {
@@ -235,6 +242,7 @@ angular.module('histograph')
       filterGuard($scope, $location, 'keywords', 'connector.keywords')
       filterGuard($scope, $location, 'with', 'connector.relatedTo')
       filterGuard($scope, $location, 'tst', 'connector.topicScoreThreshold')
+      filterGuard($scope, $location, 'without', 'connector.excluding')
     })
 
     const singleValueAsList = v => (isArray(v) ? v : [v])

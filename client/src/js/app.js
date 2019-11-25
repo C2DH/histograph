@@ -269,6 +269,7 @@ module.exports = angular
             type: 'in documents of type',
             relatedTo: 'which mentions',
             notRelatedTo: 'related to anyone',
+            excluding: 'excluding',
             from: 'from',
             to: 'to'
           },

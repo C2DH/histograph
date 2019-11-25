@@ -451,7 +451,10 @@ module.exports = {
 
     if(safeParams.with)
       safeParams.with = _.compact(String(safeParams.with).split(','));
-    
+
+    if(safeParams.without)
+      safeParams.without = _.compact(String(safeParams.without).split(','));
+
     if(safeParams.limit)
       safeParams.limit = +safeParams.limit;
     
