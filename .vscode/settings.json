@@ -1,10 +1,14 @@
 {
   "cSpell.words": [
     "Explorable",
+    "Normalised",
+    "aggregatable",
     "decypher",
     "explorables",
     "histograph",
+    "normalising",
     "promisify",
+    "resample",
     "slugify"
   ]
 }

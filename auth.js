@@ -12,6 +12,17 @@ const { generateUuid } = require('./lib/util/text')
 
 const userQueries = decypher('./queries/user.cyp')
 
+const AnonymousUser = Object.freeze({
+  is_authentified: true,
+  firstname: 'User',
+  lastname: 'Anonymous',
+  email: 'test@test.com',
+  username: 'anonymous',
+  id: 'anon',
+  picture: '',
+  apiKey: 'apikey'
+})
+
 /**
  * Authentication middleware. When used, the
  * Access Token must exist and be verified against
@@ -119,6 +130,11 @@ function getUserProfile(req, res, next) {
     .catch(next)
 }
 
+function getAnonymousUserProfile(req, res, next) {
+  req.user = AnonymousUser
+  next()
+}
+
 /**
  * Middleware for authenticating user with an API Key.
  * API Key can be provided as a bearer token or
@@ -147,5 +163,6 @@ module.exports = {
   apiKeyAuthMiddleware,
   checkJwt,
   readOnly,
-  getUserProfile
+  getUserProfile,
+  getAnonymousUserProfile
 }

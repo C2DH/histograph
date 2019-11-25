@@ -84,6 +84,9 @@ const styles = {
     '& input': {
       margin: [[0, '.3em']]
     },
+  },
+  binMethod: {
+    marginRight: '1em',
   }
 }
 
@@ -102,6 +105,12 @@ const EmptyResourceResponse = {
   },
   info: {}
 }
+
+const BinMethods = [
+  { label: 'Equal bin size', value: 'count' },
+  { label: 'Year', value: 'year' },
+  { label: 'Month', value: 'month' },
+]
 
 angular.module('histograph')
   .controller('ExplorerCtrl', function (
@@ -130,6 +139,13 @@ angular.module('histograph')
 
     $scope.maxScaledIds = []
 
+    $scope.binMethods = BinMethods
+    $scope.setBinMethod = val => { $scope.params.binMethod = val }
+    $scope.getBinMethodLabel = val => {
+      const items = $scope.binMethods.filter(m => m.value === val)
+      return items.length > 0 ? items[0].label : ''
+    }
+
     ExplorerService.getAvailableAspects()
       .then(aspects => {
         $scope.availableAspects = aspects
@@ -154,6 +170,7 @@ angular.module('histograph')
         editPlotId,
         explorables,
         scaleKw,
+        binMethod
       } = $location.search()
       const parsedFilters = isEmpty(filters) ? undefined : JSON.parse(atob(filters))
       const parsedExplorables = isEmpty(explorables) ? [] : explorables.split(',')
@@ -167,7 +184,8 @@ angular.module('histograph')
         filters: parsedFilters,
         editPlotId,
         explorables: parsedExplorables,
-        scaleKeywordPlots: scaleKw
+        scaleKeywordPlots: scaleKw,
+        binMethod
       }
     }
 
@@ -192,6 +210,7 @@ angular.module('histograph')
     $scope.$watch('params.editPlotId', () => parametersToUrl())
     $scope.$watch('params.explorables', () => parametersToUrl(true), true)
     $scope.$watch('params.scaleKeywordPlots', () => parametersToUrl())
+    $scope.$watch('params.binMethod', () => parametersToUrl())
     parametersFromUrl()
 
     $scope.setBinsCount = val => {
@@ -255,6 +274,7 @@ angular.module('histograph')
       to: get($scope.params, 'to'),
       filters: get($scope.params, 'filters', {}),
       explorerConfig: $scope.explorerConfig,
+      binMethod: get($scope.params, 'binMethod', 'count')
     })
 
     function updateExplorerData(params) {
@@ -262,7 +282,7 @@ angular.module('histograph')
       const allPlotsIds = Object.keys($scope.explorerConfig)
 
       const {
-        bins, from, to, filters
+        bins, from, to, filters, binMethod
       } = params
 
       if (!bins) return
@@ -270,7 +290,7 @@ angular.module('histograph')
       allPlotsIds.forEach(id => {
         const { language } = $scope
         const queryParams = assignIn({
-          bins, from, to, language
+          bins, from, to, language, method: binMethod
         }, toQueryParameters(filters[id]))
         const previousQueryParams = $scope.previousQueryParams[id]
         if (isEqual(queryParams, previousQueryParams)) return

@@ -151,10 +151,14 @@ require('../css/base.css')
 require('angular-material/angular-material.css')
 
 app.run(function ($log, AuthService) {
-  if (AuthService.isAuthenticated()) {
-    AuthService.renewTokens();
+  if (process.env.NOAUTH !== '1') {
+    if (AuthService.isAuthenticated()) {
+      AuthService.renewTokens();
+    } else {
+      AuthService.handleAuthentication();
+    }
   } else {
-    AuthService.handleAuthentication();
+    $log.warn('Authentication disabled!')
   }
   $log.log('hg running...')
 })
