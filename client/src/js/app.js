@@ -182,34 +182,18 @@ module.exports = angular
             },
             {
               name: 'explore.projection',
+              label: 'graph of person--location co-occurrences',
+              params: {
+                modelA: 'person',
+                modelB: 'location'
+              }
+            },
+            {
+              name: 'explore.projection',
               label: 'graph of location co-occurrences',
               params: {
                 modelA: 'location',
                 modelB: 'location'
-              }
-            },
-            {
-              name: 'explore.projection',
-              label: 'graph of theme co-occurrences',
-              params: {
-                modelA: 'theme',
-                modelB: 'theme'
-              }
-            },
-            {
-              name: 'explore.projection',
-              label: 'graph of theme - location cooccurrences',
-              params: {
-                modelA: 'theme',
-                modelB: 'location'
-              }
-            },
-            {
-              name: 'explore.projection',
-              label: 'graph of theme - place cooccurrences',
-              params: {
-                modelA: 'theme',
-                modelB: 'place'
               }
             }
           ],
