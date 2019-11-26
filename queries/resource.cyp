@@ -687,6 +687,10 @@ MATCH (p1:{:entity} {status:1})-[r1:appears_in]->(res:resource)<-[r2:appears_in]
   {if:type}
     AND res.type in {type}
   {/if}
+  {if:without}
+    AND NOT p1.uuid IN {without}
+    AND NOT p2.uuid IN {without}
+  {/if}
 WITH p1, p2, count(res) as w
 ORDER BY w DESC
 LIMIT {limit}
@@ -733,7 +737,10 @@ MATCH (p1:{:entityA} {status:1})-[r1:appears_in]->(res:resource)<-[r2:appears_in
   {if:type}
     AND res.type in {type}
   {/if}
-  
+  {if:without}
+    AND NOT p1.uuid IN {without}
+    AND NOT p2.uuid IN {without}
+  {/if}
   
 WITH p1, p2, count(res) as w
 ORDER BY w DESC

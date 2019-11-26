@@ -47,6 +47,7 @@
           <a class='btn btn-default btn-line-white' ng-href='/e/{{relatedItem.id}}/g' translate>button.egonetwork</a>
           <!-- <button class='btn btn-default btn-line-white' ng-click="queue(relatedItem)"> <span class="fa fa-thumb-tack" title='{{"tooltip.resource.add.to.myselection" |translate}}'></span></button> -->
           <button class='btn btn-default btn-line-white' title='{{"tooltip.sigma.center" |translate}}' data-id="{{relatedItem.id}}"> <span class="fa fa-dot-circle-o"></span></button>
+          <button class='btn btn-default btn-line-white' ng-click='hideNode(relatedItem)'>hide</button>
         </div>
         <div ng-if='items.length == 1' reporter entity='relatedItem' user='user'></div>
 

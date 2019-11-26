@@ -273,11 +273,15 @@ header ul.menu li a:hover{
   bottom: 50px;
 }
 
-#milkyway.explore.persons{
+#milkyway.explore.persons {
   left:0;
 }
 
-#milkyway.graph{
+#milkyway.graph {
+  left:0;
+}
+
+#milkyway.locationsgraph {
   left:0;
 }
 

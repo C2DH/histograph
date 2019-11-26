@@ -75,6 +75,11 @@ angular.module('histograph')
         $scope.filterItems.with.splice(index, 1);
       }
 
+      if (key === 'without') {
+        const index = _.map($scope.filterItems.without, 'id').indexOf(value);
+        $scope.filterItems.without.splice(index, 1);
+      }
+
 
       if (aliveFilters.length === 0) $location.search(key, null);
       else $location.search(key, aliveFilters.join(','));
@@ -83,6 +88,8 @@ angular.module('histograph')
     $scope.addFilterFromTypeahead = function ($item, $model, $label) {
       $scope.addFilter('with', $item.id);
     }
+
+    $scope.addExcludeFromTypeahead = item => $scope.addFilter('without', item.id)
 
     /*
       Add filter and take care of putting the right args in location.search object.
@@ -121,20 +128,18 @@ angular.module('histograph')
       Ids can be resoruce or other.
     */
     $scope.loadFiltersItems = function () {
-      // collect ids
-      if (!$scope.filters.with) {
-        $scope.filterItems.with = [];
-      } else {
-        _.each(angular.copy($scope.filters), function (d, key) {
-          if (key === 'with') {
-            SuggestFactory.getUnknownNodes({
-              ids: d
-            }, function (res) {
-              $scope.filterItems[key] = res.result.items;
-            })
-          }
-        });
-      }
+      if (!$scope.filters.with) $scope.filterItems.with = []
+      if (!$scope.filters.without) $scope.filterItems.without = []
+
+      _.each(angular.copy($scope.filters), function (d, key) {
+        if (key === 'with' || key === 'without') {
+          SuggestFactory.getUnknownNodes({
+            ids: d
+          }, function (res) {
+            $scope.filterItems[key] = res.result.items;
+          })
+        }
+      });
     };
 
     /*
@@ -142,11 +147,7 @@ angular.module('histograph')
     */
     $scope.loadFilters = function () {
       const candidates = $location.search();
-
-
       const filters = {};
-
-
       const qs = [];
       // handle 'type' and mimetype (pseudo-array)
       for (const i in candidates) {
@@ -235,6 +236,7 @@ angular.module('histograph')
       filterGuard($scope, $location, 'keywords', 'connector.keywords')
       filterGuard($scope, $location, 'with', 'connector.relatedTo')
       filterGuard($scope, $location, 'tst', 'connector.topicScoreThreshold')
+      filterGuard($scope, $location, 'without', 'connector.excluding')
     })
 
     const singleValueAsList = v => (isArray(v) ? v : [v])

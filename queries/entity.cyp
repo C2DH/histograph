@@ -535,6 +535,10 @@ WITH t
 {/if}
 MATCH (p1:{:entity} {status:1})-[r1:appears_in]->(t)<-[r2:appears_in]-(p2:{:entity} {status:1})
 WHERE id(p1) > id(p2)
+{if:without}
+  AND NOT p1.uuid IN {without}
+  AND NOT p2.uuid IN {without}
+{/if}
 WITH p1, p2, count(t) as w 
 WITH p1, p2, w
 ORDER BY w DESC
