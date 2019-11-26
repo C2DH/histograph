@@ -33,6 +33,13 @@ angular.module('histograph')
         }
         return resource.createNewAction(payload).$promise
       },
+      bulkUnlinkEntity: (entityUuid) => {
+        const payload = {
+          type: 'unlink-entity-bulk',
+          parameters: { entityUuid }
+        }
+        return resource.createNewAction(payload).$promise
+      },
       linkEntity: (entityUuid, resourceUuid, context, contextLocation) => {
         const payload = {
           type: 'link-entity',

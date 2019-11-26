@@ -117,6 +117,7 @@
 
   "popit.missinginfo": "We couldn't find any information about this <strong>{{type}}</strong> automatically... can you help us?",
   "popit.fix.not.mentioned": "this <strong>{{type}}</strong> is not mentioned here",
+  "popit.fix.bulk.remove": "remove this entity from <strong>all</strong> resources",
   "popit.fix.wrong_in_context.entity": "Do you really want to untag this <strong>{{type}}</strong>?",
   
   "popit.fix.wrong.entity": "Do you really want to remove this <strong>{{type}}</strong>?",

@@ -57,3 +57,18 @@ cd client && npm start
 
 3. Web app will open in the browser.
 
+### Disabling authentication
+
+It is possible to disable authentication during development:
+
+Start API with authentication disabled:
+
+```
+NOAUTH=1 npm start
+```
+
+Start Web app with authentication disabled:
+
+```
+NOAUTH=1 npm start
+```

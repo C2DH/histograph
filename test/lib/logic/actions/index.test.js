@@ -373,4 +373,54 @@ describe('createAction', () => {
       clearRequireCache()
     }
   })
+
+  it('creates, performs and updates "unlink-entity-bulk" action', async () => {
+    try {
+      let queryCounter = 0
+      let savedAction
+      const entityIdentifier = { name: 'Test Entity', type: 'location', slug: 'e1' }
+
+      mock(Neo4jModulePath, {
+        async executeQuery(query, params) {
+          queryCounter += 1
+          switch (queryCounter) {
+            case 1:
+              return [entityIdentifier]
+            case 2:
+              savedAction = {
+                ...params.action,
+                createdAt: new Date().toISOString()
+              }
+              return [savedAction]
+            case 3:
+              return [{ entityUuid: '123', totalResources: 5 }]
+            case 4:
+              savedAction = {
+                ...savedAction,
+                performedAt: new Date().toISOString()
+              }
+              return [savedAction]
+            default:
+              return undefined
+          }
+        }
+      })
+
+      const { createAction } = mock.reRequire('../../../../lib/logic/actions')
+
+      const {
+        action,
+        performed,
+        results
+      } = await createAction('unlink-entity-bulk', { entityUuid: '123' }, 'test user', 1)
+      assert.equal(performed, true)
+      assert.deepEqual(action, fromNeo4jChangeAction(savedAction))
+      assert.deepEqual(results, [
+        ['Entity (123) is unlinked from 5 resources', true]
+      ])
+    } finally {
+      mock.stop(Neo4jModulePath)
+      clearRequireCache()
+    }
+  })
 })

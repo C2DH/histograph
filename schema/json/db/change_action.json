@@ -13,7 +13,8 @@
         "unlink-entity",
         "link-entity",
         "change-entity-type",
-        "merge-entities"
+        "merge-entities",
+        "unlink-entity-bulk"
       ]
     },
     "uuid": {
