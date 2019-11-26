@@ -182,6 +182,26 @@ angular.module('histograph')
             .finally(() => { $scope.isLocked = false });
         }
 
+        $scope.bulkUnlinkEntity = () => {
+          if (!$scope.entity.id) {
+            $log.error(`Entity Id (${$scope.entity.id}) is not provided`);
+            return;
+          }
+          $scope.isLocked = true;
+          $scope.cancelQuestion();
+          ActionsService.bulkUnlinkEntity($scope.entity.id)
+            .then(result => {
+              const customMsg = _.get(result, 'results.0.0')
+              const msg = result.performed
+                ? 'Action has been performed successfully'
+                : 'Action is waiting for votes';
+              $log.info(customMsg || msg);
+              $state.reload();
+            })
+            .catch(e => { $log.error(e.message); })
+            .finally(() => { $scope.isLocked = false });
+        }
+
         /*
           Downvote an entity in a context.
           $scope.resource should be set, cfr. popit directive
