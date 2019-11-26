@@ -174,7 +174,8 @@ apiRouter.route('/another')
 apiRouter.route('/corpus-settings')
   .get((req, res) => {
     res.json({
-      defaultLanguage: settings.defaultLanguage || 'en'
+      defaultLanguage: settings.defaultLanguage || 'en',
+      title: settings.title || undefined
     })
   })
 
