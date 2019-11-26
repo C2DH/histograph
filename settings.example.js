@@ -6,7 +6,7 @@
 module.exports = {
   port: 8000,
   env: 'development', // production | development
-  title: 'Histograph', // name of 
+  title: 'Example', // name of 
   authOrReadOnlyMode: false,
   anonymousUser: {
     props: {

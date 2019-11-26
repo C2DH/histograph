@@ -118,7 +118,51 @@ a#header-title {
   max-width: 50px;
 }
 
-.view{
+.navbar-header {
+  margin: 0;
+  position: absolute;
+  height: 100%;
+}
+
+.navbar-header a:hover {
+  color: #999 !important;
+}
+
+.header-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: 100%;
+}
+
+.header-title .wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  border-bottom: 1px solid #ababab;
+}
+
+.header-title .wrapper h1 {
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  line-height: initial;
+}
+
+.header-title .wrapper sub {
+  display: flex;
+  text-transform: uppercase;
+  font-size: 10px;
+  margin-left: .5em;
+  font-weight: 100;
+  bottom: 0;
+  font-variant: unicase;
+  opacity: .7;
+}
+
+.view {
   position: absolute;
   top: 50px;
   bottom: 50px;

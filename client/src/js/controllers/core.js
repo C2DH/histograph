@@ -207,6 +207,7 @@ angular.module('histograph')
       language handlers
     */
     $scope.language = 'en';
+    $scope.instanceTitle = 'untitled';
 
     $scope.availableLanguages = [
       'en', 'fr', 'de'
@@ -217,8 +218,9 @@ angular.module('histograph')
     }
 
     CorpusSettings.get().$promise
-      .then(({ defaultLanguage }) => {
+      .then(({ defaultLanguage, title }) => {
         if (defaultLanguage) $scope.setLanguage(defaultLanguage)
+        if (title) $scope.instanceTitle = title
       })
 
     /*
