@@ -1519,6 +1519,11 @@ header ul li .notification a {
   left: 20px;
 }
 
+#milkyway.locationsgraph{
+  display: block;
+  left: 20px;
+}
+
 
 #milkyway.search, #milkyway.user {
   left: 560px;

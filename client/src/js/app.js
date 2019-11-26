@@ -736,19 +736,6 @@ module.exports = angular
               name: 'resource.persons',
               label: 'people'
             },
-            {
-              name: 'resource.users',
-              label: 'researchers'
-            },
-            {
-              name: 'resource.inquiries',
-              label: 'inquiries'
-            },
-
-            {
-              name: 'resource.organizations',
-              label: 'organizations (experimental)'
-            }
           ]
         }
       })
