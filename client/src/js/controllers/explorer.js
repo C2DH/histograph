@@ -197,7 +197,7 @@ angular.module('histograph')
         scaleKw: $scope.params.scaleKeywordPlots ? true : undefined,
         scaleKeywordPlots: undefined
       }), isUndefined)
-      const l = $location.search(assignIn({}, $location.search(), queryParams))
+      const l = $location.search(assignIn({}, queryParams))
       if (replace) l.replace()
     }
 
