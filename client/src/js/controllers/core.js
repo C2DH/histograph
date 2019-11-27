@@ -53,6 +53,17 @@ angular.module('histograph')
 
     // the current user
     $scope.user = {}
+
+    /*
+      language handlers
+    */
+    $scope.language = 'en';
+    $scope.instanceTitle = 'untitled';
+
+    $scope.availableLanguages = [
+      'en', 'fr', 'de'
+    ];
+
     currentUserPromise
       .then(u => {
         $log.log('Current user', u)
@@ -66,6 +77,12 @@ angular.module('histograph')
         VisualizationFactory.resource(VIZ.TIMELINE).then(function (res) {
           $scope.contextualTimeline = res.data.result.timeline;
         });
+
+        CorpusSettings.get().$promise
+          .then(({ defaultLanguage, title }) => {
+            if (defaultLanguage) $scope.setLanguage(defaultLanguage)
+            if (title) $scope.instanceTitle = title
+          })
       })
 
     // current viewpoint (view mode)
@@ -203,25 +220,9 @@ angular.module('histograph')
       $scope.currentResourceRange = v
     }
 
-    /*
-      language handlers
-    */
-    $scope.language = 'en';
-    $scope.instanceTitle = 'untitled';
-
-    $scope.availableLanguages = [
-      'en', 'fr', 'de'
-    ];
-
     $scope.setLanguage = function (lang) {
       $scope.language = lang
     }
-
-    CorpusSettings.get().$promise
-      .then(({ defaultLanguage, title }) => {
-        if (defaultLanguage) $scope.setLanguage(defaultLanguage)
-        if (title) $scope.instanceTitle = title
-      })
 
     /*
       sorting order handlers.

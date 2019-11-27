@@ -188,7 +188,7 @@ const directive = {
   restrict: 'A',
   scope: {
     plotId: '=hiExplorableConfiguration',
-    onCloseClicked: '&onClose',
+    onCloseClicked: '<onClose',
     explorerConfig: '=hiExplorerConfig',
     onRemoveExplorable: '<onRemoveExplorable'
   },
