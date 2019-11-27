@@ -22,10 +22,12 @@ Histograph is barely useful without data. Data ingestion is a multi step process
 The script is located in `scripts/examples/prepare_war_and_peace_db.sh`. It can be run as follows:
 
 ```shell
-scripts/examples/prepare_pride_and_prejudice_db.sh ~/tmp_dir
+scripts/examples/prepare_war_and_peace_db.sh ~/tmp_dir
 ```
 
 Where `tmp_dir` is a temporary directory where the pipeline process stores temporary files and the new Histograph database.
+
+**Make sure you have Python 3.5+ installed on your OS**
 
 If the script is completed without errors a `tmp_dir/db` directory will be created. The content of this directory can be moved to `docker/data/neo4j` directory to be available for the `docker-compose` set-up. Histograph can then be restarted using the command from the previous section. 
 
