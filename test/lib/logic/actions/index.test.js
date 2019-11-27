@@ -392,9 +392,7 @@ describe('createAction', () => {
                 createdAt: new Date().toISOString()
               }
               return [savedAction]
-            case 3:
-              return [{ entityUuid: '123', totalResources: 5 }]
-            case 4:
+            case 5:
               savedAction = {
                 ...savedAction,
                 performedAt: new Date().toISOString()
@@ -403,6 +401,19 @@ describe('createAction', () => {
             default:
               return undefined
           }
+        },
+        async withTransaction(fn) {
+          const exec = async () => {
+            queryCounter += 1
+            if (queryCounter === 3) {
+              return [{ entityUuid: '123', totalResources: 5 }]
+            }
+            if (queryCounter === 4) {
+              return [{ entityUuid: null, totalResources: 1 }]
+            }
+            return undefined
+          }
+          return fn(exec)
         }
       })
 

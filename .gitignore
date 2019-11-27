@@ -24,10 +24,10 @@ TODO
 *.gdf
 *.gexf
 
-
+docker/*
 !docker/docker-compose.yml
 !docker/config/nginx.conf
+!docker/config/histograph.js
 !docker/data/.gitkeep
 !docker/data/histograph-content/.gitkeep
 !docker/data/neo4j/.gitkeep
-docker/*
