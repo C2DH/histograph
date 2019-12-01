@@ -85,9 +85,9 @@ header ul.menu li.active a:hover{
   color: #151515;
 }
 
-header ul.dropdown-menu{
+/* header ul.dropdown-menu{
   min-width: 300px
-}
+} */
 
 header ul.dropdown-menu li{
   padding: 0;
@@ -7440,7 +7440,18 @@ g.note.manual .note-borders{
   background: #fff;
 }
 
-
+.btn-top-menu {
+  text-decoration: none !important;
+  color: #8A8A8A;
+  font-size: 13px;
+  outline: none;
+}
+.btn-top-menu:hover {
+  color: inherit;
+}
+.btn-top-menu:focus {
+  outline: none;
+}
 /*
   media improvements
   cf.http://getbootstrap.com/css/#responsive-utilities
@@ -7453,10 +7464,10 @@ g.note.manual .note-borders{
   .explore .masonry-brick{
     width: 33%;
   }
-  .navbar-right .dropdown-menu {
+  /* .navbar-right .dropdown-menu {
     left: 0px;
     right: auto;
-  }
+  } */
 }
 
 @media screen and (min-width: 1200px) {

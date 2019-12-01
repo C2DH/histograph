@@ -67,19 +67,21 @@
           </div>
         </li>
         <li id="tip-user">
-          <span uib-dropdown="">
-            <a uib-dropdown-toggle="uib-dropdown-toggle">
+          <span uib-dropdown>
+            <button uib-dropdown-toggle id="tip-user-toggle" class="btn btn-link btn-top-menu">
               <img ng-src="{{user.picture}}" />
               <span>{{user.username}}</span>
-            </a>
-            <ul class="uib-dropdown-menu dropdown-menu">
+            </button>
+            <ul class="uib-dropdown-menu dropdown-menu" role="menu" aria-labelledby="tip-user-toggle">
               <li><a href="/u/{{user.id}}">favourites</a></li>
               <li><a href="/changes-history">history of changes</a></li>
               <li><a href="/actions/merge-entities">merge entities</a></li>
               <li><a href="/logout">logout</a></li>
               <li>
-                <span>API Key&nbsp;</span>
-                <input value="{{user.apiKey}}" onclick="event.stopPropagation();" />
+                <div style="display: flex; flex-direction: row; align-items: center;">
+                  <span style="white-space: nowrap;">API Key&nbsp;</span>
+                  <input value="{{user.apiKey}}" onclick="event.stopPropagation();" />                    
+                </div>
               </li>
             </ul>
           </span>
