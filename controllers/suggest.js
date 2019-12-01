@@ -38,7 +38,7 @@ function toRegexp(query) {
 */
 
 
-module.exports =  function(io){
+module.exports =  function() {
   return {
     /*
       Return a list of possible paths connecting at least two nodes of the given set.

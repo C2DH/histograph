@@ -73,21 +73,13 @@
               <span>{{user.username}}</span>
             </a>
             <ul class="uib-dropdown-menu dropdown-menu">
-              <li>
-                <a style="cursor:pointer" ng-click="startGuidedTour()">start guided tour!</a>
-              </li>
+              <li><a href="/u/{{user.id}}">favourites</a></li>
+              <li><a href="/changes-history">history of changes</a></li>
+              <li><a href="/actions/merge-entities">merge entities</a></li>
+              <li><a href="/logout">logout</a></li>
               <li>
                 <span>API Key&nbsp;</span>
                 <input value="{{user.apiKey}}" onclick="event.stopPropagation();" />
-              </li>
-              <li>
-                <a href="/u/{{user.id}}">favourites</a>
-              </li>
-              <li>
-                <a href="/changes-history">history of changes</a>
-              </li>
-              <li>
-                <a href="/logout">logout</a>
               </li>
             </ul>
           </span>
