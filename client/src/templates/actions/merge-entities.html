@@ -28,7 +28,7 @@
     </div>
     <div class="{{classes.mergeTargetControls}} {{ targetEntity ? classes.controlsAnimation : '' }}" ng-show="targetEntity">
       <p>
-        Merge <b>{{sourceEntities.length || 0}}</b> entities into <b>{{targetEntity.name}}</b>
+        Merge <b>{{sourceEntities.length || 0}}</b> entities into <b><a href="/e/{{targetEntity.uuid}}">{{targetEntity.name}}</a></b>
       </p>
       <button class="btn btn-default {{classes.mergeButton}}"
               ng-disabled="sourceEntities.length === 0"

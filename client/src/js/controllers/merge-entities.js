@@ -92,6 +92,12 @@ const styles = {
       padding: 0,
       marginRight: theme.units(1),
     },
+    '& a': {
+      color: 'inherit',
+      '&:hover': {
+        textDecoration: 'underline'
+      }
+    },
     transition: 'opacity 1s',
     opacity: 0
   },
