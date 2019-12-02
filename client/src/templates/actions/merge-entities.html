@@ -1,3 +1,13 @@
-<div>
-  {{title}}
+<div class="{{classes.container}}">
+  <div class="{{classes.searchContainer}}">
+    <input ng-model="query" class="form-control {{classes.searchInput}}"/>
+    <button class="btn btn-default" 
+            ng-click="findEntities()"
+            ng-disabled="isLoading">
+      {{ isLoading ? 'Searching...' : 'Find entities' }}
+    </button>
+  </div>
+  <div class="{{classes.entitiesContainer}}">
+    {{entities}}
+  </div>
 </div>

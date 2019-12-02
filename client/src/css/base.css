@@ -34,7 +34,7 @@ h1,h2,h3,h4{
 
 header{
   height: 50px;
-  position: fixed;
+  /* position: fixed; */
   left:0px;
   right:0px;
   top: 0px;
@@ -215,6 +215,11 @@ header{
   line-height: 70px;
   background: #f0f0f0;
   padding: 0 50px 0 70px;
+  display: flex;
+}
+
+header > .row {
+  width: 100%;
 }
 
 .navbar-header a {
