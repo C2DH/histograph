@@ -1,5 +1,7 @@
 import { isEmpty } from 'lodash'
 
+const isTimelineEnabledForUrl = urlPath => !urlPath.startsWith('/actions/')
+
 /* eslint-env browser */
 /* globals angular */
 /* eslint-disable prefer-arrow-callback, func-names, object-shorthand */
@@ -26,6 +28,7 @@ angular.module('histograph')
     $scope.absoluteLocationUrl = $location.absUrl()
     $scope.locationPath = $location.path();
     $scope.locationJson = JSON.stringify($location.search());
+    console.log('OOO', $location.path())
 
     try {
       $scope.flags = JSON.parse($window.localStorage.getItem('histograph.flags')) || {}
@@ -53,6 +56,7 @@ angular.module('histograph')
 
     // the current user
     $scope.user = {}
+
 
     /*
       language handlers
@@ -544,17 +548,18 @@ angular.module('histograph')
       $scope.setMessage(MESSAGES.LOADING);
     });
 
-    $scope.currentPath;
+    $scope.currentPath = undefined
 
     $scope.$on('$locationChangeSuccess', function (e, path) {
       $log.log('CoreCtrl @locationChangeSuccess', path, $location);
 
       // same state as before???
-      if ($scope.currentPath == $location.path()) {
+      if ($scope.currentPath === $location.path()) {
         $scope.params = $location.search();
         $scope.$broadcast(EVENTS.API_PARAMS_CHANGED, angular.copy($scope.params));
       }
       $scope.currentPath = $location.path();
+      $scope.isTimelineHidden = !isTimelineEnabledForUrl($location.path())
 
       $scope.unsetMessage();
     });

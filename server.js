@@ -429,62 +429,9 @@ apiRouter.route('/entity/:entity_id([\\da-zA-Z_\\-]+)/related/resource/:resource
 // apiRouter.route('/collection/:id/related/resources')
 //   .get(ctrl.collection.getRelatedResources);
 
-
-/*
-
-  Controller: search & suggest
-  ----------------------
-
-  This controller answers every typeahead request.
-
-  Cfr. controllers/suggest.js
-  Cfr Neo4j queries: queries/collection.cyp
-
-*/
-apiRouter.route('/suggest')
-  .get(ctrl.suggest.suggest)
-
-apiRouter.route('/suggest/stats')
-  .get(ctrl.suggest.getStats)
-apiRouter.route('/suggest/resource')
-  .get(ctrl.suggest.getResources)
-apiRouter.route('/suggest/:entity(entity|person|location|organization|theme)')
-  .get(ctrl.suggest.getEntities)
-apiRouter.route('/suggest/resource/graph')
-  .get(ctrl.suggest.getResourcesGraph)
-apiRouter.route('/suggest/:entity(person|location|organization|theme)/graph')
-  .get(ctrl.suggest.getEntitiesGraph)
-
-apiRouter.route('/suggest/all-in-between/:ids([\\da-zA-Z_\\-][\\d,a-zA-Z\\-_]+)/resource/graph')
-  .get(ctrl.suggest.getAllInBetweenGraph)
-apiRouter.route('/suggest/all-in-between/:ids([\\da-zA-Z_\\-][\\d,a-zA-Z\\-_]+)/resource')
-  .get(ctrl.suggest.getAllInBetweenResources)
-apiRouter.route('/suggest/all-in-between/:ids([\\da-zA-Z_\\-][\\d,a-zA-Z\\-_]+)/resource/timeline')
-  .get(ctrl.suggest.getAllInBetweenTimeline)
-
-apiRouter.route('/suggest/all-shortest-paths/:ids([\\d,a-zA-Z\\-_]+)')
-  .get(ctrl.suggest.allShortestPaths)
-apiRouter.route('/suggest/all-in-between')
-  .get(ctrl.suggest.allInBetween)
-apiRouter.route('/suggest/unknown-node/:id([\\da-zA-Z_\\-]+)')
-  .get(ctrl.suggest.getUnknownNode)
-apiRouter.route('/suggest/unknown-nodes/:ids([\\d,a-zA-Z\\-_]+)')
-  .get(ctrl.suggest.getUnknownNodes)
-apiRouter.route('/suggest/neighbors/:ids([\\d,a-zA-Z\\-_]+)')
-  .get(ctrl.suggest.getNeighbors)
-apiRouter.route('/suggest/shared/:ids([\\d,a-zA-Z\\-_]+)/resource')
-  .get(ctrl.suggest.getSharedResources)
-apiRouter.route('/suggest/shared/:ids([\\d,a-zA-Z\\-_]+)/:entity(person|location|organization)')
-  .get(ctrl.suggest.getSharedEntities)
-
-// api proxy for VIAF (they don't have CROSS ORIGIN ...)
-apiRouter.route('/suggest/viaf')
-  .get(ctrl.suggest.viaf.autosuggest)
-apiRouter.route('/suggest/dbpedia')
-  .get(ctrl.suggest.dbpedia)
-
-apiRouter.use('/explorer/', require('./lib/endpoints/public/explorer'))
-apiRouter.use('/actions/', require('./lib/endpoints/public/actions'))
+apiRouter.use('/suggest', require('./lib/endpoints/public/suggest'))
+apiRouter.use('/explorer', require('./lib/endpoints/public/explorer'))
+apiRouter.use('/actions', require('./lib/endpoints/public/actions'))
 
 apiRouter.route(/\/.+/)
   .get((req, res, next) => {

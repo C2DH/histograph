@@ -30,9 +30,13 @@ const styles = {
     flexBasis: '20%',
     flexGrow: 0,
     flexShrink: 0,
-    flexDirection: 'column',
+    flexDirection: 'row',
     justifyContent: 'flex-end',
+    flexWrap: 'wrap',
     alignItems: 'flex-end',
+    '& div': {
+      margin: [[0, '0.2em']]
+    }
   },
   loadMoreBtn: {
     background: 'black',
@@ -51,6 +55,8 @@ function getLabel(action) {
       return `Entity "${get(action, 'meta.entity.name')}" type changed from "${get(action, 'meta.entity.type')}" to "${get(action, 'meta.newType')}"`
     case 'merge-entities':
       return `Merged entities ${get(action, 'meta.originalEntities.names', []).map(v => `"${v}"`).join(', ')} into "${get(action, 'meta.newEntity.name')}"`
+    case 'unlink-entity-bulk':
+      return `Unlinked entity "${get(action, 'meta.entity.name')}" from all resources`
     default:
       return '[Unknown action]'
   }

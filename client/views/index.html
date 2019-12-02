@@ -13,7 +13,7 @@
 
 <body ng-app="histograph">
   <div ng-controller="CoreCtrl" class="main" ng-class="{auth: user.is_authentified}">
-    <div ng-controller="FiltersCtrl">
+    <div ng-controller="FiltersCtrl" class="flex-wrapper">
       <div ng-show="user.is_authentified" ng-include="'templates/partials/menu.html'">
       </div>
 
@@ -38,7 +38,9 @@
         </div>
       </div>
 
-      <div ng-show="user.is_authentified" ng-include="'templates/partials/main.html'">
+      <div ng-show="user.is_authentified" 
+           ng-include="'templates/partials/main.html'"
+           class="flex-wrapper">
       </div>
 
     </div>

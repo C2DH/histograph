@@ -42,10 +42,7 @@ const styles = {
     flexDirection: 'row',
     alignContent: 'stretch',
     alignItems: 'stretch',
-    width: '100% !important',
-    position: 'absolute',
-    bottom: 0,
-    top: 40,
+    width: '100% !important'
   },
   containerChild: {
     flex: 1,

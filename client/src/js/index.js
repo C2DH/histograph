@@ -85,6 +85,7 @@ require('./directives/reporter.js')
 require('./directives/popit.js')
 require('./directives/lazy-text.js')
 require('./directives/iiifImage.js')
+require('./directives/on-enter.js')
 
 require('./components/topic-details.js')
 require('./components/snackbar.js')
@@ -119,6 +120,7 @@ require('./controllers/explorer.js')
 require('./controllers/topicResources.js')
 require('./controllers/loginCallback.js')
 require('./controllers/changes-history.js')
+require('./controllers/merge-entities.js')
 
 // modal controllers. templates in templates/modal
 require('./controllers/modals/contribute.js')

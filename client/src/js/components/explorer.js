@@ -127,7 +127,6 @@ const directive = {
     const root = element[0].querySelector('.svg-container')
     const tooltipElement = element[0].querySelector('.explorer-tooltip')
 
-
     function updateControlButtonsPositions() {
       if (!$scope.plotIds) return
       $scope.plotIds.forEach(id => {

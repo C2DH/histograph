@@ -1,4 +1,4 @@
-<div>
+<div class="main-wrapper">
   <div class="loader animated" ng-class="isLoading? 'fadeIn' : 'fadeOut'">
     <div class="sk-double-bounce">
       <div class="sk-child sk-double-bounce1"></div>
@@ -6,10 +6,10 @@
     </div>
   </div>
 
-  <div
-    class="view {{currentCtrl}} {{currentState.name|humanizeState}} {{queueStatus}} viewpoint-{{viewpoint.selected.name}}"
-    infinite-scroll="addMoreItems()" infinite-scroll-collection="relatedItems">
-    <div ui-view=""></div>
+  <div class="view {{currentCtrl}} {{currentState.name|humanizeState}} {{queueStatus}} viewpoint-{{viewpoint.selected.name}} {{isTimelineHidden ? 'timeline-hidden' : ''}}"
+       infinite-scroll="addMoreItems()"
+       infinite-scroll-collection="relatedItems">
+    <div ui-view="" class="flex-wrapper"></div>
   </div>
 
   <div class="{{currentState.name|humanizeState}} {{queueStatus}} viewpoint-{{viewpoint.selected.name}}"
@@ -19,8 +19,14 @@
     filter="addFilter(key, value)">
   </div>
 
-  <div class="{{currentState.name}} {{queueStatus}}" id="timeline" timeline="timeline" t="timeline"
-    cxt="contextualTimeline" filters="filters" currentItemRange="currentResourceRange">
+  <div class="{{currentState.name}} {{queueStatus}}"
+       id="timeline"
+       timeline="timeline"
+       t="timeline"
+       cxt="contextualTimeline"
+       filters="filters"
+       currentItemRange="currentResourceRange"
+       ng-if="!isTimelineHidden">
   </div>
 
   <div id="pop" popit="popit" user="user" target="target" redirect="redirect(path)" filter="addFilter(key, item)"
