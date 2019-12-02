@@ -1,11 +1,21 @@
 <div class="{{classes.container}}">
   <div class="{{classes.searchContainer}}">
-    <input ng-model="query" class="form-control {{classes.searchInput}}"/>
-    <button class="btn btn-default" 
-            ng-click="findEntities()"
-            ng-disabled="isLoading">
-      {{ isLoading ? 'Searching...' : 'Find entities' }}
-    </button>
+    <div class="{{classes.inputsWrapper}}">
+      <div class="{{classes.inputsContainer}}">
+        <input ng-model="query" class="form-control {{classes.searchInput}}"/>
+        <button class="btn btn-default" 
+                ng-click="findEntities()"
+                ng-disabled="isLoading">
+          {{ isLoading ? 'Searching...' : 'Find entities' }}
+        </button>
+      </div>
+      <div class="{{classes.inputsContainer}}">
+        <p class="{{classes.searchBoxHelpText}}">
+          <a href="https://lucene.apache.org/solr/guide/6_6/the-standard-query-parser.html">Lucene queries</a>
+          can be used here.
+        </p>
+      </div>  
+    </div>
   </div>
   <div class="{{classes.entitiesContainer}}">
     {{entities}}
