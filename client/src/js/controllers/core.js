@@ -548,13 +548,13 @@ angular.module('histograph')
       $scope.setMessage(MESSAGES.LOADING);
     });
 
-    $scope.currentPath;
+    $scope.currentPath = undefined
 
     $scope.$on('$locationChangeSuccess', function (e, path) {
       $log.log('CoreCtrl @locationChangeSuccess', path, $location);
 
       // same state as before???
-      if ($scope.currentPath == $location.path()) {
+      if ($scope.currentPath === $location.path()) {
         $scope.params = $location.search();
         $scope.$broadcast(EVENTS.API_PARAMS_CHANGED, angular.copy($scope.params));
       }
