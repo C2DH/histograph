@@ -1,19 +1,15 @@
 <div id='perspective-menu' class="tk-proxima-nova header-menu" ng-include="'templates/partials/helpers/menu.html'">
 </div>
 
-<div id="perspective" class="{{queueStatus}}" ng-include="'templates/partials/resource.html'"></div>
-
-
-
-<div ui-view id='see-also' class="resource-see-also">
-  <div  class='{{currentCtrl}}' ng-cloak>
-    
-    <div class="empty-list" ng-if="relatedItems.length == 0">
-      There are no related <i>documents</i>.
+<div class="flex-row">
+  <div id="perspective" class="{{queueStatus}}" ng-include="'templates/partials/resource.html'"></div>
+  <div ui-view id='see-also' class="resource-see-also">
+    <div  class='{{currentCtrl}}' ng-cloak>
+      <div class="empty-list" ng-if="relatedItems.length == 0">
+        There are no related <i>documents</i>.
+      </div>
+      <div class="{{loading? 'animated fadeOut': 'animated fadeIn'}}" style="-webkit-animation-delay: {{$index * 100}}ms;
+      animation-delay: {{$index * 100}}ms"  ng-repeat='relatedItem in relatedItems' ng-include='"templates/partials/resource-lite.html"'></div>
     </div>
-    <div class="{{loading? 'animated fadeOut': 'animated fadeIn'}}" style="-webkit-animation-delay: {{$index * 100}}ms;
-    animation-delay: {{$index * 100}}ms"  ng-repeat='relatedItem in relatedItems' ng-include='"templates/partials/resource-lite.html"'></div>
   </div>
-  
 </div>
-  

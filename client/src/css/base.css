@@ -467,9 +467,10 @@ header ul.dropdown-menu li .notification a {
 
 .entity #see-also{
   margin-left: auto;
-  width: auto;
+  width: 100%;
   margin-right: 0px;
   left: 360px;
+  height: 100%;
 }
 
 .entity #perspective{
@@ -491,12 +492,6 @@ header ul.dropdown-menu li .notification a {
     width: 100%;
   }
 
-  .resource #see-also {
-    width: 320px
-  }
-  .resource #perspective {
-    right: 320px;
-  }
   header ul.menu li a{
     padding: 0 10px;
   }
@@ -507,37 +502,11 @@ header ul.dropdown-menu li .notification a {
   .masonry-brick{
     width: 50%;
   }
-  .resource #perspective {
-    width: 540px;
-  }
-
-  .entity #perspective{
-    width: 360px;
-  }
-
-  
-  .resource #see-also {
-    left: 550px;
-    margin-left: 0;
-    width: auto ;
-  }
 }
 
 @media screen and (min-width: 1200px) {
   header ul.menu li a{
     padding: 0 20px;
-  }
-  .resource #perspective {
-    width: 670px;
-  }
-  .resource #see-also {
-    left: 680px;
-    margin-left: 0;
-    width: auto ;
-}
-
-  .resource #perspective-menu{
-    
   }
   
   .entity .masonry-brick{

@@ -63,9 +63,7 @@ angular.module('histograph')
         }
         return resource.createNewAction(payload).$promise
       },
-      getPerformedActions: (skip = 0, limit = 50) => {
-        return resource.query({ skip, limit }).$promise;
-      }
+      getPerformedActions: (skip = 0, limit = 50) => resource.query({ skip, limit }).$promise
     }
   })
   /*

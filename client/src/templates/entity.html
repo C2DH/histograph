@@ -1,23 +1,16 @@
 <div id='perspective-menu' class="tk-proxima-nova header-menu" ng-include src="'templates/partials/helpers/menu.html'">
 </div>
 
-<div id="perspective" ng-if="item"  class="{{queueStatus}}" ng-include='"templates/partials/entity.html"'>
-  
-      
-</div>
-
-
-
-
-<div ui-view id='see-also'>
-  <div  class='{{currentCtrl}}'>
-    <!-- <div ng-include src="'templates/partials/resource-toolbar.html'"></div> -->
-  
-    <div class="empty-list" ng-if="relatedItems.length == 0">
-      There are no related <i>{{model}}</i>.
-    </div>
-    
-    
+<div class="flex-row">
+  <div id="perspective" ng-if="item"  class="{{queueStatus}}" ng-include='"templates/partials/entity.html"'>
   </div>
   
+  <div ui-view id='see-also'>
+    <div  class='{{currentCtrl}}'>
+      <!-- <div ng-include src="'templates/partials/resource-toolbar.html'"></div> -->
+      <div class="empty-list" ng-if="relatedItems.length == 0">
+        There are no related <i>{{model}}</i>.
+      </div>
+    </div>  
+  </div>  
 </div>

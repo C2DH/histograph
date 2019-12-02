@@ -841,7 +841,7 @@ header ul li .notification a {
   
 */
 #perspective{
-  position: absolute;
+  /* position: absolute; */
   width: 470px;
   top:  40px;
   left: 10px;
@@ -1124,6 +1124,7 @@ header ul li .notification a {
 .resource #see-also{
   margin-left: auto;
   margin-right: 0px;
+  width: 100%;
 }
 
 .entity #see-also{
@@ -7478,11 +7479,6 @@ g.note.manual .note-borders{
 }
 
 @media screen and (min-width: 1200px) {
-  .resource #see-also{
-    left: 680px;
-    margin-left: 0;
-        width: auto;
-  }
 
   .resource #perspective, .entity #perspective{
     width: 680px;
@@ -7496,23 +7492,6 @@ g.note.manual .note-borders{
     width: 25%;
   }
 }
-
-@media screen and (max-width: 992px) {
-  .resource #see-also{
-    width: 280px;
-  }
-
-  .resource #perspective{
-    right: 300px;
-  }
-  .entity #perspective{
-    width: 360px;
-  }
-  .entity #see-also {
-    left: 360px;
-  }
-}
-
 
 .main-title {
   display: flex;
@@ -7548,4 +7527,10 @@ g.note.manual .note-borders{
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.flex-row {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
 }

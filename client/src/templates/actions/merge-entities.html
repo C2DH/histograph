@@ -1,10 +1,20 @@
 <div class="{{classes.container}}">
-  <div class="{{classes.searchContainer}}">
+  <div class="{{classes.veil}}" ng-show="isLoading">
+    <div class="loader animated">
+      <div class="sk-double-bounce">
+        <div class="sk-child sk-double-bounce1"></div>
+        <div class="sk-child sk-double-bounce2"></div>
+      </div>
+    </div>
+  </div>
+  <div class="{{classes.controlsContainer}}">
     <div class="{{classes.inputsWrapper}}">
       <div class="{{classes.inputsContainer}}">
-        <input ng-model="query" class="form-control {{classes.searchInput}}"/>
+        <input ng-model="query"
+               class="form-control {{classes.searchInput}}"
+               hg-on-enter="setQuery()"/>
         <button class="btn btn-default" 
-                ng-click="findEntities()"
+                ng-click="setQuery()"
                 ng-disabled="isLoading">
           {{ isLoading ? 'Searching...' : 'Find entities' }}
         </button>
@@ -16,8 +26,47 @@
         </p>
       </div>  
     </div>
+    <div class="{{classes.mergeTargetControls}} {{ targetEntity ? classes.controlsAnimation : '' }}" ng-show="targetEntity">
+      <p>
+        Merge <b>{{sourceEntities.length || 0}}</b> entities into <b>{{targetEntity.name}}</b>
+      </p>
+      <button class="btn btn-default {{classes.mergeButton}}"
+              ng-disabled="sourceEntities.length === 0"
+              ng-click="performMerge()">
+        Merge
+      </button>
+    </div>
   </div>
   <div class="{{classes.entitiesContainer}}">
-    {{entities}}
+    <ul class="list-group">
+      <li ng-repeat="entity in entities" class="list-group-item">
+        <div class="{{classes.entity}}">
+          <div class="{{classes.entityControls}}">
+            <input type="checkbox"
+                   ng-checked="isSourceEntity(entity)"
+                   ng-disabled="entity === targetEntity"
+                   ng-click="toggleSourceEntity(entity)"/>
+            <button class="btn btn-default"
+                    ng-click="setTarget(entity)"
+                    ng-disabled="isSourceEntity(entity) || entity === targetEntity">
+              {{ entity === targetEntity ? 'target' : 'set as target' }}
+            </button>
+          </div>
+          <div class="{{classes.entityDetails}}">
+            <p><a href="/e/{{entity.uuid}}">{{entity.name}}</a></p>
+            <span class="badge">{{entity.type}}</span>
+          </div>
+        </div>
+        
+      </li>
+    </ul>
+
+    <!-- load more -->
+    <div class="{{classes.loadMoreItemsSection}}" ng-show="entities.length > 0">
+      <button class="btn btn-default"
+              ng-click="loadMore()">
+        Load more items
+      </button>
+    </div>
   </div>
 </div>

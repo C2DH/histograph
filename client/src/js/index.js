@@ -85,6 +85,7 @@ require('./directives/reporter.js')
 require('./directives/popit.js')
 require('./directives/lazy-text.js')
 require('./directives/iiifImage.js')
+require('./directives/on-enter.js')
 
 require('./components/topic-details.js')
 require('./components/snackbar.js')
