@@ -1,3 +1,4 @@
+import { get } from 'lodash'
 import { withStyles, theme } from '../styles'
 
 const styles = {
@@ -144,7 +145,8 @@ const styles = {
   }
 }
 
-function controller($scope, $location, SuggestFactory, MatchingEntitiesService) {
+function controller($scope, $location, SuggestFactory, MatchingEntitiesService,
+  ActionsService, $log) {
   withStyles($scope, styles)
 
   $scope.entitiesQuery = $location.search().e || ''
@@ -215,7 +217,19 @@ function controller($scope, $location, SuggestFactory, MatchingEntitiesService) 
   $scope.setTargetEntity = entity => { $scope.targetEntity = entity }
 
   $scope.tagDocuments = () => {
-    console.log(`Will tag ${$scope.matchedDocumentsCount} items with entity ${$scope.targetEntity.name}`)
+    ActionsService.linkEntitiyBulk($scope.targetEntity.uuid, $scope.resourcesQuery, $scope.language)
+      .then(result => {
+        const msg = result.performed
+          ? get(result, 'results.0.0', 'Entity has been linked')
+          : 'Waiting for votes';
+        $log.info(msg)
+
+        $scope.entities = []
+        $scope.resources = []
+        $scope.matchedDocumentsCount = 0
+      }).finally(() => {
+        $scope.isLoading = false
+      })
   }
 }
 
