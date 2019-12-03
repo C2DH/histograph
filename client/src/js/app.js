@@ -1297,6 +1297,11 @@ module.exports = angular
         templateUrl: 'templates/actions/merge-entities.html',
         controller: 'MergeEntitiesCtrl'
       })
+      .state('tag-documents', {
+        url: '/actions/tag-documents',
+        templateUrl: 'templates/actions/tag-documents.html',
+        controller: 'TagDocumentsCtrl'
+      })
   })
   .config(function ($httpProvider, jwtOptionsProvider, jwtInterceptorProvider, HgSettingsProvider) {
     // eslint-disable-next-line no-param-reassign

@@ -374,6 +374,7 @@ RETURN {
 CALL db.index.fulltext.queryNodes({fullTextIndex}, {query})
 YIELD node as n
 WHERE 'entity' in labels(n)
+MATCH (n)-[r:appears_in]->()
 WITH last(labels(n)) as group, count(n) as count_items
 RETURN {
   group: group, 
@@ -395,7 +396,7 @@ RETURN {
   // appearing: last_resource,
   type: last(labels(n))
 } AS result
-ORDER BY n.score DESC, df DESC
+ORDER BY df DESC
 SKIP {offset}
 LIMIT {limit}
 

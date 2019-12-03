@@ -121,6 +121,7 @@ require('./controllers/topicResources.js')
 require('./controllers/loginCallback.js')
 require('./controllers/changes-history.js')
 require('./controllers/merge-entities.js')
+require('./controllers/tag-documents.js')
 
 // modal controllers. templates in templates/modal
 require('./controllers/modals/contribute.js')

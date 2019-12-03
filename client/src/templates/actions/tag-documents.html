@@ -1,0 +1,102 @@
+<div class="{{classes.container}}">
+  
+  <!-- loading indicator -->
+  <div class="{{classes.veil}}" ng-show="isLoading">
+    <div class="loader animated">
+      <div class="sk-double-bounce">
+        <div class="sk-child sk-double-bounce1"></div>
+        <div class="sk-child sk-double-bounce2"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- search box panel -->
+  <div class="{{classes.controlsContainer}}">
+    <!-- entities search -->
+    <div class="{{classes.inputsWrapper}}">
+      <div class="{{classes.inputsContainer}}">
+        <input ng-model="entitiesQuery"
+               class="form-control {{classes.searchInput}}"
+               hg-on-enter="setEntitiesQuery()"/>
+        <button class="btn btn-default" 
+                ng-click="setEntitiesQuery()"
+                ng-disabled="isLoading">
+          Find entities
+        </button>
+      </div>
+      <div class="{{classes.inputsContainer}}">
+        <p class="{{classes.searchBoxHelpText}}">
+          <a href="https://lucene.apache.org/solr/guide/6_6/the-standard-query-parser.html">Lucene queries</a>
+          can be used here.
+        </p>
+      </div>  
+    </div>
+    <!-- merge control -->
+    <div class="{{classes.mergeTargetControls}} {{ targetEntity ? classes.controlsAnimation : '' }}" ng-show="targetEntity">
+      <p>Tag {{matchedDocumentsCount || 0}} documents with {{targetEntity.name}}</p>
+      <button class="btn btn-default"
+              ng-disabled="isLoading || !targetEntity || !matchedDocumentsCount"
+              ng-click="tagDocuments()">
+        Tag
+      </button>
+    </div>
+    <!-- documents search -->
+    <div class="{{classes.inputsWrapper}}">
+      <div class="{{classes.inputsContainer}}">
+        <input ng-model="resourcesQuery"
+               class="form-control {{classes.searchInput}}"
+               hg-on-enter="setResourcesQuery()"/>
+        <button class="btn btn-default" 
+                ng-click="setResourcesQuery()"
+                ng-disabled="isLoading">
+          Find documents
+        </button>
+      </div>
+      <div class="{{classes.inputsContainer}}">
+        <p class="{{classes.searchBoxHelpText}}">
+          Exact word or phrase will be matched against all documents
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="{{classes.contentWrapper}}">
+    <div class="{{classes.entitiesContainer}}">
+      <ul class="list-group">
+        <li ng-repeat="entity in entities" class="list-group-item">
+          <div class="{{classes.entity}}">
+            <div class="{{classes.entityControls}}">
+              <button class="btn btn-default"
+                      ng-click="setTargetEntity(entity)"
+                      ng-disabled="entity === targetEntity">
+                {{ entity === targetEntity ? 'selected' : 'use this entity' }}
+              </button>
+            </div>
+            <div class="{{classes.entityDetails}}">
+              <p class="{{classes.entityText}}">
+                <a href="/e/{{entity.uuid}}">{{entity.name}}</a>
+                <span class="mentions">{{entity.mentions}} mentions</span>
+              </p>
+              <span class="badge">{{entity.type}}</span>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="{{classes.resourcesInfoContainer}}">
+      <div class="{{classes.resourcesSummary}}" ng-show="resourcesQuery">
+        Found {{matchedDocumentsCount}} documents that mention "{{resourcesQuery}}" including:
+      </div>
+      <div class="{{classes.resourcesList}}">
+        <ul class="list-group">
+          <li ng-repeat="resource in resources"
+              class="list-group-item">
+            <div class="{{classes.entityDetails}}">
+              <p><a href="/r/{{resource.uuid}}">{{resource.name}}</a></p>              
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

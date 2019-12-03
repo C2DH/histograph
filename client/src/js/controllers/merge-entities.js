@@ -82,6 +82,17 @@ const styles = {
       }
     }
   },
+  entityText: {
+    display: 'flex',
+    flexDirection: 'column',
+    margin: 0,
+    '& .mentions': {
+      fontSize: '10px',
+      lineHeight: '12px',
+      fontWeight: 500,
+      color: theme.colours.text.light.secondary
+    }
+  },
   mergeTargetControls: {
     display: 'flex',
     flexDirection: 'row',

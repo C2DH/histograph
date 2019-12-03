@@ -53,11 +53,13 @@
             </button>
           </div>
           <div class="{{classes.entityDetails}}">
-            <p><a href="/e/{{entity.uuid}}">{{entity.name}}</a></p>
+            <p class="{{classes.entityText}}">
+              <a href="/e/{{entity.uuid}}">{{entity.name}}</a>
+              <span class="mentions">{{entity.mentions}} mentions</span>
+            </p>
             <span class="badge">{{entity.type}}</span>
           </div>
         </div>
-        
       </li>
     </ul>
 
