@@ -434,4 +434,59 @@ describe('createAction', () => {
       clearRequireCache()
     }
   })
+
+  it('creates, performs and updates "link-entity-bulk" action', async () => {
+    try {
+      let queryCounter = 0
+      let savedAction
+      const entityIdentifier = { name: 'Test Entity', type: 'location', slug: 'e1' }
+      const keyphrase = 'a test entity'
+      const languageCode = 'fr'
+
+      mock(Neo4jModulePath, {
+        async executeQuery(query, params) {
+          queryCounter += 1
+          switch (queryCounter) {
+            case 1: // get entity identifier
+              return [entityIdentifier]
+            case 2: // save action
+              savedAction = {
+                ...params.action,
+                createdAt: new Date().toISOString()
+              }
+              return [savedAction]
+            case 3: // perform merge
+              assert.equal(params.indexName, 'text_fr')
+              assert.equal(params.query, '"a test entity"')
+              assert.equal(params.entitySlug, 'e1')
+              return [{ totalResources: 5, entityUuid: 'uide1' }]
+            case 4: // mark action complete
+              savedAction = {
+                ...savedAction,
+                performedAt: new Date().toISOString()
+              }
+              return [savedAction]
+            default:
+              return undefined
+          }
+        }
+      })
+
+      const { createAction } = mock.reRequire('../../../../lib/logic/actions')
+
+      const {
+        action,
+        performed,
+        results
+      } = await createAction('link-entity-bulk', { entityUuid: 'uide1', keyphrase, languageCode }, 'test user', 1)
+      assert.equal(performed, true)
+      assert.deepEqual(action, fromNeo4jChangeAction(savedAction))
+      assert.deepEqual(results, [
+        ['Entity uide1 is linked to 5 resources', true]
+      ])
+    } finally {
+      mock.stop(Neo4jModulePath)
+      clearRequireCache()
+    }
+  })
 })

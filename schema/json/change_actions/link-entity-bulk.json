@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://c2dh.uni.lu/histograph/change_actions/link-entity-bulk.json",
+  "title": "Bulk unlink entity action",
+  "description": "Unlink entity from all resources",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "entity": {
+      "$ref": "http://c2dh.uni.lu/histograph/change_actions/common.json#/definitions/entityIdentifier"
+    },
+    "keyphrase": {
+      "type": "string"
+    },
+    "languageCode": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "entity",
+    "keyphrase",
+    "languageCode"
+  ]
+}
