@@ -245,7 +245,8 @@ function controller($scope, $location, SuggestFactory, MatchingEntitiesService,
   $scope.setTargetEntity = entity => { $scope.targetEntity = entity }
 
   $scope.tagDocuments = () => {
-    ActionsService.linkEntitiyBulk($scope.targetEntity.uuid, $scope.resourcesQuery, $scope.language)
+    $scope.isLoading = true
+    ActionsService.linkEntityBulk($scope.targetEntity.uuid, $scope.resourcesQuery, $scope.language)
       .then(result => {
         const msg = result.performed
           ? get(result, 'results.0.0', 'Entity has been linked')

@@ -63,7 +63,7 @@ angular.module('histograph')
         }
         return resource.createNewAction(payload).$promise
       },
-      linkEntitiyBulk: (entityUuid, keyphrase, languageCode) => {
+      linkEntityBulk: (entityUuid, keyphrase, languageCode) => {
         const payload = {
           type: 'link-entity-bulk',
           parameters: { entityUuid, keyphrase, languageCode }
