@@ -16,6 +16,7 @@ module.exports = (env, options) => {
   const plugins = [
     new CopyWebpackPlugin([
       { from: './src/fonts', to: 'fonts' },
+      { from: './node_modules/bootstrap/fonts', to: 'fonts' },
       { from: './src/images', to: 'images' },
       { from: './src/locale', to: 'locale' },
       // { from: './src/css', to: 'css' },

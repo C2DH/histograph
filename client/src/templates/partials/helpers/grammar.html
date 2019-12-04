@@ -1,4 +1,5 @@
 <!-- global template for grammar based on current state-->
+<!-- Driven by "FiltersCtrl" -->
 <div class='grammar'>
   <!-- change sub state -->
   
@@ -142,17 +143,20 @@
             </ul>
           </div>
         </div>
-        
-        
-        <span ng-if="filters.from">
-          &nbsp;{{grammar.connector.from}}&nbsp;
-          <span class="filter "><b>{{filters.from}}</b><span ng-click='removeFilter("from",filter)'>&nbsp;<i class="fa fa-times-circle"></i></span></span>
-        </span>
-        
-        <span ng-if="filters.to">
-          &nbsp;{{grammar.connector.to}}&nbsp;
-          <span class="filter"><b>{{filters.to}}</b><span ng-click='removeFilter("to",filter)'>&nbsp;<i class="fa fa-times-circle"></i></span></span>
-        </span>
+
+        <div ng-if="filters.from"
+             hi-date-filter="filters.from"
+             label="grammar.connector.from"
+             on-remove="removeFilter('from', filter)"
+             on-date-changed="setFilter('from', date)">
+        </div>
+
+        <div ng-if="filters.to"
+             hi-date-filter="filters.to"
+             label="grammar.connector.to"
+             on-remove="removeFilter('to', filter)"
+             on-date-changed="setFilter('to', date)">
+        </div>
         
         <div ng-if="grammar.connector.keywords"
              hi-text-items-filter

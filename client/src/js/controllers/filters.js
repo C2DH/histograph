@@ -1,9 +1,8 @@
 /* eslint-env browser */
 /* globals angular, _ */
-const {
-  assignIn, omitBy, isUndefined,
-  isEmpty, get, isArray
-} = require('lodash')
+import {
+  assignIn, omitBy, isUndefined, isEmpty, get, isArray
+} from 'lodash'
 
 /**
  * [RK] NOTE a filter guard used to remove query search filter parameters when moving from
@@ -24,7 +23,6 @@ function filterGuard(scope, $location, queryParameterName, grammarName) {
 }
 
 /**
- * @ngdoc function
  * @name histograph.controller:FiltersCtrl
  * @description
  * # FiltersCtrl
@@ -33,7 +31,7 @@ function filterGuard(scope, $location, queryParameterName, grammarName) {
  */
 angular.module('histograph')
   // eslint-disable-next-line prefer-arrow-callback
-  .controller('FiltersCtrl', function controller($scope, $log, $http, $location, $stateParams, SuggestFactory, EVENTS) {
+  .controller('FiltersCtrl', function controller($scope, $log, $location, $stateParams, SuggestFactory) {
     $log.debug('FiltersCtrl ready, filters active:', $location.search());
 
     $scope.filters = {};
@@ -85,7 +83,7 @@ angular.module('histograph')
       else $location.search(key, aliveFilters.join(','));
     }
 
-    $scope.addFilterFromTypeahead = function ($item, $model, $label) {
+    $scope.addFilterFromTypeahead = function ($item) {
       $scope.addFilter('with', $item.id);
     }
 
@@ -125,7 +123,7 @@ angular.module('histograph')
 
     /*
       For some field, load complex items (e.g; location, persons etc..);
-      Ids can be resoruce or other.
+      Ids can be resource or other.
     */
     $scope.loadFiltersItems = function () {
       if (!$scope.filters.with) $scope.filterItems.with = []
@@ -150,11 +148,11 @@ angular.module('histograph')
       const filters = {};
       const qs = [];
       // handle 'type' and mimetype (pseudo-array)
-      for (const i in candidates) {
+      Object.keys(candidates).forEach(i => {
         const list = _.uniq(_.compact(_.map((`${candidates[i]}`).split(','), _.trim)));
         filters[i] = list.length === 1 ? list[0] : list;
         qs.push(`${encodeURIComponent(i)}=${encodeURIComponent(candidates[i])}`);
-      }
+      })
       // set query for search ctrl
       if (filters.query) $scope.query = filters.query.join('');
       $log.debug('FiltersCtrl -> loadFilters()', filters);
@@ -178,18 +176,18 @@ angular.module('histograph')
         limit: 10,
         language: $scope.language,
       }).$promise.then(function (res) {
-        if (res.status != 'ok') return [];
+        if (res.status !== 'ok') return [];
         return [{ type: 'default' }].concat(res.result.items)
       })
     }
     /*
-      The combinatio of choices.
+      The combination of choices.
       load facets?
     */
-    $scope.grammar;
+    $scope.grammar = undefined
 
     /*
-      Set a choiche from the choices provided by the ruler
+      Set a choice from the choices provided by the ruler
       (i.e. the root grammar)
     */
     $scope.setChoice = function (choice) {
@@ -202,6 +200,7 @@ angular.module('histograph')
 
 
     $scope.setType = function (subject, type) {
+      // eslint-disable-next-line no-param-reassign
       subject.type = type;
       if (type.filter) $scope.addFilter(type.filter.split('=')[0], type.filter.split('=')[1])
       else $scope.removeFilter('type')
@@ -226,7 +225,7 @@ angular.module('histograph')
       $scope.stateParams = $stateParams;
 
 
-      // ruler is the parentstate grammar
+      // ruler is the parent state grammar
       if (parentState && parentState.abstract) {
         $scope.ruler = parentState.grammar;
       }
