@@ -82,10 +82,21 @@
           </div>
         </li>
       </ul>
+
+      <!-- load more -->
+      <div class="{{classes.loadMoreItemsSection}}" ng-show="entities.length > 0">
+        <button class="btn btn-default" ng-click="loadMoreEntities()">
+          Load more items
+        </button>
+      </div>
     </div>
     <div class="{{classes.resourcesInfoContainer}}">
-      <div class="{{classes.resourcesSummary}}" ng-show="resourcesQuery">
-        Found {{matchedDocumentsCount}} documents that mention "{{resourcesQuery}}" including:
+      <div class="{{classes.resourcesSummary}}" ng-show="currentResourcesQuery">
+        <ul class="list-group">
+          <li class="list-group-item">
+            Found {{matchedDocumentsCount}} documents that mention "{{currentResourcesQuery}}" including:
+          </li>
+        </ul>
       </div>
       <div class="{{classes.resourcesList}}">
         <ul class="list-group">

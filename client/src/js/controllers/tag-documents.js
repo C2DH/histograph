@@ -133,15 +133,41 @@ const styles = {
   resourcesSummary: {
     display: 'flex',
     marginTop: theme.units(2),
-    marginBottom: theme.units(1)
+    '& ul': {
+      marginBottom: 0,
+      width: '100%',
+      zIndex: 1,
+      '& li:first-child': {
+        borderBottomRightRadius: 0,
+        borderBottomLeftRadius: 0,
+        backgroundColor: theme.colours.background.light.secondary
+      }
+    }
+    // marginBottom: theme.units(1)
   },
   resourcesList: {
+    marginTop: '-1px',
     display: 'flex',
     overflowY: 'auto',
     height: '100%',
     '& ul': {
-      width: '100%'
+      width: '100%',
+      '& li:first-child': {
+        borderTopRightRadius: 0,
+        borderTopLeftRadius: 0
+      },
+      '& li:last-child': {
+        marginBottom: theme.units(2)
+      }
     }
+  },
+  loadMoreItemsSection: {
+    display: 'flex',
+    width: '100%',
+    '& button': {
+      width: '100%'
+    },
+    marginBottom: theme.units(2)
   }
 }
 
@@ -151,6 +177,7 @@ function controller($scope, $location, SuggestFactory, MatchingEntitiesService,
 
   $scope.entitiesQuery = $location.search().e || ''
   $scope.resourcesQuery = $location.search().r || ''
+  $scope.currentResourcesQuery = $scope.resourcesQuery
 
   $scope.setEntitiesQuery = () => {
     const { entitiesQuery: e } = $scope
@@ -160,6 +187,7 @@ function controller($scope, $location, SuggestFactory, MatchingEntitiesService,
   $scope.setResourcesQuery = () => {
     const { resourcesQuery: r } = $scope
     $location.search(Object.assign({}, $location.search(), { r }))
+    $scope.currentResourcesQuery = r
   }
 
   $scope.findEntities = () => {
@@ -185,7 +213,7 @@ function controller($scope, $location, SuggestFactory, MatchingEntitiesService,
     $scope.isLoading = true
     MatchingEntitiesService.find({ query, skip }).$promise
       .then(results => {
-        $scope.entities = results
+        $scope.entities = $scope.entities.concat(results)
       })
       .finally(() => {
         $scope.isLoading = false

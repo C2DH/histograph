@@ -23,6 +23,9 @@ export const theme = {
     background: {
       dark: {
         primary: '#383838'
+      },
+      light: {
+        secondary: '#f0f0f0'
       }
     },
     text: {
