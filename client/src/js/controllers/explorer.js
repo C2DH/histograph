@@ -1,7 +1,8 @@
 /* eslint-env browser */
 import {
   assignIn, get, isEmpty, isEqual,
-  isArray, clone, last, omitBy, isUndefined
+  isArray, clone, last, omitBy, isUndefined,
+  without
 } from 'lodash'
 import moment from 'moment'
 import { withStyles, theme } from '../styles'
@@ -60,7 +61,7 @@ const styles = {
   mainPanel: {
     flex: '1 1 100%',
     flexGrow: 3,
-    overflowY: 'scroll',
+    // overflowY: 'scroll',
     margin: '1em 1em 0 1em',
   },
   button: {
@@ -118,6 +119,8 @@ angular.module('histograph')
     withStyles($scope, styles)
 
     $scope.uid = $scope.$id
+
+    $scope.busyCounter = []
 
     // NOTE: a workaround to disable ruler (see filters.js). Ugly but saves from refactoring.
     $scope.rulerDisabled = true
@@ -294,12 +297,16 @@ angular.module('histograph')
 
         const { aspect } = $scope.explorerConfig[id]
 
+        $scope.busyCounter.push(id)
         ExplorerService.getAspectData(aspect, queryParams)
           .then(data => {
             $scope.previousQueryParams[id] = queryParams
             $scope.explorerData[id] = data
           })
           .catch(e => $log.error(`Getting data ${id}:`, _.get(e, 'data.message', 'Error getting data')))
+          .finally(() => {
+            $scope.busyCounter = without($scope.busyCounter, id)
+          })
       })
     }
 
@@ -360,7 +367,11 @@ angular.module('histograph')
       const [fromTime, toTime] = [meta.minStartDate, meta.maxStartDate]
         .map(v => moment.utc(v).format('DD MMM YYYY'))
 
-      return `${meta.totalResources} <span>items</span><br/> <span>from</span> ${fromTime}<br/> <span>to</span> ${toTime}`
+      return /* html */ `
+      <span>${meta.totalResources} items</span>
+      <span>from ${fromTime}</span>
+      <span>to ${toTime}</span>
+      `
     }
 
     $scope.addNewExplorable = aspect => {

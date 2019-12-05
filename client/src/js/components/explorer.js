@@ -44,6 +44,12 @@ const styles = {
     fontWeight: 'bold',
     border: '1px solid #ccc',
     position: 'absolute',
+    display: 'flex',
+    flexDirection: 'column',
+    flexWrap: 'nowrap',
+    minWidth: '100px',
+    minHeight: '0px',
+    justifyContent: 'center',
     zIndex: 1000,
     padding: ['0.4em', '0.6em'],
     borderRadius: 4,
@@ -184,9 +190,9 @@ const directive = {
         const step = get([...root.querySelectorAll('.svg-container .bins .step')], index)
         if (!step) return
 
-        const { left, width: stepWidth } = step.getBoundingClientRect()
+        const { left, width: stepWidth, top } = step.getBoundingClientRect()
 
-        tooltipElement.style.display = 'block'
+        tooltipElement.style.display = 'flex'
         tooltipElement.innerHTML = $scope.getTooltipContent(index)
 
         const {
@@ -199,7 +205,7 @@ const directive = {
           const {
             height: tooltipHeight
           } = tooltipElement.getBoundingClientRect()
-          tooltipElement.style.top = `${-tooltipHeight + 20}px`
+          tooltipElement.style.top = `${top - tooltipHeight + 20}px`
         }, 0)
       }
     })

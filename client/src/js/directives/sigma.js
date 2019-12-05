@@ -300,10 +300,10 @@ angular.module('histograph')
           }, 300);
         });
 
-        scope.$on(EVENTS.LOCATION_CHANGE_START, function () {
+        scope.$on('$locationChangeStart', function () {
           stop();
           $log.log('::sigma @EVENTS.LOCATION_CHANGE_START');
-          scope.setMessage({ message: 'loading ...' });
+          // scope.setMessage({ message: 'loading ...' });
         });
 
         // scope.$on(EVENTS.API_PARAMS_CHANGED, function (v, stateName) {

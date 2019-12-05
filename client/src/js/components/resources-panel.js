@@ -2,7 +2,7 @@ import {
   isUndefined, assignIn, without,
   get, isNil
 } from 'lodash'
-import { withStyles, theme } from '../styles'
+import { withStyles } from '../styles'
 
 const styles = {
   container: {
@@ -39,7 +39,6 @@ const styles = {
 }
 
 function controller($scope, $log, HgSettings) {
-  withStyles($scope, styles)
 
   $scope.busyCounter = []
 
@@ -149,6 +148,8 @@ const itemTemplate = /* html */ `
 
 const template = /* html */ `
 <div class="{{classes.container}}">
+  <div hi-veil ng-show="busyCounter.length"></div>
+
   <div class="{{classes.resourceItems}}" ng-show="resources.meta.totalResources > 0">
     <div ng-repeat="resource in resources.items" class="{{classes.resourceItem}}">
       ${itemTemplate}
@@ -173,7 +174,8 @@ const directive = {
   },
   template,
   controller: 'ResourcesPanelCtrl',
-  link: function link($scope) {
+  link: $scope => {
+    withStyles($scope, styles)
     if (isUndefined($scope.params)) $scope.params = {}
     if (isUndefined($scope.resources)) $scope.resources = []
   }
