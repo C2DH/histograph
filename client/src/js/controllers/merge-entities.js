@@ -115,14 +115,6 @@ const styles = {
   controlsAnimation: {
     opacity: 1
   },
-  veil: {
-    background: '#fff',
-    opacity: 0.5,
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    zIndex: 1,
-  },
   loadMoreItemsSection: {
     display: 'flex',
     width: '100%',

@@ -28,7 +28,6 @@ angular.module('histograph')
     $scope.absoluteLocationUrl = $location.absUrl()
     $scope.locationPath = $location.path();
     $scope.locationJson = JSON.stringify($location.search());
-    console.log('OOO', $location.path())
 
     try {
       $scope.flags = JSON.parse($window.localStorage.getItem('histograph.flags')) || {}
@@ -544,8 +543,8 @@ angular.module('histograph')
 
       $scope.currentResourceRange = undefined
 
-      $scope.$broadcast(EVENTS.LOCATION_CHANGE_START)
-      $scope.setMessage(MESSAGES.LOADING);
+      // $scope.$broadcast(EVENTS.LOCATION_CHANGE_START)
+      // $scope.setMessage(MESSAGES.LOADING);
     });
 
     $scope.currentPath = undefined
@@ -561,7 +560,7 @@ angular.module('histograph')
       $scope.currentPath = $location.path();
       $scope.isTimelineHidden = !isTimelineEnabledForUrl($location.path())
 
-      $scope.unsetMessage();
+      // $scope.unsetMessage();
     });
 
     /*

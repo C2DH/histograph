@@ -97,6 +97,7 @@ require('./components/slider-value-filter.js')
 require('./components/auth.js')
 require('./components/explorable-configuration.js')
 require('./components/elements/date-filter.js')
+require('./components/elements/veil.js')
 
 require('./controllers/core.js')
 require('./controllers/filters.js')
