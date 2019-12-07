@@ -206,7 +206,7 @@ angular.module('histograph')
       else $scope.removeFilter('type')
     }
 
-    $scope.$on('$locationChangeSuccess', $scope.loadFilters);
+    // $scope.$on('$locationChangeSuccess', $scope.loadFilters);
 
     /*
       Watch for currentState changes in ui.router.

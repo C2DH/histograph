@@ -49,14 +49,22 @@ function controller($scope) {
   }
 
   $scope.$watch('date', () => {
-    $scope.dateModel = moment.utc($scope.date).toDate()
+    if ($scope.date === undefined) {
+      $scope.dateModel = undefined
+    } else {
+      $scope.dateModel = moment.utc($scope.date).toDate()
+    }
   })
 
   $scope.$watch('dateModel', value => {
-    const newDate = moment.utc(value).format('YYYY-MM-DD')
-    if (newDate !== $scope.date) {
-      if ($scope.onDateChanged) {
-        $scope.onDateChanged({ date: newDate })
+    if (value === undefined) {
+      $scope.onDateChanged({ date: undefined })
+    } else {
+      const newDate = moment.utc(value).format('YYYY-MM-DD')
+      if (newDate !== $scope.date) {
+        if ($scope.onDateChanged) {
+          $scope.onDateChanged({ date: newDate })
+        }
       }
     }
   })

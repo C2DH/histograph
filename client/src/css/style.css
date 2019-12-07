@@ -770,7 +770,8 @@ header ul li .notification a {
   padding: 0;
 }
 
-.header-menu ul.dropdown-menu > li a{
+.header-menu ul.dropdown-menu > li a,
+.typeahead-menu .dropdown-menu >li a {
   padding: 10px 15px;
 }
 
@@ -841,15 +842,16 @@ header ul li .notification a {
   
 */
 #perspective{
+  display: flex;
   /* position: absolute; */
   width: 470px;
-  top:  40px;
-  left: 10px;
-  bottom: 0px;
+  /* top:  40px; */
+  /* left: 10px; */
+  /* bottom: 0px; */
   /*overflow: hidden;*/
-  overflow: auto;
-  overflow-y: auto;
-  overflow-x: hidden;
+  /* overflow: auto; */
+  /* overflow-y: auto; */
+  /* overflow-x: hidden; */
   /*background: white;*/
   border-right: 1px solid #E8E8E7;
   -webkit-transition: transform .3s cubic-bezier(0.65, 0.05, 0.36, 1), width .3s cubic-bezier(0.65, 0.05, 0.36, 1); /* Changed here */ 
@@ -873,6 +875,7 @@ header ul li .notification a {
 
 .resource #perspective .item, .entity #perspective .item {
   max-width: 100%;
+  overflow-y: scroll;
 }
 
 #perspective ul.facets{
@@ -914,7 +917,8 @@ header ul li .notification a {
   max-height: 260px;
 }
 
-#perspective-menu .dropdown-menu >li a{
+#perspective-menu .dropdown-menu >li a,
+.typeahead-menu .dropdown-menu >li a {
   font-size:12px;
   line-height: 18px
 }

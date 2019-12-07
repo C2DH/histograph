@@ -97,7 +97,10 @@ require('./components/slider-value-filter.js')
 require('./components/auth.js')
 require('./components/explorable-configuration.js')
 require('./components/elements/date-filter.js')
+require('./components/elements/grammar-filter.js')
+require('./components/elements/related-to-filter.js')
 require('./components/elements/veil.js')
+require('./components/filters-menu.js')
 
 require('./controllers/core.js')
 require('./controllers/filters.js')
@@ -124,6 +127,7 @@ require('./controllers/loginCallback.js')
 require('./controllers/changes-history.js')
 require('./controllers/merge-entities.js')
 require('./controllers/tag-documents.js')
+require('./controllers/new-search.js')
 
 // modal controllers. templates in templates/modal
 require('./controllers/modals/contribute.js')

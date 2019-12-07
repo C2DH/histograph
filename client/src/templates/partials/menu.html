@@ -60,6 +60,7 @@
           <div>
             <form id="search-field" ng-submit="setQuery(query)">
               <input class="form-control" type="text" name="test" ng-model="__query"
+                autocomplete="off"
                 typeahead-on-select="setQuery($item, $model, $label)" typeahead-editable="false" placeholder="search"
                 typeahead="item for items in suggest($viewValue)" typeahead-wait-ms="100"
                 typeahead-template-url="templates/partials/helpers/suggest.html" />

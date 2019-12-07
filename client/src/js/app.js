@@ -1127,6 +1127,28 @@ module.exports = angular
       //   }
       // })
 
+      .state('newsearch', {
+        url: '/newsearch/:query',
+        template: '<ui-view/>',
+        abstract: true
+      })
+      .state('newsearch.resources', {
+        url: '',
+        templateUrl: 'templates/newsearch.html',
+        controller: 'NewSearchCtrl',
+        resolve: {
+          type() { return 'resource' }
+        }
+      })
+      .state('newsearch.entities', {
+        url: '/e',
+        templateUrl: 'templates/newsearch.html',
+        controller: 'NewSearchCtrl',
+        resolve: {
+          type() { return 'entity' }
+        }
+      })
+
       .state('search', {
         abstract: true,
         url: '/search/:query',
