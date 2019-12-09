@@ -206,7 +206,7 @@ angular.module('histograph')
       else $scope.removeFilter('type')
     }
 
-    // $scope.$on('$locationChangeSuccess', $scope.loadFilters);
+    $scope.$on('$locationChangeSuccess', $scope.loadFilters);
 
     /*
       Watch for currentState changes in ui.router.
@@ -232,10 +232,10 @@ angular.module('histograph')
 
       if (state.grammar) $scope.grammar = state.grammar
 
-      filterGuard($scope, $location, 'keywords', 'connector.keywords')
-      filterGuard($scope, $location, 'with', 'connector.relatedTo')
-      filterGuard($scope, $location, 'tst', 'connector.topicScoreThreshold')
-      filterGuard($scope, $location, 'without', 'connector.excluding')
+      // filterGuard($scope, $location, 'keywords', 'connector.keywords')
+      // filterGuard($scope, $location, 'with', 'connector.relatedTo')
+      // filterGuard($scope, $location, 'tst', 'connector.topicScoreThreshold')
+      // filterGuard($scope, $location, 'without', 'connector.excluding')
     })
 
     const singleValueAsList = v => (isArray(v) ? v : [v])

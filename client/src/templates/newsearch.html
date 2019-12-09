@@ -2,9 +2,13 @@
   <hi-filters-menu 
     elements="menuElements"
     values="filterValues"
-    on-changed="onFilterChanged(type, value)"/>
+    on-element-changed="onFilterChanged(type, value)">
+  </hi-filters-menu>
   
-  <div>
-    [new search placeholder for {{type}}]
+  <div class="{{classes.container}}">
+    <div class="{{classes.itemsPanel}}">
+    </div>
+    <div class="{{classes.graphPanel}}">
+    </div>
   </div>
 </div>
