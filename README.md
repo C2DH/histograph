@@ -49,6 +49,9 @@ Where:
  * `tmp_dir` is a temporary directory where the pipeline process stores temporary files and the new Histograph database
  * `document_files_dir` is a directory containing document files.
 
+## Notes
+
+Ingestion pipeline uses a `resource_creator` tool which is bundled as a docker image. The image is rather big (almost 4Gb) because it includes a 1Gb pytorch dependency and pretty big NER/NED models. Plan your free space accordingly.
 
 # Architecture
 
