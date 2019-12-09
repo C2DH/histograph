@@ -2,25 +2,14 @@
 
 echo "
   This is an example of a Histograph data ingestion pipeline.
-  It uses 'War and Peace' book as an example of a corpus.
+  It assumes you have prepared document files as described in
+  'Preparing documents' section here: 
+  https://github.com/C2DH/histograph/tree/master/tools/resource_creator#preparing-documents
+  and put these documents in a folder.
   
-  There are several steps in the process. The first one is corpus
-  specific. The rest is the same for any corpus.
+  There are several steps in the process.
 
-  1) First the book is split into chapters. Every chapter will represent
-  a single document in Histograph. Chapters are stored in files, one
-  file per chapter. File names contain some metadata associated with
-  the document: document timestamp and document title. 
-  See 'tools/resource_creator/README.md' for more information about
-  the format of the filename.
-  
-  ***
-  This is a custom step. Depending on your corpus
-  you will most likely need to write your own script for creating
-  documents.
-  ***
-
-  2) Chapters are converted to Histograph 'resource' JSON objects.
+  1) Documents are converted to Histograph 'resource' JSON objects.
   Entities are extracted and disambiguated at this point. Resource 
   objects are stored in a single file, one line per JSON.
 
@@ -28,13 +17,17 @@ echo "
   Depending on the corpus size and NER/NED model used this
   step may take a lot of time to complete. You may consider to
   run it in parallel potentially in a GPU enabled environment.
-  At uni.lu this step is usually performed on one or more HPC nodes (https://hpc.uni.lu/)
+  At uni.lu this step is usually performed on one or more HPC nodes (https://hpc.uni.lu/).
+
+  This step uses a `resource_creator` tool which is bundled as a docker image.
+  The image is rather big (almost 4Gb) because it includes a 1Gb pytorch dependency
+  and pretty big NER/NED models.
   ***
 
-  3) Resources are converted into Neo4j CSV files that can be 
+  2) Resources are converted into Neo4j CSV files that can be 
   understood by the Neo4j import tool.
 
-  4) A database folder is created from the CSV files using Neo4j
+  3) A database folder is created from the CSV files using Neo4j
   import tool.
 
 "
@@ -43,55 +36,42 @@ SCRIPT_PATH=$0
 SCRIPT_REAL_PATH=$(realpath $SCRIPT_PATH)
 SCRIPT_BASE_PATH=$(dirname $SCRIPT_REAL_PATH)
 WORK_DIR=$1
+DOCUMENTS_DIR=$2
 
-CORPUS_FILENAME="war_and_peace.txt"
-CHAPTERS_DIR="chapters"
 CSV_DIR="csv"
 DB_DIR="db"
 JSONS_FILENAME="resources.jsons"
 
 work_dir_abs_path=$(realpath $WORK_DIR)
+documents_dir_abs_path=$(realpath $DOCUMENTS_DIR)
 
 print_help_and_exit() {
   if [ -n "$1" ]; then
     echo "Error: $1"
   fi
-  echo "Usage: $SCRIPT_PATH <Work Directory>"
+  echo "Usage: $SCRIPT_PATH <Work Directory> <Documents Directory>"
   exit 1
 }
 
 [ -d "$WORK_DIR" ] || print_help_and_exit "Work directory $WORK_DIR does not exist"
-
-download_corpus() {
-  curl http://www.gutenberg.org/files/2600/2600-0.txt -o $WORK_DIR/$CORPUS_FILENAME 
-  echo "Corpus downloaded into $WORK_DIR/$CORPUS_FILENAME"
-}
-
-split_corpus_into_chapters() {
-  echo "1. Splitting corpus into documents"
-
-  [ -d "$WORK_DIR/$CHAPTERS_DIR" ] || mkdir -p $WORK_DIR/$CHAPTERS_DIR
-  python $SCRIPT_BASE_PATH/split_into_chapters.py "$WORK_DIR/$CORPUS_FILENAME" "$WORK_DIR/$CHAPTERS_DIR"
-  total_chapters=$(ls $WORK_DIR/$CHAPTERS_DIR | wc -l)
-  echo "Split corpus into $total_chapters chapters \n"
-}
+[ -d "$DOCUMENTS_DIR" ] || print_help_and_exit "Documents directory $DOCUMENTS_DIR does not exist"
 
 prepare_json_resources() {
-  echo "2. Preparing resource JSON objects"
+  echo "1. Preparing resource JSON objects"
 
   docker run --name hg_resource_creator --rm -it \
-    -v $work_dir_abs_path/$CHAPTERS_DIR:/chapters \
+    -v $documents_dir_abs_path:/documents \
     -v $work_dir_abs_path:/jsons \
     theorm/histograph-resource-creator \
     python -m hg_resource_creator \
-    --path /chapters \
+    --path /documents \
     --outpath /jsons/$JSONS_FILENAME \
     --language en --skip-validation --ner-method spacy_small_en
     echo "Prepared resources in file $WORK_DIR/$JSONS_FILENAME \n"
 }
 
 prepare_neo4j_csv_files() {
-  echo "3. Preparing Neo4j CSV files"
+  echo "2. Preparing Neo4j CSV files"
 
   [ -d "$WORK_DIR/$CSV_DIR" ] || mkdir -p $WORK_DIR/$CSV_DIR
 
@@ -106,14 +86,12 @@ prepare_neo4j_csv_files() {
 }
 
 prepare_neo4j_db() {
-  echo "4. Creating Neo4j database"
+  echo "3. Creating Neo4j database"
   [ -d "$WORK_DIR/$DB_DIR" ] || mkdir -p $WORK_DIR/$DB_DIR
   $SCRIPT_BASE_PATH/../tools/load-csv-into-db.sh $WORK_DIR/$CSV_DIR $WORK_DIR/$DB_DIR
   echo "Prepared Neo4j database: $WORK_DIR/$DB_DIR \n"
 }
 
-download_corpus
-split_corpus_into_chapters
 prepare_json_resources
 prepare_neo4j_csv_files
 prepare_neo4j_db
