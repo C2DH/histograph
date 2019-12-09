@@ -1261,7 +1261,7 @@ angular.module('histograph')
       set order by
       according to the favourite orderby. Avoid default values.
     */
-    if (relatedItems.info.orderby != 'relevance') $scope.setSorting(relatedItems.info.orderby);
+    if (relatedItems.info.orderby !== 'relevance') $scope.setSorting(relatedItems.info.orderby);
 
     /*
       set facets

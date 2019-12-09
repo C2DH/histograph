@@ -12,11 +12,21 @@
     <div ui-view="" class="flex-wrapper"></div>
   </div>
 
-  <div class="{{currentState.name|humanizeState}} {{queueStatus}} viewpoint-{{viewpoint.selected.name}}"
-    id="milkyway" sigma="sigma" isloading="isLoading" params="params" user="user" graph="graph" freeze="freeze"
-    tips="headers.graph" togglemenu="toggleMenu(e, item, tag)" controller="currentCtrl"
-    setmessage="setMessage(message)" redirect="redirect(path)" queue="addToQueue(items)"
-    filter="addFilter(key, value)">
+  <div class="{{currentState.name|humanizeState}} {{queueStatus}} viewpoint-{{viewpoint.selected.name}} milkyway"
+       ng-show="graph"
+       sigma="sigma"
+       isloading="isLoading"
+       params="params"
+       user="user"
+       graph="graph"
+       freeze="freeze"
+       tips="headers.graph"
+       togglemenu="toggleMenu(e, item, tag)"
+       controller="currentCtrl"
+       setmessage="setMessage(message)"
+       redirect="redirect(path)"
+       queue="addToQueue(items)"
+       filter="addFilter(key, value)">
   </div>
 
   <div class="{{currentState.name}} {{queueStatus}}"

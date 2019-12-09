@@ -7,6 +7,7 @@ const style = {
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 1,
+    width: '100%',
     boxShadow: '0px 6px 6px #33333333',
     height: 'auto',
     borderBottom: '1px solid #d8d8d8',
@@ -74,7 +75,7 @@ const template = /* html */ `
 `
 
 const ElementTypeToQueryParameter = {
-  search: 'q',
+  search: 'query',
   'related-to': 'with',
   from: 'from',
   to: 'to'
@@ -85,7 +86,7 @@ const ElementTypeToParser = {
 }
 
 const ElementTypeToSerializer = {
-  'related-to': v => (v ? v.join(',') : undefined)
+  'related-to': v => (v && v.length > 0 ? v.join(',') : undefined)
 }
 
 function controller($scope, $location) {

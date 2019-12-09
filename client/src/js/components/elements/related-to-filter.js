@@ -1,4 +1,4 @@
-import { uniq } from 'lodash'
+import { uniq, without } from 'lodash'
 import { withStyles, theme } from '../../styles'
 
 const styles = {
@@ -108,6 +108,10 @@ function controller($scope, SuggestFactory) {
     $scope.q = undefined
   }
 
+  $scope.removeItem = item => {
+    $scope.value = without($scope.value, item.id)
+  }
+
   const updateItems = values => {
     if (values.length > 0) {
       SuggestFactory.getUnknownNodes({
@@ -123,7 +127,6 @@ function controller($scope, SuggestFactory) {
   $scope.$watch('value', updateItems, true)
   $scope.$watch('value', () => {
     if ($scope.onChanged) {
-      console.log('****V', $scope.value)
       const { value } = $scope
       $scope.onChanged({ value })
     }

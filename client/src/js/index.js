@@ -101,6 +101,8 @@ require('./components/elements/grammar-filter.js')
 require('./components/elements/related-to-filter.js')
 require('./components/elements/veil.js')
 require('./components/filters-menu.js')
+require('./components/resource.js')
+require('./components/entity.js')
 
 require('./controllers/core.js')
 require('./controllers/filters.js')

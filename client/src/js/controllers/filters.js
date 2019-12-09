@@ -154,7 +154,12 @@ angular.module('histograph')
         qs.push(`${encodeURIComponent(i)}=${encodeURIComponent(candidates[i])}`);
       })
       // set query for search ctrl
-      if (filters.query) $scope.query = filters.query.join('');
+      if (filters.query) {
+        $scope.query = isArray(filters.query)
+          ? filters.query.join('')
+          : filters.query
+      }
+
       $log.debug('FiltersCtrl -> loadFilters()', filters);
       $scope.filters = filters;
       $scope.isFiltered = !_.isEmpty($scope.filters);
