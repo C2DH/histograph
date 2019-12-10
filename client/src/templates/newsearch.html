@@ -9,9 +9,17 @@
     <div ng-if="filterValues.grammar === 'resource'" class="{{classes.itemsPanel}}">
       <hi-resource-item ng-repeat="item in items"
                         resource="item"
+                        index="$index"
                         total-resources="totalItems"
                         on-pin="queue">
       </hi-resource-item>
+      <div class="{{classes.loadMoreItemsSection}}">
+        <button class="btn btn-default"
+                ng-show="items.length < totalItems"
+                ng-click="loadMoreItems()">
+          Load more
+        </button>  
+      </div>
     </div>
     <div ng-if="filterValues.grammar === 'entity'" class="{{classes.itemsPanel}}">
       <ul class="list-group">
@@ -22,6 +30,13 @@
           </hi-entity-item>
         </li>
       </ul>
+      <div class="{{classes.loadMoreItemsSection}}">
+        <button class="btn btn-default"
+                ng-show="items.length < totalItems"
+                ng-click="loadMoreItems()">
+          Load more
+        </button>  
+      </div>
     </div>
     <div class="{{classes.graphPanel}}">
       <div sigma

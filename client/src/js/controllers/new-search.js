@@ -8,7 +8,8 @@ const styles = {
     display: 'flex',
     flexDirection: 'row',
     overflow: 'hidden',
-    height: '100%'
+    height: '100%',
+    marginTop: theme.units(1)
   },
   itemsPanel: {
     display: 'flex',
@@ -28,6 +29,14 @@ const styles = {
     width: '100%',
     display: 'flex',
     height: '100%'
+  },
+  loadMoreItemsSection: {
+    display: 'flex',
+    width: '100%',
+    '& button': {
+      width: '100%'
+    },
+    marginBottom: theme.units(2)
   }
 }
 
@@ -61,7 +70,8 @@ function getItems(SearchFactory, type, language, params, offset = 0) {
   return SearchFactory.get(Object.assign({}, params, {
     model: type,
     limit: 10,
-    offset
+    offset,
+    language
   })).$promise.then(parse)
 }
 
@@ -81,23 +91,29 @@ function controller($scope, $stateParams, $location, SearchFactory, SearchVizFac
 
   $scope.menuElements = MenuElements
   $scope.filterValues = { grammar: type }
+  $scope.items = []
 
   $scope.onFilterChanged = (filterType, value) => {
     if (filterType === 'grammar') $location.path(`/newsearch/${value}`)
   }
 
+  const updateItems = () => getItems(
+    SearchFactory, type, $scope.language, $location.search(), $scope.items.length
+  ).then(({ items, total }) => {
+    $scope.items = $scope.items.concat(items)
+    $scope.totalItems = total
+  })
+
   const updateItemsAndGraph = () => {
-    getItems(SearchFactory, type, $scope.language, $location.search())
-      .then(({ items, total }) => {
-        $scope.items = items
-        $scope.totalItems = total
-      })
+    updateItems()
     getGraph(SearchVizFactory, type, $scope.language, $location.search())
       .then(graph => { $scope.graph = graph })
   }
 
   $scope.$on('$locationChangeSuccess', updateItemsAndGraph)
   updateItemsAndGraph()
+
+  $scope.loadMoreItems = () => updateItems()
 }
 
 angular.module('histograph')

@@ -23,7 +23,7 @@ const resourceItemTemplate = /* html */ `
       </div>
     </div>   
     <div class="meta">
-      <span class='type sans-serif' translate='resource.type.{{resource.props.type}}'></span> {{$index + 1}} of {{totalResources}}
+      <span class='type sans-serif' translate='resource.type.{{resource.props.type}}'></span> {{index + 1}} of {{totalResources}}
     </div>
     <h4>
       <a href='/r/{{resource.id}}'>
@@ -87,7 +87,8 @@ const directive = {
   scope: {
     resource: '=',
     totalResources: '=',
-    pinResource: '&onPin'
+    pinResource: '&onPin',
+    index: '='
   },
   controller
 }
