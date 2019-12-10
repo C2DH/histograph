@@ -25,14 +25,26 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: theme.units(0.3),
+  },
+  itemsMention: {
+    display: 'flex',
+    fontWeight: 'bold',
+    marginLeft: theme.units(0.5)
+  },
+  mentionsContainerInner: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'left',
+    padding: [[theme.units(0.5), theme.units(1)]]
   }
 }
 
 const template = /* html */ `
   <div class="{{classes.container}}">
-    <span ng-if="items.length">which mentions</span>
-    <span ng-if="!items.length">related to anyone</span>
-    <div class="{{classes.container}}">
+    <span ng-if="items.length">{{ title ? title : 'which mentions' }}</span>
+    <span ng-if="!items.length">{{ emptyTitle ? emptyTitle : 'related to anyone' }}</span>
+    <span class="{{classes.itemsMention}}" ng-show="items.length >= 3">{{items.length}} items</span>
+    <div class="{{classes.container}}" ng-show="items.length < 3">
       <div ng-repeat="item in items"
            class="{{classes.item}}">
         <b data-id='{{item.id}}' gasp-type='{{item.type}}'>
@@ -63,6 +75,22 @@ const template = /* html */ `
           aria-labelledby="related-to-button-{{uid}}">
         <li disable-auto-close>
           <div class='typeahead-in-dropdown'>
+
+            <div class="{{classes.mentionsContainerInner}}" ng-show="items.length >= 3">
+              <div ng-repeat="item in items"
+                  class="{{classes.item}}">
+                <b data-id='{{item.id}}' gasp-type='{{item.type}}'>
+                  {{item.props|lookup:'name':language:24}}
+                </b>
+                <button tooltip-append-to-body="true"
+                        class="{{classes.removeButton}}"
+                        tooltip='remove {{item.type}} {{item.props|lookup:"name":language:24}} from filters'
+                        ng-click='removeItem(item)'>
+                  <i class="fa fa-times-circle"></i>
+                </button>
+              </div>
+            </div>
+    
             <label>which entity</label>
             <form>
               <input autofocus 
@@ -137,7 +165,9 @@ const directive = {
   restrict: 'E',
   scope: {
     value: '=',
-    onChanged: '&'
+    onChanged: '&',
+    title: '=',
+    emptyTitle: '='
   },
   template,
   controller,

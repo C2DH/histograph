@@ -56,6 +56,14 @@ const template = /* html */ `
                             onChanged="filterValueUpdated($index, value)">
       </hi-related-to-filter>
 
+      <!-- without -->
+      <hi-related-to-filter ng-if="element.type === 'without'"
+                            value="filters[$index]"
+                            onChanged="filterValueUpdated($index, value)"
+                            title="'excluding'"
+                            empty-title="'excluding no one'">
+      </hi-related-to-filter>
+
       <!-- from and to -->
       <div ng-if="element.type === 'from'"
            ng-show="filters[$index]"
@@ -77,16 +85,19 @@ const template = /* html */ `
 const ElementTypeToQueryParameter = {
   search: 'query',
   'related-to': 'with',
+  without: 'without',
   from: 'from',
   to: 'to'
 }
 
 const ElementTypeToParser = {
-  'related-to': v => (v ? v.split(',') : [])
+  'related-to': v => (v ? v.split(',') : []),
+  without: v => (v ? v.split(',') : [])
 }
 
 const ElementTypeToSerializer = {
-  'related-to': v => (v && v.length > 0 ? v.join(',') : undefined)
+  'related-to': v => (v && v.length > 0 ? v.join(',') : undefined),
+  without: v => (v && v.length > 0 ? v.join(',') : undefined)
 }
 
 function controller($scope, $location) {

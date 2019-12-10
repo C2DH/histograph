@@ -9,7 +9,8 @@ const styles = {
     flexDirection: 'row',
     overflow: 'hidden',
     height: '100%',
-    marginTop: theme.units(1)
+    marginTop: theme.units(1),
+    position: 'relative'
   },
   itemsPanel: {
     display: 'flex',
@@ -28,7 +29,8 @@ const styles = {
     top: 0,
     width: '100%',
     display: 'flex',
-    height: '100%'
+    height: '100%',
+    zIndex: 0,
   },
   loadMoreItemsSection: {
     display: 'flex',
@@ -40,7 +42,7 @@ const styles = {
   }
 }
 
-const MenuElements = [
+const ResourceMenuElements = [
   { type: 'search' },
   {
     type: 'grammar',
@@ -51,6 +53,21 @@ const MenuElements = [
     ]
   },
   { type: 'related-to' },
+  { type: 'without' },
+  { type: 'from' },
+  { type: 'to' },
+]
+
+const EntityMenuElements = [
+  { type: 'search' },
+  {
+    type: 'grammar',
+    prefix: 'in',
+    choices: [
+      { label: 'documents', value: 'resource' },
+      { label: 'entities', value: 'entity' }
+    ]
+  },
   { type: 'from' },
   { type: 'to' },
 ]
@@ -84,17 +101,20 @@ function getGraph(SearchVizFactory, type, language, params) {
   })).$promise.then(res => res.result.graph)
 }
 
-function controller($scope, $stateParams, $location, SearchFactory, SearchVizFactory) {
+function controller($scope, $stateParams, $location, $q, SearchFactory, SearchVizFactory) {
   withStyles($scope, styles)
+  $scope.isLoading = false
 
   const { type } = $stateParams
 
-  $scope.menuElements = MenuElements
+  $scope.menuElements = type === 'entity' ? EntityMenuElements : ResourceMenuElements
   $scope.filterValues = { grammar: type }
   $scope.items = []
 
   $scope.onFilterChanged = (filterType, value) => {
-    if (filterType === 'grammar') $location.path(`/newsearch/${value}`)
+    if (filterType === 'grammar') {
+      $location.path(`/newsearch/${value}`)
+    }
   }
 
   const updateItems = () => getItems(
@@ -105,15 +125,24 @@ function controller($scope, $stateParams, $location, SearchFactory, SearchVizFac
   })
 
   const updateItemsAndGraph = () => {
-    updateItems()
-    getGraph(SearchVizFactory, type, $scope.language, $location.search())
-      .then(graph => { $scope.graph = graph })
+    if ($scope.isLoading) return undefined
+    $scope.isLoading = true
+    $scope.items = []
+    delete $scope.totalItems
+    delete $scope.graph
+    return $q.all([
+      updateItems(),
+      getGraph(SearchVizFactory, type, $scope.language, $location.search())
+        .then(graph => { $scope.graph = graph })
+    ]).finally(() => { $scope.isLoading = false })
   }
 
-  $scope.$on('$locationChangeSuccess', updateItemsAndGraph)
-  updateItemsAndGraph()
+  $scope.$watch(() => $location.search(), updateItemsAndGraph)
 
-  $scope.loadMoreItems = () => updateItems()
+  $scope.loadMoreItems = () => {
+    $scope.isLoading = true
+    updateItems().finally(() => { $scope.isLoading = false })
+  }
 }
 
 angular.module('histograph')

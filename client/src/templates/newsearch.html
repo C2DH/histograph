@@ -6,6 +6,7 @@
   </hi-filters-menu>
   
   <div class="{{classes.container}}">
+    <div hi-veil ng-show="isLoading"></div>
     <div ng-if="filterValues.grammar === 'resource'" class="{{classes.itemsPanel}}">
       <hi-resource-item ng-repeat="item in items"
                         resource="item"
