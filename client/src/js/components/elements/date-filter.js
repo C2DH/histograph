@@ -89,8 +89,8 @@ const directive = {
       <button class="{{classes.removeButton}}" ng-click='removeItem()'>
         <i class="fa fa-times-circle"></i>
       </button>
-    </span>
-  </span>
+    </div>
+  </div>
   `,
   controller: 'HiDateFilterCtrl',
   scope: {

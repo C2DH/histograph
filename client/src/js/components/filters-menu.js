@@ -36,11 +36,11 @@ const template = /* html */ `
   <div class="tk-proxima-nova {{classes.container}}">
     <div ng-repeat="element in elements" class="{{classes.element}}">
       <!-- search -->
-      <div ng-if="element.type === 'search'"
-           class="{{classes.searchElement}}">
-        <p>search</p>
-        <b>{{filters[$index]}}</b>
-      </div>
+      <hi-search-input ng-if="element.type === 'search'"
+                       class="{{classes.searchElement}}"
+                       value="filters[$index]"
+                       on-changed="filterValueUpdated($index, value)">
+      </hi-search-input>
 
       <!-- grammar -->
       <hi-grammar-filter ng-if="element.type === 'grammar'"
