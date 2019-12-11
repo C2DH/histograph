@@ -8,6 +8,9 @@
   <div class="{{classes.container}}">
     <div hi-veil ng-show="isLoading"></div>
     <div ng-if="filterValues.grammar === 'resource'" class="{{classes.itemsPanel}}">
+      <div ng-if="totalItems === 0" class="{{classes.nothingFoundPanel}}">
+        <span>Nothing found</span>
+    </div>
       <hi-resource-item ng-repeat="item in items"
                         resource="item"
                         index="$index"
@@ -23,6 +26,9 @@
       </div>
     </div>
     <div ng-if="filterValues.grammar === 'entity'" class="{{classes.itemsPanel}}">
+      <div ng-if="totalItems === 0" class="{{classes.nothingFoundPanel}}">
+        <span>Nothing found</span>
+      </div>
       <ul class="list-group">
         <li ng-repeat="item in items" class="list-group-item">
           <hi-entity-item entity="item"

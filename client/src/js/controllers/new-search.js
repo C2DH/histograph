@@ -39,6 +39,17 @@ const styles = {
       width: '100%'
     },
     marginBottom: theme.units(2)
+  },
+  nothingFoundPanel: {
+    display: 'flex',
+    alignSelf: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    '& span': {
+      fontWeight: 400,
+      fontSize: '16px'
+    }
   }
 }
 
