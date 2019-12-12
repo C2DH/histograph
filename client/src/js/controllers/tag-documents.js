@@ -20,7 +20,9 @@ const styles = {
   },
   inputsWrapper: {
     display: 'flex',
+    flexBasis: '35%',
     flexDirection: 'column',
+    margin: [[0, theme.units(2)]]
   },
   inputsContainer: {
     display: 'flex',
@@ -66,12 +68,15 @@ const styles = {
   mergeTargetControls: {
     display: 'flex',
     flexDirection: 'row',
+    flexBasis: '30%',
     alignSelf: 'start',
+    margin: [[0, theme.units(2)]],
     lineHeight: '33px',
     '& p': {
       margin: 0,
       padding: 0,
       marginRight: theme.units(1),
+      lineHeight: theme.units(1.5)
     },
     '& a': {
       color: 'inherit',

@@ -46,15 +46,25 @@ const styles = {
   }
 }
 
+const MentionScheme = {
+  0: 'not mentioned anywhere',
+  1: 'mentioned in {} document',
+  other: 'mentioned in {} documents'
+}
+
 const entityItemTemplate = /* html */ `
 <div class="{{classes.entity}}">
   <div class="{{classes.entityControls}}">
-    <ng-transclude></ng-transclude>
+    <ng-transclude class="{{classes.entity}}"></ng-transclude>
   </div>
   <div class="{{classes.entityDetails}}">
     <p class="{{classes.entityText}}">
       <a href="/e/{{entity.uuid}}">{{entity.name}}</a>
-      <span ng-if="isNumber(entity.mentions)"class="mentions">{{entity.mentions}} mentions</span>
+      <ng-pluralize ng-if="isNumber(entity.mentions)"
+                    class="mentions"
+                    count="entity.mentions"
+                    when="mentionScheme">
+      </ng-pluralize>
     </p>
     <span class="badge">{{entity.type}}</span>
   </div>
@@ -68,6 +78,7 @@ const directive = {
   link($scope) {
     withStyles($scope, styles)
     $scope.isNumber = isNumber
+    $scope.mentionScheme = MentionScheme
   },
   scope: {
     entity: '=',

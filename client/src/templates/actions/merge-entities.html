@@ -34,26 +34,18 @@
   <div class="{{classes.entitiesContainer}}">
     <ul class="list-group">
       <li ng-repeat="entity in entities" class="list-group-item">
-        <div class="{{classes.entity}}">
-          <div class="{{classes.entityControls}}">
-            <input type="checkbox"
-                   ng-checked="isSourceEntity(entity)"
-                   ng-disabled="entity === targetEntity"
-                   ng-click="toggleSourceEntity(entity)"/>
-            <button class="btn btn-default"
-                    ng-click="setTarget(entity)"
-                    ng-disabled="isSourceEntity(entity) || entity === targetEntity">
-              {{ entity === targetEntity ? 'target' : 'set as target' }}
-            </button>
-          </div>
-          <div class="{{classes.entityDetails}}">
-            <p class="{{classes.entityText}}">
-              <a href="/e/{{entity.uuid}}">{{entity.name}}</a>
-              <span class="mentions">{{entity.mentions}} mentions</span>
-            </p>
-            <span class="badge">{{entity.type}}</span>
-          </div>
-        </div>
+        <hi-entity-item entity="entity"
+                        on-pin="queue">
+          <input type="checkbox"
+                 ng-checked="isSourceEntity(entity)"
+                 ng-disabled="entity === targetEntity"
+                 ng-click="toggleSourceEntity(entity)"/>
+          <button class="btn btn-default"
+                  ng-click="setTarget(entity)"
+                  ng-disabled="isSourceEntity(entity) || entity === targetEntity">
+            {{ entity === targetEntity ? 'target' : 'set as target' }}
+          </button>
+        </hi-entity-item>
       </li>
     </ul>
 
