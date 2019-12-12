@@ -171,7 +171,7 @@ const styles = {
   }
 }
 
-function controller($scope, $location, SuggestFactory, MatchingEntitiesService,
+function controller($scope, $location, SuggestFactory, SuggestEntitiesService,
   ActionsService, $log) {
   withStyles($scope, styles)
 
@@ -195,7 +195,7 @@ function controller($scope, $location, SuggestFactory, MatchingEntitiesService,
     if (!query) return
 
     $scope.isLoading = true
-    MatchingEntitiesService.find({ query }).$promise
+    SuggestEntitiesService.findAll({ query }).$promise
       .then(results => {
         $scope.entities = results
       })
@@ -211,7 +211,7 @@ function controller($scope, $location, SuggestFactory, MatchingEntitiesService,
     const skip = $scope.entities.length
 
     $scope.isLoading = true
-    MatchingEntitiesService.find({ query, skip }).$promise
+    SuggestEntitiesService.findAll({ query, skip }).$promise
       .then(results => {
         $scope.entities = $scope.entities.concat(results)
       })

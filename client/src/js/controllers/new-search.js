@@ -89,18 +89,26 @@ const parseResourceItems = response => ({
 })
 
 const parseEntityItems = response => ({
-  items: response.result.items.map(i => Object.assign(i.props, { type: i.type, mentions: null })),
-  total: response.info.total_items
+  items: response.items
+    .map(({ entity, mentions, type }) => Object.assign(entity, { mentions, type })),
+  total: response.info.total
 })
 
-function getItems(SearchFactory, type, language, params, offset = 0) {
-  const parse = type === 'entity' ? parseEntityItems : parseResourceItems
+function getItems(SearchFactory, SuggestEntitiesService, type, language, params, offset = 0) {
+  if (type === 'entity') {
+    return SuggestEntitiesService.findMentioned(Object.assign({}, params, {
+      limit: 10,
+      skip: offset,
+      language
+    })).$promise.then(parseEntityItems)
+  }
+
   return SearchFactory.get(Object.assign({}, params, {
     model: type,
     limit: 10,
     offset,
     language
-  })).$promise.then(parse)
+  })).$promise.then(parseResourceItems)
 }
 
 function getGraph(SearchVizFactory, type, language, params) {
@@ -112,7 +120,8 @@ function getGraph(SearchVizFactory, type, language, params) {
   })).$promise.then(res => res.result.graph)
 }
 
-function controller($scope, $stateParams, $location, $q, SearchFactory, SearchVizFactory) {
+function controller($scope, $stateParams, $location, $q, SearchFactory,
+  SuggestEntitiesService, SearchVizFactory) {
   withStyles($scope, styles)
   $scope.isLoading = false
 
@@ -129,7 +138,8 @@ function controller($scope, $stateParams, $location, $q, SearchFactory, SearchVi
   }
 
   const updateItems = () => getItems(
-    SearchFactory, type, $scope.language, $location.search(), $scope.items.length
+    SearchFactory, SuggestEntitiesService, type,
+    $scope.language, $location.search(), $scope.items.length
   ).then(({ items, total }) => {
     $scope.items = $scope.items.concat(items)
     $scope.totalItems = total
