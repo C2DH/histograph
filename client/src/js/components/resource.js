@@ -90,8 +90,9 @@ const directive = {
     pinResource: '&onPin',
     index: '='
   },
-  controller
+  controller: 'HiResourceItemCtrl'
 }
 
 angular.module('histograph')
   .directive('hiResourceItem', () => directive)
+  .controller('HiResourceItemCtrl', controller)
