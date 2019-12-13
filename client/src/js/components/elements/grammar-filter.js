@@ -68,7 +68,7 @@ const directive = {
     onChanged: '&'
   },
   template,
-  controller,
+  controller: 'HiGrammarFilterCtrl',
   link($scope) {
     withStyles($scope, styles)
   }
@@ -76,3 +76,4 @@ const directive = {
 
 angular.module('histograph')
   .directive('hiGrammarFilter', () => directive)
+  .controller('HiGrammarFilterCtrl', controller)

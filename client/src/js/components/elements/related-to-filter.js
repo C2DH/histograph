@@ -170,7 +170,7 @@ const directive = {
     emptyTitle: '='
   },
   template,
-  controller,
+  controller: 'HiRelatedToFilterCtrl',
   link($scope) {
     withStyles($scope, styles)
   }
@@ -178,3 +178,4 @@ const directive = {
 
 angular.module('histograph')
   .directive('hiRelatedToFilter', () => directive)
+  .controller('HiRelatedToFilterCtrl', controller)

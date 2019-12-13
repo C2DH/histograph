@@ -156,7 +156,7 @@ const directive = {
     onElementChanged: '&'
   },
   template,
-  controller,
+  controller: 'HiFiltersMenuCtrl',
   link($scope) {
     withStyles($scope, style)
   }
@@ -164,3 +164,4 @@ const directive = {
 
 angular.module('histograph')
   .directive('hiFiltersMenu', () => directive)
+  .controller('HiFiltersMenuCtrl', controller)

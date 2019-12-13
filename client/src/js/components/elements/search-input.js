@@ -56,7 +56,7 @@ const template = /* html */ `
 const directive = {
   restrict: 'E',
   template,
-  controller,
+  controller: 'HiSearchInputCtrl',
   link($scope) { withStyles($scope, styles) },
   scope: {
     value: '=',
@@ -66,3 +66,4 @@ const directive = {
 
 angular.module('histograph')
   .directive('hiSearchInput', () => directive)
+  .controller('HiSearchInputCtrl', controller)
