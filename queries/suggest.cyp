@@ -309,11 +309,17 @@ WITH res
 {AND?res:end_time__lt}
 {AND?res:type__in}
 WITH DISTINCT res
+{if:with_or_without}
+  MATCH (ent:entity)-[:appears_in]->(res)
+{/if}
 {if:with}
-  MATCH (ent:entity)
-    WHERE ent.uuid IN {with}
-  WITH ent
-  MATCH (ent) -[:appears_in]->(res)
+  WHERE ent.uuid IN {with}
+{/if}
+{if:without}
+  WITH ANY (e in collect(ent) where e.uuid in {without}) as excluded, res
+  WHERE NOT excluded
+{/if}
+{if:with_or_without}
   WITH DISTINCT res
 {/if}
 RETURN {
@@ -331,9 +337,17 @@ WITH res
 {AND?res:end_time__lt}
 {AND?res:type__in}
 WITH DISTINCT res
-{if:with}
+{if:with_or_without}
   MATCH (ent:entity)-[:appears_in]->(res)
+{/if}
+{if:with}
   WHERE ent.uuid IN {with}
+{/if}
+{if:without}
+  WITH ANY (e in collect(ent) where e.uuid in {without}) as excluded, res
+  WHERE NOT excluded
+{/if}
+{if:with_or_without}
   WITH DISTINCT res
 {/if}
 SKIP {offset}
@@ -440,7 +454,9 @@ LIMIT {limit}
 // e.g. START m=node:node_auto_index('full_search:*goerens*')
 CALL db.index.fulltext.queryNodes('name', {query})
 YIELD node as m
-WHERE last(labels(m)) = {entity}
+{if:entity}
+WHERE {entity} in labels(m)
+{/if}
 MATCH (m)-[r:appears_in]->(ent)
 WITH ent, collect(DISTINCT m) as ms
   WHERE length(ms)>1

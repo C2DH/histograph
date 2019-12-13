@@ -471,6 +471,10 @@ module.exports =  function() {
       
       var q = parser.toLucene(req.query.query); //, 'full_search');
       form.params.query = q;
+
+      if (form.params.with || form.params.without) {
+        form.params.with_or_without = true
+      }
       
       models.getMany({
         queries: {

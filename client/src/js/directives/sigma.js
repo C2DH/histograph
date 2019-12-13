@@ -496,7 +496,7 @@ angular.module('histograph')
           const label = `${[
             si.graph.nodes(`${e.data.edge.source}`).label,
             si.graph.nodes(`${e.data.edge.target}`).label
-          ].join(' - ')} / ${e.data.edge.weight} in common`;
+          ].join(' - ')} / ${typeof e.data.edge.weight === 'number' ? e.data.edge.weight : 'none'} in common`;
 
           tooltip.edge.edge = e.data.edge.id;
           if (!tooltip.edge.isVisible) _css.opacity = 1.0;
