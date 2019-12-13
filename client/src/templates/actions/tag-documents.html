@@ -57,22 +57,14 @@
     <div class="{{classes.entitiesContainer}}">
       <ul class="list-group">
         <li ng-repeat="entity in entities" class="list-group-item">
-          <div class="{{classes.entity}}">
-            <div class="{{classes.entityControls}}">
-              <button class="btn btn-default"
-                      ng-click="setTargetEntity(entity)"
-                      ng-disabled="entity === targetEntity">
-                {{ entity === targetEntity ? 'selected' : 'use this entity' }}
-              </button>
-            </div>
-            <div class="{{classes.entityDetails}}">
-              <p class="{{classes.entityText}}">
-                <a href="/e/{{entity.uuid}}">{{entity.name}}</a>
-                <span class="mentions">{{entity.mentions}} mentions</span>
-              </p>
-              <span class="badge">{{entity.type}}</span>
-            </div>
-          </div>
+          <hi-entity-item entity="entity"
+                          on-pin="queue">
+            <button class="btn btn-default"
+                    ng-click="setTargetEntity(entity)"
+                    ng-disabled="entity === targetEntity">
+              {{ entity === targetEntity ? 'selected' : 'use this entity' }}
+            </button>    
+          </hi-entity-item>
         </li>
       </ul>
 

@@ -1128,8 +1128,19 @@ module.exports = angular
       // })
 
       .state('search', {
+        url: '/search/:type',
+        params: {
+          type: {
+            value: 'resource',
+            squash: true
+          }
+        },
+        templateUrl: 'templates/newsearch.html',
+        controller: 'NewSearchCtrl',
+      })
+      .state('oldsearch', {
         abstract: true,
-        url: '/search/:query',
+        url: '/oldsearch/:query',
         templateUrl: 'templates/search.html',
         controller: 'SearchCtrl',
         grammar: {
@@ -1156,7 +1167,7 @@ module.exports = angular
           }
         }
       })
-      .state('search.resources', {
+      .state('oldsearch.resources', {
         url: '',
         templateUrl: 'templates/partials/resources.html',
         controller: 'RelatedItemsCtrl',
@@ -1214,7 +1225,7 @@ module.exports = angular
           }
         }
       })
-      .state('search.persons', {
+      .state('oldsearch.persons', {
         url: '/per',
         templateUrl: 'templates/partials/entities.html',
         controller: 'EntitiesCtrl',
@@ -1267,17 +1278,17 @@ module.exports = angular
           },
         }
       })
-      .state('search.locations', {
+      .state('oldsearch.locations', {
         url: '/loc',
         templateUrl: 'templates/partials/entities.html',
         controller: 'SearchEntitiesCtrl',
       })
-      .state('search.organization', {
+      .state('oldsearch.organization', {
         url: '/org',
         templateUrl: 'templates/partials/entities.html',
         controller: 'SearchEntitiesCtrl',
       })
-      .state('search.social_group', {
+      .state('oldsearch.social_group', {
         url: '/soc',
         templateUrl: 'templates/partials/entities.html',
         controller: 'SearchEntitiesCtrl',

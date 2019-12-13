@@ -8,6 +8,11 @@ import moment from 'moment'
 import { withStyles, theme } from '../styles'
 
 const styles = {
+  pageContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%'
+  },
   explorerGraph: {
     display: 'flex',
     flex: 1,
@@ -43,7 +48,9 @@ const styles = {
     flexDirection: 'row',
     alignContent: 'stretch',
     alignItems: 'stretch',
-    width: '100% !important'
+    width: '100% !important',
+    overflowY: 'auto',
+    flex: 1
   },
   containerChild: {
     flex: 1,
@@ -59,8 +66,11 @@ const styles = {
     flexBasis: '25%'
   },
   mainPanel: {
-    flex: '1 1 100%',
-    flexGrow: 3,
+    display: 'flex',
+    alignContent: 'stretch',
+    flexDirection: 'column',
+    flex: '1 1 75%',
+    // flexGrow: 1,
     // overflowY: 'scroll',
     margin: '1em 1em 0 1em',
   },

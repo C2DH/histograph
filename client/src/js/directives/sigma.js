@@ -74,15 +74,10 @@ angular.module('histograph')
           ---
           thanks to @jacomyal (it need to be added before creating any new instance of sigmajs)
         */
-        window.sigma.classes.graph.addMethod('neighbors', function (nodeId) {
+        function neighborsFn(nodeId) {
           let k;
-
-
           const neighbors = {};
-
-
           let index = {};
-
           if (typeof nodeId === 'object') {
             // eslint-disable-next-line guard-for-in, no-restricted-syntax
             for (const i in nodeId) {
@@ -91,12 +86,14 @@ angular.module('histograph')
           } else {
             index = this.allNeighborsIndex[nodeId] || {};
           }
-
           // eslint-disable-next-line guard-for-in, no-restricted-syntax
           for (k in index) neighbors[k] = this.nodesIndex[k];
           neighbors[nodeId] = this.nodesIndex[nodeId];
           return neighbors;
-        });
+        }
+        if (!window.sigma.classes.graph.hasMethod('neighbors')) {
+          window.sigma.classes.graph.addMethod('neighbors', neighborsFn)
+        }
 
         // eslint-disable-next-line new-cap
         const si = new window.sigma({
@@ -135,7 +132,7 @@ angular.module('histograph')
           Calculate the differences between pg and g: nodes to delete, nodes to add.
           usage
         */
-        window.sigma.classes.graph.addMethod('build', function (g) {
+        function buildFn(g) {
           const self = this;
 
 
@@ -207,8 +204,10 @@ angular.module('histograph')
 
           setTimeout(addNextNode, 20);
           return this;
-        });
-
+        }
+        if (!window.sigma.classes.graph.hasMethod('build')) {
+          window.sigma.classes.graph.addMethod('build', buildFn)
+        }
 
         // Creating sigma instance
         let timeout;
@@ -253,7 +252,7 @@ angular.module('histograph')
         si.addRenderer({
           type: 'canvas',
           camera: 'main',
-          container: element.find('#playground')[0]
+          container: element[0].querySelector('.playground')
         });
 
         /*
@@ -497,7 +496,7 @@ angular.module('histograph')
           const label = `${[
             si.graph.nodes(`${e.data.edge.source}`).label,
             si.graph.nodes(`${e.data.edge.target}`).label
-          ].join(' - ')} / ${e.data.edge.weight} in common`;
+          ].join(' - ')} / ${typeof e.data.edge.weight === 'number' ? e.data.edge.weight : 'none'} in common`;
 
           tooltip.edge.edge = e.data.edge.id;
           if (!tooltip.edge.isVisible) _css.opacity = 1.0;

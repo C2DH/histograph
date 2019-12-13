@@ -37,7 +37,7 @@
         <li>
           <a href="/u/{{user.id}}">my bookmarks</a>
         </li>
-        <li id="tip-notification" ng-controller="PulseController">
+        <!-- <li id="tip-notification" ng-controller="PulseController">
           <span uib-dropdown="uib-dropdown" on-toggle="toggle(open)">
             <a class="with-number" href="/" uib-dropdown-toggle="uib-dropdown-toggle">
               <i class="fa fa-flash"></i>
@@ -54,15 +54,12 @@
               </li>
             </ul>
           </span>
-        </li>
+        </li> -->
         <li
           class="{{currentState.name === 'search.resources' || currentState.name === 'search.persons' ? 'active' : ''}}">
           <div>
             <form id="search-field" ng-submit="setQuery(query)">
-              <input class="form-control" type="text" name="test" ng-model="__query"
-                typeahead-on-select="setQuery($item, $model, $label)" typeahead-editable="false" placeholder="search"
-                typeahead="item for items in suggest($viewValue)" typeahead-wait-ms="100"
-                typeahead-template-url="templates/partials/helpers/suggest.html" />
+              <input class="form-control" type="text" name="test" ng-model="query" autocomplete="off"/>
             </form>
           </div>
         </li>

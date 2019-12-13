@@ -230,6 +230,7 @@ header > .row {
 .view {
   top: 70px;
   background: #fff;
+  height: 0px;
 }
 
 a.with-number{
@@ -270,7 +271,7 @@ header ul.menu li a:hover{
   padding: 0;
 }
 
-#milkyway {
+.milkyway {
   position: fixed;
   top: 110px;
   left: 0;
@@ -278,15 +279,15 @@ header ul.menu li a:hover{
   bottom: 50px;
 }
 
-#milkyway.explore.persons {
+.milkyway.explore.persons {
   left:0;
 }
 
-#milkyway.graph {
+.milkyway.graph {
   left:0;
 }
 
-#milkyway.locationsgraph {
+.milkyway.locationsgraph {
   left:0;
 }
 
@@ -347,11 +348,6 @@ header ul.dropdown-menu li .notification a {
 }
 .user #see-also,.neighbors #see-also{
   left:10px;
-}
-
-
-#milkyway.search  {
-  left: 540px
 }
 
 
@@ -448,7 +444,7 @@ header ul.dropdown-menu li .notification a {
 /*
 
 */
-#sigma-snippets .btn-line-white .fa{
+.sigma-snippets .btn-line-white .fa{
       font-size: 13px;
     line-height: 15px;
 
@@ -456,12 +452,12 @@ header ul.dropdown-menu li .notification a {
 
 
 
-#sigma-snippets .content .links{
+.sigma-snippets .content .links{
   margin-left:20px;
   text-align: left
 }
 
-#sigma-snippets .content .links a:hover{
+.sigma-snippets .content .links a:hover{
   color: #fff;
 }
 

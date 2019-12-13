@@ -770,7 +770,8 @@ header ul li .notification a {
   padding: 0;
 }
 
-.header-menu ul.dropdown-menu > li a{
+.header-menu ul.dropdown-menu > li a,
+.typeahead-menu .dropdown-menu >li a {
   padding: 10px 15px;
 }
 
@@ -841,15 +842,16 @@ header ul li .notification a {
   
 */
 #perspective{
+  display: flex;
   /* position: absolute; */
   width: 470px;
-  top:  40px;
-  left: 10px;
-  bottom: 0px;
+  /* top:  40px; */
+  /* left: 10px; */
+  /* bottom: 0px; */
   /*overflow: hidden;*/
-  overflow: auto;
-  overflow-y: auto;
-  overflow-x: hidden;
+  /* overflow: auto; */
+  /* overflow-y: auto; */
+  /* overflow-x: hidden; */
   /*background: white;*/
   border-right: 1px solid #E8E8E7;
   -webkit-transition: transform .3s cubic-bezier(0.65, 0.05, 0.36, 1), width .3s cubic-bezier(0.65, 0.05, 0.36, 1); /* Changed here */ 
@@ -873,6 +875,7 @@ header ul li .notification a {
 
 .resource #perspective .item, .entity #perspective .item {
   max-width: 100%;
+  overflow-y: scroll;
 }
 
 #perspective ul.facets{
@@ -914,7 +917,8 @@ header ul li .notification a {
   max-height: 260px;
 }
 
-#perspective-menu .dropdown-menu >li a{
+#perspective-menu .dropdown-menu >li a,
+.typeahead-menu .dropdown-menu >li a {
   font-size:12px;
   line-height: 18px
 }
@@ -1530,7 +1534,7 @@ header ul li .notification a {
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
 */
-#milkyway{
+.milkyway{
   position: fixed;
   top: 120px;
   left: 840px;
@@ -1544,69 +1548,69 @@ header ul li .notification a {
           transition: transform .3s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
 
-#milkyway.viewpoint-network {
+.milkyway.viewpoint-network {
   left: 30%;
 }
 
-#milkyway.active{
+.milkyway.active{
   /*bottom: 150px;*/
   transform: translateX(200px)
 }
 
-#milkyway.AllShortestPathsCtrl, #milkyway.NeighborsCtrl, #milkyway.SearchCtrl{
+.milkyway.AllShortestPathsCtrl, .milkyway.NeighborsCtrl, .milkyway.SearchCtrl{
   left: 50%;
 }
 
-#milkyway.explore.resources{
+.milkyway.explore.resources{
   display: none;left: 50%;
 }
 
-#milkyway.explore.persons, #milkyway.explore.projection, #milkyway.explore.locations{
+.milkyway.explore.persons, .milkyway.explore.projection, .milkyway.explore.locations{
   left: 0px;
   display: block
 }
 
-#milkyway.graph{
+.milkyway.graph{
   display: block;
   left: 20px;
 }
 
-#milkyway.locationsgraph{
+.milkyway.locationsgraph{
   display: block;
   left: 20px;
 }
 
 
-#milkyway.search, #milkyway.user {
+.milkyway.user {
   left: 560px;
   display: block
 }
 
-#milkyway.neighbors{
+.milkyway.neighbors{
   left: 360px;
   display: block
 }
 
-#milkyway.user{
+.milkyway.user{
   left: 360px;
 }
 
-#milkyway.index{
+.milkyway.index{
   display: none;
 }
 
-#milkyway.InquiriesCtrl, #milkyway.InquiryCtrl, #milkyway.InquiryCreateCtrl{
+.milkyway.InquiriesCtrl, .milkyway.InquiryCtrl, .milkyway.InquiryCreateCtrl{
   display: none;
 }
 
 
 
-#milkyway #playground{
+.milkyway .playground{
   width: 100%;
   height: 100%;
 }
 
-#milkyway #playground-lock{
+.milkyway .playground-lock{
   position: absolute;
   top: 0;
   height: 100%;
@@ -1621,16 +1625,16 @@ header ul li .notification a {
           transition: opacity .3s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
 
-#milkyway #playground-lock.active{
+.milkyway .playground-lock.active{
   pointer-events: auto;
   opacity: .7;
 }
 
-#milkyway #playground-lock.disabled{
+.milkyway .playground-lock.disabled{
   opacity: 0;
 }
 
-#milkyway #playground-lock > div{
+.milkyway .playground-lock > div{
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1642,7 +1646,7 @@ header ul li .notification a {
   text-align: middle
 }
 
-#milkyway #commands{
+.milkyway .commands{
   position: absolute;
   right: 10px;
   bottom: 10px;
@@ -1652,11 +1656,11 @@ header ul li .notification a {
   z-index: 2;
 }
 
-#milkyway #commands.lookup{
+.milkyway .commands.lookup{
 height: 150px;
 }
 
-#milkyway #commands .action{
+.milkyway .commands .action{
   width: 30px;
   height: 30px;
   text-align: center;
@@ -1664,7 +1668,7 @@ height: 150px;
     cursor: pointer
 }
 
-#milkyway #tips {
+.milkyway #tips {
   position: absolute;
   bottom: 20px;
   left: 50%;
@@ -1675,7 +1679,7 @@ height: 150px;
   z-index: 3;
 }
 
-#milkyway #tips>div{
+.milkyway #tips>div{
   background-color: rgba(218, 218, 218, 0.8);
   padding: 10px 17px;
   border-radius: 2px;
@@ -1684,14 +1688,14 @@ height: 150px;
   display: inline-block;
 }
 
-#milkyway #sigma-actions{
+.milkyway .sigma-actions{
   position: absolute;
   top:20px;
   right:20px;
   z-index: 2;
 }
 
-#milkyway .gasp{
+.milkyway .gasp{
   opacity: 0;
   position: absolute;
   top: 0;
@@ -1701,7 +1705,7 @@ height: 150px;
   z-index: 11;
 }
 
-#milkyway .gasp.enabled{
+.milkyway .gasp.enabled{
   opacity: 1;
   position: absolute;
   top: 0;
@@ -1711,7 +1715,7 @@ height: 150px;
   z-index: 11;
 }
 
-#milkyway .gasp .inner{
+.milkyway .gasp .inner{
   background-color: #585858;
     color: white;
     display: inline-block;
@@ -1722,37 +1726,37 @@ height: 150px;
     line-height: 40px;
 }
 
-#milkyway .gasp .text{
+.milkyway .gasp .text{
   display: inline;
   float:left;
   position: relative;
 }
 
-#milkyway .gasp .text .weight{
+.milkyway .gasp .text .weight{
       position: absolute;
     top: -10px;
     left: 22px;
     text-align: center;
 }
 
-#milkyway .gasp .text a{
+.milkyway .gasp .text a{
   color: #EBEAEA;
   text-decoration: none;
   border: 0px transparent
 }
 
-#milkyway .gasp .text a:hover{
+.milkyway .gasp .text a:hover{
   color: #ffffff;
   text-decoration: none;
   border: 0px transparent
 }
 
-#milkyway .gasp .action-group{
+.milkyway .gasp .action-group{
   display: inline-block;
   padding-left: 10px;
 }
 
-#milkyway .gasp .action{
+.milkyway .gasp .action{
   display: inline-block;
   line-height: 40px;
   width: 30px;
@@ -1765,11 +1769,11 @@ height: 150px;
           transition: color .3s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
 
-#milkyway .gasp .action.disabled {
+.milkyway .gasp .action.disabled {
   opacity: .1; 
 }
 
-#sigma-messenger {
+.sigma-messenger {
   top: 50%;
   position: absolute;
   left: 50%;
@@ -1779,7 +1783,7 @@ height: 150px;
   text-align: center;
 }
 
-#sigma-messenger > .inner{
+.sigma-messenger > .inner{
   background: #151515;
   color: #EBEAEA;
   display: inline-block;
@@ -1795,7 +1799,7 @@ height: 150px;
   
   Cfr snippets directive
 */
-#sigma-snippets {
+.sigma-snippets {
   opacity: 1;
   position: absolute;
   top: 0px;
@@ -1811,7 +1815,7 @@ height: 150px;
   color: #A9A2A2;
 }
 
-#sigma-snippets > .snip {
+.sigma-snippets > .snip {
   background: #949494;
   width: 50px;
   height: 50px;
@@ -1834,12 +1838,12 @@ height: 150px;
           transition: transform .3s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
 
-#sigma-snippets > .snip.person {
+.sigma-snippets > .snip.person {
   border: 3px solid #4dc3ba; 
 }
 
 
-#sigma-snippets > .inner {
+.sigma-snippets > .inner {
  
   width: 100%;
   height: auto;
@@ -1856,27 +1860,27 @@ height: 150px;
           transition: transform .3s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
 
-#sigma-snippets > .inner.wait{
+.sigma-snippets > .inner.wait{
   -webkit-transition-delay: .3s; /* Safari */
     transition-delay: .3s;
 }
 
-#sigma-snippets > .inner.loading, #sigma-snippets > .inner.enabled {
+.sigma-snippets > .inner.loading, .sigma-snippets > .inner.enabled {
   transform: translateX(0px);
   -webkit-transition-delay: 0s; /* Safari */
     transition-delay: 0s;
 }
 
-#sigma-snippets > .snip.loading, #sigma-snippets > .snip.targeting, #sigma-snippets > .snip.enabled {
+.sigma-snippets > .snip.loading, .sigma-snippets > .snip.targeting, .sigma-snippets > .snip.enabled {
   transform: translateX(-150px);
 }
 
-#sigma-snippets > .snip.disabled {
+.sigma-snippets > .snip.disabled {
   -webkit-transition-delay: .3s; /* Safari */
     transition-delay: .3s;
 }
 
-#sigma-snippets .reporter{
+.sigma-snippets .reporter{
       padding: 0 10px;
 }
 
@@ -1901,12 +1905,12 @@ height: 150px;
   color: white;
 } 
 
-#sigma-snippets .edges{
+.sigma-snippets .edges{
   padding-top:5px;
 
 }
 
-#sigma-snippets .edges .related{
+.sigma-snippets .edges .related{
   margin: 0;
   width: auto;
   border:0px transparent;
@@ -1917,11 +1921,11 @@ height: 150px;
     margin: 5px 10px
 }
 
-#sigma-snippets .edges .related h4{
+.sigma-snippets .edges .related h4{
   margin-left: 15px;
 }
 
-#sigma-snippets .edges .related.entity h4{
+.sigma-snippets .edges .related.entity h4{
   margin-left: 60px;
   margin-top: 0;
   padding-top: 0;
@@ -2034,7 +2038,7 @@ margin-left: 50px;
   color: #A9A2A2;
 }
 
-#sigma-snippets h4{
+.sigma-snippets h4{
   text-align: left;
   margin: 0 20px;
   font-weight: bold;
@@ -2042,43 +2046,43 @@ margin-left: 50px;
   padding-top: 12px;
 }
 
-#sigma-snippets h4 p{
+.sigma-snippets h4 p{
   margin: 0;
   padding: 0;
 }
 
-#sigma-snippets ul.dropdown-menu li > div{
+.sigma-snippets ul.dropdown-menu li > div{
   position: relative;
 }
 
-#sigma-snippets ul.dropdown-menu h4{
+.sigma-snippets ul.dropdown-menu h4{
   color: #151515;
   margin: 0;
   padding: 0;
 }
-#sigma-snippets ul.dropdown-menu .with-thumbnail h4{
+.sigma-snippets ul.dropdown-menu .with-thumbnail h4{
   margin: 0 20px 0 55px;
 }
 
-#sigma-snippets ul.dropdown-menu .with-thumbnail a > p{
+.sigma-snippets ul.dropdown-menu .with-thumbnail a > p{
   margin: 0 20px 0 55px;
 }
 
 
 
-#sigma-snippets .detail{
+.sigma-snippets .detail{
   text-align: left;
   background: #383838;
 }
 
-#sigma-snippets .detail .abstract{
+.sigma-snippets .detail .abstract{
   height: 112px; /* 4 lines at 24px of line-height + 10 px margin + 10 px button*/
   overflow: hidden;
   position:relative;
 }
 
 
-#sigma-snippets .detail .abstract .ellipsis{
+.sigma-snippets .detail .abstract .ellipsis{
   position:absolute;
   bottom:0px;
   width: 100%;
@@ -2093,11 +2097,11 @@ margin-left: 50px;
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#383838', endColorstr='#383838', GradientType=0 );
 }
 
-#sigma-snippets .detail .abstract.expanded{
+.sigma-snippets .detail .abstract.expanded{
   height: auto
 }
 
-#sigma-snippets .detail .abstract .ellipsis > button{
+.sigma-snippets .detail .abstract .ellipsis > button{
   position: absolute;
   left: 50%;
   width: 100px;
@@ -2105,7 +2109,7 @@ margin-left: 50px;
   bottom: 10px;
 }
 
-#sigma-snippets .detail blockquote{
+.sigma-snippets .detail blockquote{
   margin: 15px;
   font-family: inherit;
   margin: 0;
@@ -2113,27 +2117,27 @@ margin-left: 50px;
   color: #D3CFCF;
 }
 
-#sigma-snippets .detail .meta{
+.sigma-snippets .detail .meta{
   margin: 0 15px;
   color: #D3CFCF;
 }
 
-#sigma-snippets .detail .tag.person, #sigma-snippets .detail blockquote a[gasp-type=person]{
+.sigma-snippets .detail .tag.person, .sigma-snippets .detail blockquote a[gasp-type=person]{
   background: transparent;
   color: white;
   border-bottom: 1px solid #4dc3ba;
 }
 
 
-#sigma-snippets .detail img{
+.sigma-snippets .detail img{
   width: 100%
 }
 
-#sigma-snippets .detail blockquote a {
+.sigma-snippets .detail blockquote a {
   color: white;
 }
 
-#sigma-snippets .detail .doi{
+.sigma-snippets .detail .doi{
       padding: 10px 15px;
     font-size: 10px;
     color: #A9A2A2;
@@ -2163,7 +2167,7 @@ margin-left: 50px;
   pointer-events: none;  
 }
 
-#milkyway .gasp a.action:hover, #milkyway .gasp a.action:focus{
+.milkyway .gasp a.action:hover, .milkyway .gasp a.action:focus{
   border-bottom: 0px solid transparent;
   /*background: #989898*/
   color: white;

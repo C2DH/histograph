@@ -147,12 +147,7 @@ angular.module('histograph')
 
     // set query and redirect to search controller
     $scope.setQuery = function (item) {
-      $scope.freeze = 'sigma';
-      $log.log('CoreCtrl > setQuery', arguments);
-      if (typeof item === 'string') location = `/search/${$scope.query}`;
-      else if (item.type == 'resource') $location.path(`r/${item.id}`);
-      else if (item.type == 'person') $location.path(`e/${item.id}`);
-      else $location.path(`search/${$scope.query}`);
+      return $location.path('/search').search({ query: item })
     }
 
     /*
@@ -1261,7 +1256,7 @@ angular.module('histograph')
       set order by
       according to the favourite orderby. Avoid default values.
     */
-    if (relatedItems.info.orderby != 'relevance') $scope.setSorting(relatedItems.info.orderby);
+    if (relatedItems.info.orderby !== 'relevance') $scope.setSorting(relatedItems.info.orderby);
 
     /*
       set facets

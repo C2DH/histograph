@@ -154,7 +154,12 @@ angular.module('histograph')
         qs.push(`${encodeURIComponent(i)}=${encodeURIComponent(candidates[i])}`);
       })
       // set query for search ctrl
-      if (filters.query) $scope.query = filters.query.join('');
+      if (filters.query) {
+        $scope.query = isArray(filters.query)
+          ? filters.query.join('')
+          : filters.query
+      }
+
       $log.debug('FiltersCtrl -> loadFilters()', filters);
       $scope.filters = filters;
       $scope.isFiltered = !_.isEmpty($scope.filters);
@@ -232,10 +237,10 @@ angular.module('histograph')
 
       if (state.grammar) $scope.grammar = state.grammar
 
-      filterGuard($scope, $location, 'keywords', 'connector.keywords')
-      filterGuard($scope, $location, 'with', 'connector.relatedTo')
-      filterGuard($scope, $location, 'tst', 'connector.topicScoreThreshold')
-      filterGuard($scope, $location, 'without', 'connector.excluding')
+      // filterGuard($scope, $location, 'keywords', 'connector.keywords')
+      // filterGuard($scope, $location, 'with', 'connector.relatedTo')
+      // filterGuard($scope, $location, 'tst', 'connector.topicScoreThreshold')
+      // filterGuard($scope, $location, 'without', 'connector.excluding')
     })
 
     const singleValueAsList = v => (isArray(v) ? v : [v])

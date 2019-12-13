@@ -82,6 +82,7 @@ prepare_json_resources() {
   docker run --name hg_resource_creator --rm -it \
     -v $work_dir_abs_path/$CHAPTERS_DIR:/chapters \
     -v $work_dir_abs_path:/jsons \
+    -e "GKG_API_KEY=$GKG_API_KEY" \
     theorm/histograph-resource-creator \
     python -m hg_resource_creator \
     --path /chapters \

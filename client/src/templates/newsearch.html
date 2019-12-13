@@ -1,0 +1,65 @@
+<div class="flex-wrapper">
+  <hi-filters-menu class="{{classes.menu}}"
+                   elements="menuElements"
+                   values="filterValues"
+                   on-element-changed="onFilterChanged(type, value)">
+  </hi-filters-menu>
+  
+  <div class="{{classes.container}}">
+    <div hi-veil ng-show="isLoading"></div>
+    <div ng-if="filterValues.grammar === 'resource'" class="{{classes.itemsPanel}}">
+      <div ng-if="totalItems === 0" class="{{classes.nothingFoundPanel}}">
+        <span>Nothing found</span>
+    </div>
+      <hi-resource-item ng-repeat="item in items"
+                        resource="item"
+                        index="$index"
+                        total-resources="totalItems"
+                        on-pin="queue">
+      </hi-resource-item>
+      <div class="{{classes.loadMoreItemsSection}}">
+        <button class="btn btn-default"
+                ng-show="items.length < totalItems"
+                ng-click="loadMoreItems()">
+          Load more
+        </button>  
+      </div>
+    </div>
+    <div ng-if="filterValues.grammar === 'entity'" class="{{classes.itemsPanel}}">
+      <div ng-if="totalItems === 0" class="{{classes.nothingFoundPanel}}">
+        <span>Nothing found</span>
+      </div>
+      <ul class="list-group">
+        <li ng-repeat="item in items" class="list-group-item">
+          <hi-entity-item entity="item"
+                          total-entities="totalItems"
+                          on-pin="queue">
+          </hi-entity-item>
+        </li>
+      </ul>
+      <div class="{{classes.loadMoreItemsSection}}">
+        <button class="btn btn-default"
+                ng-show="items.length < totalItems"
+                ng-click="loadMoreItems()">
+          Load more
+        </button>  
+      </div>
+    </div>
+    <div class="{{classes.graphPanel}}">
+      <div sigma
+           class="milkyway viewpoint-tv {{classes.graph}}"
+           isloading="isLoading"
+           params="params"
+           user="user"
+           graph="graph"
+           freeze="freeze"
+           tips="headers.graph"
+           togglemenu="toggleMenu(e, item, tag)"
+           controller="currentCtrl"
+           redirect="redirect(path)"
+           queue="addToQueue(items)"
+           filter="addFilter(key, value)">
+      </div>
+    </div>
+  </div>
+</div>

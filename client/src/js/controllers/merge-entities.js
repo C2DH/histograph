@@ -125,7 +125,7 @@ const styles = {
   }
 }
 
-function controller($scope, MatchingEntitiesService, ActionsService, $log, $location) {
+function controller($scope, SuggestEntitiesService, ActionsService, $log, $location) {
   withStyles($scope, styles)
 
   $scope.query = $location.search().q || ''
@@ -141,7 +141,7 @@ function controller($scope, MatchingEntitiesService, ActionsService, $log, $loca
     const { query } = $scope
 
     $scope.isLoading = true
-    MatchingEntitiesService.find({ query }).$promise
+    SuggestEntitiesService.findAll({ query }).$promise
       .then(results => {
         $scope.entities = []
         $scope.sourceEntities = []
@@ -162,7 +162,7 @@ function controller($scope, MatchingEntitiesService, ActionsService, $log, $loca
     const skip = $scope.entities.length
 
     $scope.isLoading = true
-    MatchingEntitiesService.find({ query, skip }).$promise
+    SuggestEntitiesService.findAll({ query, skip }).$promise
       .then(results => {
         $scope.entities = $scope.entities.concat(results)
       })
@@ -212,12 +212,13 @@ function controller($scope, MatchingEntitiesService, ActionsService, $log, $loca
 }
 
 function service($resource, HgSettings) {
-  const url = `${HgSettings.apiBaseUrl}/api/suggest/entities/matching`
+  const url = `${HgSettings.apiBaseUrl}/api/suggest/entities/:aspect`
   return $resource(url, null, {
-    find: { method: 'GET', isArray: true }
+    findAll: { method: 'GET', isArray: true },
+    findMentioned: { method: 'GET', isArray: false, params: { aspect: 'mentioned' } }
   })
 }
 
 angular.module('histograph')
   .controller('MergeEntitiesCtrl', controller)
-  .factory('MatchingEntitiesService', service)
+  .factory('SuggestEntitiesService', service)
