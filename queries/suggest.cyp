@@ -419,9 +419,17 @@ LIMIT {limit}
 // e.g. START m=node:node_auto_index('full_search:*goerens*')
 CALL db.index.fulltext.queryNodes({fullTextIndex}, {query})
 YIELD node as res
+{if:with_or_without}
+  MATCH (ent:entity)-[:appears_in]->(res)
+{/if}
 {if:with}
-  MATCH(res)<-[:appears_in]-(ent:entity)
   WHERE ent.uuid IN {with}
+{/if}
+{if:without}
+  WITH ANY (e in collect(ent) where e.uuid in {without}) as excluded, res
+  WHERE NOT excluded
+{/if}
+{if:with_or_without}
   WITH DISTINCT res
 {/if}
 {?res:start_time__gt}

@@ -507,6 +507,10 @@ module.exports =  function() {
         return helpers.formError(form.errors, res);
       
       form.params.query = parser.toLucene(form.params.query); //, 'full_search');
+
+      if (form.params.with || form.params.without) {
+        form.params.with_or_without = true
+      }
       
       query = parser.agentBrown(queries.get_matching_resources_graph, form.params);
       // build a nodes edges graph
