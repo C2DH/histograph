@@ -147,12 +147,7 @@ angular.module('histograph')
 
     // set query and redirect to search controller
     $scope.setQuery = function (item) {
-      $scope.freeze = 'sigma';
-      $log.log('CoreCtrl > setQuery', arguments);
-      if (typeof item === 'string') location = `/search/${$scope.query}`;
-      else if (item.type == 'resource') $location.path(`r/${item.id}`);
-      else if (item.type == 'person') $location.path(`e/${item.id}`);
-      else $location.path(`search/${$scope.query}`);
+      return $location.path('/search').search({ query: item })
     }
 
     /*

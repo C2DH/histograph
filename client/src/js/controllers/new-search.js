@@ -133,7 +133,7 @@ function controller($scope, $stateParams, $location, $q, SearchFactory,
 
   $scope.onFilterChanged = (filterType, value) => {
     if (filterType === 'grammar') {
-      $location.path(`/newsearch/${value}`)
+      $location.path(`/search/${value}`)
     }
   }
 

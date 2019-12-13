@@ -62,6 +62,7 @@ const styles = {
   },
   controls: {
     position: 'relative',
+    zIndex: 1,
     '& div': {
       backgroundColor: '#d6d6d63b',
       opacity: 0.3,
@@ -86,6 +87,18 @@ const styles = {
   },
   selectedGear: {
     background: '#33ff00 !important'
+  },
+  svgContainer: {
+    position: 'absolute',
+    display: 'flex',
+    height: '100%'
+  },
+  container: {
+    display: 'flex',
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+    flexDirection: 'row'
   }
 }
 
@@ -120,13 +133,15 @@ const directive = {
   },
   /* html */
   template: `
+  <div class="{{classes.container}}">
     <div class="{{classes.controls}}">
       <div ng-repeat="id in plotIds" class="btn btn-default {{id}} {{id === selectedPlotId ? classes.selectedGear : ''}}">
         <i class="fa fa-gear" ng-click="onControlClicked(id)"/>
       </div>
     </div>
     <div class="explorer-tooltip {{classes.tooltip}}">[tooltip-placeholder]</div>
-    <div class="svg-container"></div>
+    <div class="svg-container {{classes.svgContainer}}"></div>
+  </div>
   `,
   link: function link($scope, element) {
     withStyles($scope, styles)

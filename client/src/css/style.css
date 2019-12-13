@@ -1581,7 +1581,7 @@ header ul li .notification a {
 }
 
 
-.milkyway.search, .milkyway.user {
+.milkyway.user {
   left: 560px;
   display: block
 }

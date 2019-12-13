@@ -441,6 +441,10 @@ WITH ent, collect(DISTINCT res) as resources // only top resources?
   WHERE length(resources) > 1 // get top connected entities in ms
 WITH ent, resources UNWIND resources as res
 MATCH (res)<-[r:appears_in]-(ent)
+{if:without}
+  WITH ANY (e in collect(ent) where e.uuid in {without}) as excluded, res, ent, r
+  WHERE NOT excluded
+{/if}
 RETURN {
   source: {
     id: res.uuid,

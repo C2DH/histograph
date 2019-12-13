@@ -230,6 +230,7 @@ header > .row {
 .view {
   top: 70px;
   background: #fff;
+  height: 0px;
 }
 
 a.with-number{
@@ -347,11 +348,6 @@ header ul.dropdown-menu li .notification a {
 }
 .user #see-also,.neighbors #see-also{
   left:10px;
-}
-
-
-.milkyway.search  {
-  left: 540px
 }
 
 
