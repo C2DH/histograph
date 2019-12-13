@@ -107,7 +107,8 @@ const directive = {
           <span class="fa fa-question-circle" 
                 uib-tooltip-html="helpTooltips[config.key]"
                 tooltip-class="{{classes.tooltipBody}}"
-                tooltip-append-to-body="true">
+                tooltip-append-to-body="false"
+                tooltip-placement="left-top">
           </span>
         </div>
       </div>

@@ -173,7 +173,7 @@ const template = /* html */ `
   <div class="{{classes.filters}}">
     <div hi-explorer-filter="filter"
         hi-explorer-plot-id="{{plotId}}"
-        hi-help-tooltips="helpTooltips[id]"
+        hi-help-tooltips="helpTooltips[kindId]"
         hi-initial-value="params.filters[plotId][filter.key]"
         hi-on-changed="onFilterValueChanged"
         ng-repeat="filter in filters"
@@ -199,6 +199,7 @@ const directive = {
       const fn = $scope.onCloseClicked || noop
       $scope.$applyAsync(fn)
     }
+    $scope.kindId = $scope.plotId.replace(/-\d$/, '')
   }
 }
 
