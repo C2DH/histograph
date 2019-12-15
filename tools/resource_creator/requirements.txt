@@ -1,13 +1,4 @@
 dateparser==0.7.2
+fastjsonschema==2.14.1
 https://github.com/iamthebot/cld3/archive/master.zip#egg=cld3
 https://github.com/C2DH/c2dh_nerd/archive/master.zip#egg=c2dh_nerd
-# C2DH Nerd requirements:
-torch==1.2.0
-flair==0.4.3
-wheel==0.32.0
-spacy==2.1.4
-diskcache==3.1.1
-Whoosh==2.7.4
-allennlp==0.8.4
-aiohttp==3.5.4
-fastjsonschema==2.14.1

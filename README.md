@@ -35,6 +35,8 @@ If the script is completed without errors a `tmp_dir/db` directory will be creat
 
 ## Custom corpus
 
+### With text files ready
+
 We have provided another script that assumes you have already created separate document files
 from your corpus and named them according to the format described in [Preparing documents](tools/resource_creator#preparing-documents) section of the `resource creator` tool.
 
@@ -48,6 +50,23 @@ Where:
 
  * `tmp_dir` is a temporary directory where the pipeline process stores temporary files and the new Histograph database
  * `document_files_dir` is a directory containing document files.
+
+### With Histograph JSONs ready
+
+We have provided another script that assumes you have already created a file with JSON objects (one per line) that follow
+[Histograph payload schema format](https://github.com/C2DH/histograph/blob/master/schema/json/api/management/create_resource/payload.json).
+
+You can run this script as follows:
+
+```shell
+scripts/examples/prepare_db_from_json.sh ~/tmp_dir ~/path_to_jsons_file.jsons
+```
+
+Where:
+
+ * `tmp_dir` is a temporary directory where the pipeline process stores temporary files and the new Histograph database
+ * `path_to_jsons_file.jsons` path to the file containing JSON objects.
+
 
 ## Notes
 
