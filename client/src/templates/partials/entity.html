@@ -1,5 +1,10 @@
-<div class="entity item node {{entity.type}}">
-  <div ng-if="item.props.thumbnail" class=" thumbnail">
+<div class="entity item node {{item.type}}">
+  <hi-entity-card entity="item.props" 
+                  entity-type="{{item.type}}"
+                  style="margin-bottom: 1em; display: flex; width: 100%;">
+  </hi-entity-card>
+
+  <!-- <div ng-if="item.props.thumbnail" class=" thumbnail">
     <div class="thumbnail-wrapper" style='background-image: url({{item.props.thumbnail}})'></div>
   </div>
   <div class="content  {{item.props.thumbnail?'':'without-thumbnail'}}">
@@ -8,7 +13,7 @@
     <div class='meta' ng-if='item.type=="location"'>{{item.props.country}} <a ng-href='https://www.google.com/maps/place/{{item.props.lat}},{{item.props.lng}}/@{{item.props.lat}},{{item.props.lng}},8z' target='_blank'>(view on google maps)</a></div>
     
     
-  </div>
+  </div> -->
   
 
   <!--  pinboard and bookmarks -->
@@ -17,9 +22,9 @@
     <span class="fa fa-thumb-tack"></span></a>
   </div>
 
-  <div class='description'>
+  <!-- <div class='description'>
     <span class='meta-label sans-serif'>{{item.type}}</span> {{item.props|lookup:'description':language}}
-  </div>
+  </div> -->
 
   
   <div reporter show-egonetwork='true' entity='entity' user='user'></div>
@@ -52,13 +57,13 @@
     <span ng-repeat="lang in item.props.languages" ng-click='setLanguage(lang)'>{{lang}} </span>
   </span>
   
-  <blockquote ng-if='item.props.links_wiki' class="abstract">
+  <!-- <blockquote ng-if='item.props.links_wiki' class="abstract">
     <p><span class='meta-label sans-serif'>dbpedia: <a ng-href='http://dbpedia.org/resource/{{item.props.links_wiki}}' target="_blank">{{item.props.links_wiki}}</a></span> — {{item.props | abstract : language }}</p>
   </blockquote>
 
   <blockquote ng-if='item.props.links__wikipedia_uri' class="abstract">
     <p><span class='meta-label sans-serif'>Wikipedia: <a ng-href='{{item.props.links__wikipedia_uri}}' target="_blank">{{item.props.links__wikipedia_uri}}</a></span> — {{item.props | abstract : language }}</p>
-  </blockquote>
+  </blockquote> -->
 
   <!-- 
   <blockquote ng-if="item.abstract">
