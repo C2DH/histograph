@@ -193,7 +193,7 @@ const getSubtitle = (type, meta, languageCode) => {
 function controller($scope, $log, EntityService) {
   $scope.$watch('entity', entity => {
     $scope.title = get(entity, 'name', '')
-    const id = get(entity, 'id')
+    const id = get(entity, 'uuid')
 
     if (id) {
       EntityService.getMeta({ id }).$promise
