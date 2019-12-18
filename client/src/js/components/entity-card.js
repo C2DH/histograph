@@ -169,10 +169,10 @@ const getDateAndLocation = (birthOrDeath, languageCode) => {
 const getBirthAndDeath = (meta, languageCode) => {
   const birth = getDateAndLocation(get(meta, 'birth'), languageCode)
   const death = getDateAndLocation(get(meta, 'death'), languageCode)
-  if (birth && death) return `${birth} - ${death}`
-  if (birth && !death) return `${birth} - ...`
-  if (!birth && death) return `? - ${death}`
-  return '? - ...'
+  if (birth && death) return `${birth} — ${death}`
+  if (birth && !death) return `${birth} — ...`
+  if (!birth && death) return `? — ${death}`
+  return '? — ...'
 }
 
 const getLocation = (meta, languageCode) => {
