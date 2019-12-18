@@ -72,7 +72,8 @@ const styles = {
     '& h4': {
       color: theme.colours.text.light.secondary,
       padding: 0,
-      margin: 0
+      margin: 0,
+      lineHeight: theme.units(1.5)
     }
   },
   subtitleSizeSmall: {
@@ -108,13 +109,20 @@ const styles = {
     },
     fontSize: '11px',
     color: theme.colours.text.light.secondary
+  },
+  links: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  blur: {
+    filter: 'blur(2px)'
   }
 }
 
 const template = /* html */ `
 <div class="{{classes.container}}">
-  
-  <div class="{{classes.headerRow}}">
+
+  <div class="{{classes.headerRow}} {{ isLoading ? classes.blur : ''}}">
     <div class="{{classes.thumbnail}} {{classes.thumbnailSizeClass}}"
          style='background-image: url("{{thumbnailUrl}}")'>
     </div>
@@ -196,6 +204,8 @@ function controller($scope, $log, EntityService) {
     const id = get(entity, 'uuid')
 
     if (id) {
+      $scope.meta = {}
+      $scope.isLoading = true
       EntityService.getMeta({ id }).$promise
         .then(meta => {
           $scope.meta = meta
@@ -203,6 +213,7 @@ function controller($scope, $log, EntityService) {
         .catch(() => {
           $log.error('Could not load metadata for this entity')
         })
+        .finally(() => { $scope.isLoading = false })
     }
   }, true)
   $scope.$watch('entityType', type => {
