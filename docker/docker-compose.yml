@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   neo4j:
-    image: neo4j
+    image: neo4j:3.5
     environment: 
       NEO4J_AUTH: neo4j/neo4jpwd
       # Memory configuration tweaks:
@@ -18,7 +18,7 @@ services:
       start_period: 10s
   histograph:
     restart: always
-    image: theorm/histograph
+    image: c2dhunilu/histograph
     environment:
       NODE_ENV: production
       PORT: 8000
@@ -41,12 +41,12 @@ services:
     command: [nginx-debug, '-g', 'daemon off;']
   iipsrv:
     restart: always
-    image: theorm/iipsrv
+    image: c2dhunilu/iipsrv
     volumes:
       - ./data/iipsrv_images:/data/images
   histograph_init:
     restart: on-failure
-    image: theorm/histograph
+    image: c2dhunilu/histograph
     entrypoint: /bin/sh -c "node scripts/init.js && node scripts/manage.js --task entity.jaccard --entity person"
     depends_on:
       - neo4j

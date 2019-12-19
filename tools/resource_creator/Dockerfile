@@ -1,4 +1,4 @@
-FROM theorm/c2dh_nerd
+FROM c2dhunilu/c2dh_nerd
 
 WORKDIR /hg-resource-creator
 

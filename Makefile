@@ -1,5 +1,5 @@
 build:
-	docker build -t theorm/histograph .
+	docker build -t c2dhunilu/histograph .
 
 run:
 	docker run \
@@ -8,7 +8,7 @@ run:
 		--name histograph \
 		-v $(PWD)/settings.js:/histograph/settings.js \
 		-v $(PWD)/contents:/histograph/contents \
-		theorm/histograph \
+		c2dhunilu/histograph \
 		node server.js
 
 run-db:

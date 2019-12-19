@@ -83,7 +83,7 @@ prepare_json_resources() {
     -v $work_dir_abs_path/$CHAPTERS_DIR:/chapters \
     -v $work_dir_abs_path:/jsons \
     -e "GKG_API_KEY=$GKG_API_KEY" \
-    theorm/histograph-resource-creator \
+    c2dhunilu/histograph-resource-creator \
     python -m hg_resource_creator \
     --path /chapters \
     --outpath /jsons/$JSONS_FILENAME \
@@ -101,7 +101,7 @@ prepare_neo4j_csv_files() {
     -v $work_dir_abs_path/$CSV_DIR:/csv_files \
     -v $work_dir_abs_path/$JSONS_FILENAME:/histograph_corpus.jsons \
     --entrypoint node \
-    theorm/histograph \
+    c2dhunilu/histograph \
     lib/tools/neo4jImport/index.js /csv_files /histograph_corpus.jsons
   echo "Prepared Neo4j CSV files \n"
 }

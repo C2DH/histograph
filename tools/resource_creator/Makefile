@@ -1,2 +1,2 @@
 build:
-	docker build -t theorm/histograph-resource-creator .
+	docker build -t c2dhunilu/histograph-resource-creator .

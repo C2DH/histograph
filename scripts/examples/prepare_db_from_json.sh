@@ -49,7 +49,7 @@ prepare_neo4j_csv_files() {
     -v $work_dir_abs_path/$CSV_DIR:/csv_files \
     -v $jsons_abs_path:/histograph_corpus.jsons \
     --entrypoint node \
-    theorm/histograph \
+    c2dhunilu/histograph \
     lib/tools/neo4jImport/index.js /csv_files /histograph_corpus.jsons
   echo "Prepared Neo4j CSV files \n"
 }
