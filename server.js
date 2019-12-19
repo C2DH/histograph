@@ -18,6 +18,8 @@ const env = settings.env || process.env.NODE_ENV || 'development'
 const server = app.listen(port)
 const io = socketIo.listen(server)
 
+app.set('io', io)
+
 const ctrl = requireAll({
   dirname: `${__dirname}/controllers`,
   filter: /(.*).js$/,
@@ -361,51 +363,6 @@ apiRouter.route('/cooccurrences/:entityA(person|theme|location|place|organizatio
   .get(ctrl.resource.getCooccurrences)
 // apiRouter.route('/resource/related/:entity(person|location|organization|theme)/graph')
 
-/*
-
-  Controller: entity
-  ----------------------
-
-  Cfr. controllers/entity.js
-  Cfr Neo4j queries: queries/entity.cyp
-
-*/
-apiRouter.route('/entity/:id([\\d,a-zA-Z\\-_]+)')
-  .get(ctrl.entity.getItem)
-
-apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/related/resource')
-  .get(ctrl.entity.getRelatedResources)
-
-apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/related/:entity(person|location|theme|organization)')
-  .get(ctrl.entity.getRelatedEntities)
-
-apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/related/issue')
-  .post(ctrl.entity.createRelatedIssue) // that is, I AGREE
-  .delete(ctrl.entity.removeRelatedIssue) // that is, I DISAGREE
-
-apiRouter.route('/entity/:id/related/:entity(person|location|theme|organization)/graph')
-  .get(ctrl.entity.getRelatedEntitiesGraph)
-
-apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/related/resource/graph')
-  .get(ctrl.entity.getRelatedResourcesGraph)
-
-apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/related/resource/timeline')
-  .get(ctrl.entity.getRelatedResourcesTimeline)
-
-apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/upvote')
-  .post(ctrl.entity.upvote)
-
-apiRouter.route('/entity/:id([\\da-zA-Z_\\-]+)/downvote')
-  .post(ctrl.entity.downvote)
-
-apiRouter.route('/entity/:entity_id([\\da-zA-Z_\\-]+)/related/resource/:resource_id([\\da-zA-Z_\\-]+)')
-  .post(ctrl.entity.createRelatedResource) // create or merge the relationship.
-  // The authentified user will become a curator
-  .delete(ctrl.entity.removeRelatedResource) // delete the relationship whether possible
-
-apiRouter.route('/entity/:entity_id([\\da-zA-Z_\\-]+)/related/resource/:resource_id([\\da-zA-Z_\\-]+)/:action(upvote|downvote|merge)')
-  .post(ctrl.entity.updateRelatedResource)
-
 
 /*
 
@@ -429,6 +386,7 @@ apiRouter.route('/entity/:entity_id([\\da-zA-Z_\\-]+)/related/resource/:resource
 // apiRouter.route('/collection/:id/related/resources')
 //   .get(ctrl.collection.getRelatedResources);
 
+apiRouter.use('/entity', require('./lib/endpoints/public/entity'))
 apiRouter.use('/suggest', require('./lib/endpoints/public/suggest'))
 apiRouter.use('/explorer', require('./lib/endpoints/public/explorer'))
 apiRouter.use('/actions', require('./lib/endpoints/public/actions'))

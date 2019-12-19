@@ -11,27 +11,15 @@
         <div class='weight sans-serif'>{{totalItems || weight}}</div>
       </div>
 
-      <!-- person node -->
+      <!-- entity node -->
       <div ng-if='relatedItem.type!="resource"' class='node {{relatedItem.type}}' >
-        <div class='thumbnail'>
-          <div class="thumbnail-wrapper" style='background-image: url({{relatedItem.props.thumbnail}})'>    
-            
-          </div>
-        </div>
-        <div class='content'>
-          <h4><a ng-href='/e/{{relatedItem.id}}/g' marked="relatedItem.props|lookup:'name':language"></a></h4>
-          <div class='date'>{{relatedItem.type}} - 
+        <hi-entity-card entity="relatedItem.props" 
+                        entity-type="{{relatedItem.type}}"
+                        size="small"
+                        link="/e/{{relatedItem.props.uuid}}"
+                        style="margin-bottom: 1em; padding: 20px; display: flex; width: 100%;">
+        </hi-entity-card>
 
-            <span ng-if='relatedItem.type=="person"'>{{relatedItem.props.birth_time | datesOfAPerson : relatedItem.props.death_time}}</span>
-            <span ng-if='relatedItem.type=="location"'>{{relatedItem.props.country}} {{relatedItem.props.lat}} - {{relatedItem.props.lng}}</span>
-          </div>
-          <div>
-            {{relatedItem.props|lookup:'description'}}
-          </div>
-          <div ng-if="relatedItem.props.links_viaf">VIAF: {{relatedItem.props.links_viaf}}</div>
-          <div ng-if="relatedItem.props.links_wiki" class='links'><a href='http://dbpedia.org/resource/{{relatedItem.props.links_wiki}}' target='_blank'>dbpedia: {{relatedItem.props.links_wiki}}</a></div>
-          <div ng-if="relatedItem.props.links__wikipedia_uri" class='links'><a href='{{relatedItem.props.links__wikipedia_uri}}' target='_blank'>Wikipedia</a></div>
-        </div>
         <div class="actions">
           
           <!-- <a class='action'>

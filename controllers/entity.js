@@ -78,12 +78,7 @@ function _relatedIssueForm(req) {
 };
 
 
-module.exports = function(io){
-  // io socket event listener
-  if(io)
-    io.on('connection', function(socket){
-      var cookie_string = socket.request.headers.cookie;
-    });
+module.exports = function() {
 
   return {
     /*
@@ -182,12 +177,15 @@ module.exports = function(io){
             // creata a proper 'merge' action
             // console.log('MERGE RESULTS', item.related.merged)
 
-            io.emit('entity:merge-entity:done', {
-              user: req.user.username,
-              id: +form.params.entity_id,
-              data: item,
-              resource: resource
-            });
+            const io = req.app.get('io')
+            if (io) {
+              io.emit('entity:merge-entity:done', {
+                user: req.user.username,
+                id: +form.params.entity_id,
+                data: item,
+                resource: resource
+              });  
+            }
 
             res.ok({
               item: item
@@ -213,14 +211,17 @@ module.exports = function(io){
             // add action to response result item
             item.related.action = action;
 
-            io.emit('entity:' + form.params.action + '-related-resource:done', {
-              user: req.user.username,
-              id: form.params.entity_id,
-              data: item,
-              resource: {
-                id: form.params.resource_id
-              }
-            });
+            const io = req.app.get('io')
+            if (io) {
+              io.emit('entity:' + form.params.action + '-related-resource:done', {
+                user: req.user.username,
+                id: form.params.entity_id,
+                data: item,
+                resource: {
+                  id: form.params.resource_id
+                }
+              });
+            }
 
             res.ok({
               item: item
@@ -267,12 +268,15 @@ module.exports = function(io){
           // add action to response result item
           item.related.action = action;
 
-          io.emit('entity:create-related-resource:done', {
-            user: req.user.username,
-            id: form.params.entity_id,
-            data: item,
-            resource: resource
-          });
+          const io = req.app.get('io')
+          if (io) {
+            io.emit('entity:create-related-resource:done', {
+              user: req.user.username,
+              id: form.params.entity_id,
+              data: item,
+              resource: resource
+            });
+          }
 
           res.ok({
             item: item
@@ -297,14 +301,17 @@ module.exports = function(io){
         if(err)
           return helpers.cypherQueryError(err, res);
 
-        io.emit('entity:remove-related-resource:done', {
-          user: req.user.username,
-          id: form.params.entity_id,
-          data: item,
-          resource: {
-            id: form.params.resource_id
-          }
-        });
+        const io = req.app.get('io')
+        if (io) {
+          io.emit('entity:remove-related-resource:done', {
+            user: req.user.username,
+            id: form.params.entity_id,
+            data: item,
+            resource: {
+              id: form.params.resource_id
+            }
+          });
+        }
 
         return res.ok({item: item}, form.params);
       });
@@ -389,11 +396,14 @@ module.exports = function(io){
             }
           }, results[1]);
 
-        io.emit('entity:create-related-issue:done', {
-          user: req.user.username,
-          id:  form.params.id, 
-          data: item
-        });
+        const io = req.app.get('io')
+        if (io) {
+          io.emit('entity:create-related-issue:done', {
+            user: req.user.username,
+            id:  form.params.id, 
+            data: item
+          });
+        }
 
         return res.ok({
           item: item
@@ -462,11 +472,14 @@ module.exports = function(io){
             }
           }, results[1]);
 
-        io.emit('entity:remove-related-issue:done', {
-          user: req.user.username,
-          id:  form.params.id, 
-          data: item
-        });
+        const io = req.app.get('io')
+        if (io) {
+          io.emit('entity:remove-related-issue:done', {
+            user: req.user.username,
+            id:  form.params.id, 
+            data: item
+          });
+        }
 
         return res.ok({
           item: item
@@ -519,11 +532,15 @@ module.exports = function(io){
       }, function (err, ent) {
         if(err)
           return helpers.cypherQueryError(err, res);
-        io.emit('entity:upvote:done', {
-          user: req.user.username,
-          doi: +req.params.id, 
-          data: ent
-        });
+        const io = req.app.get('io')
+        if (io) {
+          io.emit('entity:upvote:done', {
+            user: req.user.username,
+            doi: +req.params.id, 
+            data: ent
+          });
+        }
+
         return res.ok({
           item: ent
         });
@@ -542,11 +559,16 @@ module.exports = function(io){
       }, function (err, ent) {
         if(err)
           return helpers.cypherQueryError(err, res);
-        io.emit('entity:downvote:done', {
-          user: req.user.username,
-          doi: req.params.id, 
-          data: ent
-        });
+
+        const io = req.app.get('io')
+        if (io) {
+          io.emit('entity:downvote:done', {
+            user: req.user.username,
+            doi: req.params.id, 
+            data: ent
+          });
+        }
+
         return res.ok({
           item: ent
         });

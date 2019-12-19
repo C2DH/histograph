@@ -7,15 +7,19 @@ import {
 } from '../utils'
 
 const styles = {
+  page: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%'
+  },
   container: {
     display: 'flex',
     flexDirection: 'row',
     alignContent: 'stretch',
     alignItems: 'stretch',
     width: '100% !important',
-    position: 'absolute',
-    bottom: 0,
-    top: 40,
+    position: 'initial',
+    height: '100%'
   },
   containerChild: {
     flex: 1,

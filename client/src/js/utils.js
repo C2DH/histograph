@@ -138,3 +138,12 @@ export function resolveLanguage(context, language, fallbackLanguage) {
 
   return head(languagesPriorityList)
 }
+
+export function valueForLanguage(context, languageCode) {
+  if (context === undefined) return undefined
+  if (isString(context)) return context
+  const languageCodes = Object.keys(context)
+  if (languageCodes.includes(languageCode)) return context[languageCode]
+  const fallbackLanguageCode = head(languageCodes)
+  return fallbackLanguageCode ? context[fallbackLanguageCode] : undefined
+}
