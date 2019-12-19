@@ -299,6 +299,8 @@ const directive = {
 
       // eslint-disable-next-line no-param-reassign
       element[0].style.height = `${sum(unitsList.map(unit => unit * 100))}px`
+      // eslint-disable-next-line no-param-reassign
+      element[0].style['min-height'] = element[0].style.height
     }, true)
 
     $scope.$watch(() => $scope.explorer._getWH(), () => {
