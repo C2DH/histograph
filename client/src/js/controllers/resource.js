@@ -1,5 +1,6 @@
 /* eslint-env browser */
 import { resolveLanguage } from '../utils'
+import { withStyles, theme } from '../styles'
 
 function getEntitiesOfType(resource, entityType) {
   return resource.entities_and_appearances
@@ -293,4 +294,73 @@ angular.module('histograph')
 
     // load timeline
     $scope.syncTimeline();
-  });
+  })
+  .controller('RelatedItemsCtrl', function ($scope, $log, $stateParams, $filter,
+    specials, relatedModel, relatedVizFactory, socket, EVENTS, ResourceService) {
+    withStyles($scope, {
+      resourceItem: {
+        display: 'flex',
+        flexBasis: '33.3%',
+        padding: theme.units(0.5)
+      },
+      relatedResourcesContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        height: '100%'
+      },
+      moreButton: {
+        marginBottom: theme.units(4)
+      }
+    })
+
+    const resourceUuid = $stateParams.id
+
+    $scope.syncGraph = function () {
+      $scope.lock('graph');
+      relatedVizFactory.get(angular.extend({
+        model: relatedModel,
+        viz: 'graph',
+        limit: 100,
+        language: $scope.language
+      }, $stateParams, $scope.params), function (res) {
+        $scope.unlock('graph');
+        if ($stateParams.ids) {
+          $scope.setGraph(res.result.graph, {
+            centers: $stateParams.ids
+          });
+        } else if ($scope.item && $scope.item.id) {
+          $scope.setGraph(res.result.graph, {
+            centers: [$scope.item.id]
+          });
+        } else $scope.setGraph(res.result.graph);
+      });
+    }
+
+    const loadResources = () => {
+      $scope.isLoading = true
+      return ResourceService
+        .findRecommendedResourcesFor(resourceUuid, $scope.relatedItems.length)
+        .then(({ data: { recommended: { resources, info } } }) => {
+          $scope.setRelatedItems($scope.relatedItems.concat(resources.map(props => ({ props }))))
+          $scope.totalItems = info.total
+        })
+        .catch(e => $log.error(e))
+        .finally(() => $scope.$applyAsync(() => { $scope.isLoading = false }))
+    }
+
+    $scope.sync = () => {
+      $scope.setRelatedItems([])
+      $scope.total = 0
+      loadResources()
+    };
+
+    $scope.loadMore = loadResources
+
+    $scope.$on(EVENTS.API_PARAMS_CHANGED, function () {
+      $scope.sync();
+      // if ($stateParams.ids || $stateParams.query || ~~!specials.indexOf('syncGraph')) $scope.syncGraph();
+    });
+    $scope.sync()
+
+    // if ($stateParams.ids || $stateParams.query || ~~!specials.indexOf('syncGraph')) $scope.syncGraph();
+  })

@@ -9,51 +9,32 @@ const styles = {
 }
 
 const resourceItemTemplate = /* html */ `
-  <div class="{{classes.container}} related animated fadeIn {{resource.users.length? 'with-users':''}}">
-    <div class='user sans-serif' ng-repeat='user in resource.users' ng-if='$index == 0'>
-      {{user.username}} <strong>{{user.type}}</strong> {{user.last_modification_time*1000|date:'longDate'}}
-    </div>
+  <div class="{{classes.container}} related animated fadeIn">
     <div class='actions-wrapper'>
       <div class='actions '>
         <div class="btn-group">
-          <button class='btn btn-default action' uib-tooltip='{{tooltip.resource.add.to.myselection|translate}}' tooltip-append-to-body="true" ng-click='pinResource(resource.id, true)'>
+          <button class='btn btn-default action' uib-tooltip='{{tooltip.resource.add.to.myselection|translate}}' tooltip-append-to-body="true" ng-click='pinResource(resource.uuid, true)'>
             <i class='fa fa-thumb-tack'></i>
           </button>
         </div>
       </div>
     </div>   
     <div class="meta">
-      <span class='type sans-serif' translate='resource.type.{{resource.props.type}}'></span> {{index + 1}} of {{totalResources}}
+      <span class='type sans-serif' translate='resource.type.{{resource.type}}'></span> {{index + 1}} of {{totalResources}}
     </div>
     <h4>
-      <a href='/r/{{resource.id}}'>
+      <a href='/r/{{resource.uuid}}'>
         <span lookup context='resource' field='title' language='language'></span>
       </a>
     </h4>
 
     <div class="meta">
-      <span gasp-type="date" class="empty" gasp-parent="{{resource.type}}-{{resource.id}}" ng-if="!resource.props.start_time">no date found</span>
-      <span class='date' ng-if="resource.props.start_time"> {{resource.props | guessInterval}}</span>
-      <span ng-if='resource.matches.length' class='tags'> — <i translate>resource.in_between</i>:
-        <span ng-repeat="mat in resource.matches">
-          <span class="tag match" data-id='{{mat.id}}' gasp-type='{{mat.type}}' gasp-parent='{{resource.type}}-{{resource.id}}'>{{mat.props.name}}</span>{{$last? '':  ', '}}
-        </span>
-      </span>
-      <span ng-if='resource.themes.length' class='tags'> — <i translate>resource.themes.mentioned</i>:
-        <span ng-repeat="the in resource.themes">
-          <span class="tag theme" data-id='{{the.id}}' gasp-type='theme' gasp-parent='{{resource.type}}-{{resource.id}}'>{{the.props.name}}</span>
-          {{$last? '':  ', '}}
-        </span>
-      </span>
-
-      <span ng-if='resource.persons.length' class='tags'> — <i translate='resource.people.mentioned'></i>:
-        <span ng-repeat="tag in resource.persons" ng-include='"templates/partials/entity-tag-lite.html"' ng-init='item=resource'></span>  
-      </span>
-
+      <span gasp-type="date" class="empty" gasp-parent="{{resource.type}}-{{resource.uuid}}" ng-if="!resource.start_date">no date found</span>
+      <span class='date' ng-if="resource.start_date"> {{resource | guessInterval}}</span>
     </div>
             
     <div class='img-wrapper' ng-if='hasImage(resource)'>
-      <a ng-href='/r/{{resource.id}}'>
+      <a ng-href='/r/{{resource.uuid}}'>
         <div class="img"  style='background-image: url({{ getImageUrl(resource) }})'></div>
       </a>
     </div>
@@ -65,18 +46,18 @@ const resourceItemTemplate = /* html */ `
 
 function controller($scope, HgSettings) {
   $scope.hasImage = function (resource) {
-    const isImageType = get(resource, 'props.mimetype') === 'image' && !!get(resource, 'props.url')
-    const hasIiif = !!get(resource, 'props.iiif_url')
+    const isImageType = get(resource, 'mimetype') === 'image' && !!get(resource, 'url')
+    const hasIiif = !!get(resource, 'iiif_url')
 
     return isImageType || hasIiif;
   }
 
   $scope.getImageUrl = function (resource) {
-    const iiifUrl = get(resource, 'props.iiif_url')
+    const iiifUrl = get(resource, 'iiif_url')
     if (iiifUrl) {
       return iiifUrl.replace(/info.json$/, 'full/pct:20/0/default.jpg');
     }
-    return `${HgSettings.apiBaseUrl}/media/${get(resource, 'props.url')}`;
+    return `${HgSettings.apiBaseUrl}/media/${get(resource, 'url')}`;
   }
 }
 

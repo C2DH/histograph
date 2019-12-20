@@ -106,7 +106,9 @@ require('./components/resource.js')
 require('./components/entity.js')
 require('./components/entity-card.js')
 
+require('./services/graphql.js')
 require('./services/entity.js')
+require('./services/resource.js')
 
 require('./controllers/core.js')
 require('./controllers/filters.js')

@@ -7,12 +7,13 @@ type Resource {
   slug: String!
   uuid: ID!
   name: String!
+  type: String!
   start_date: GraphQLDateTime
   end_date: GraphQLDateTime
   title: LanguageContextStringField
   caption: LanguageContextStringField
   content: LanguageContextStringField
-  type: String!
+  iiif_url: String
 }
 
 type PageInfo {
