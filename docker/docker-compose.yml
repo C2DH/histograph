@@ -5,9 +5,9 @@ services:
     environment: 
       NEO4J_AUTH: neo4j/neo4jpwd
       # Memory configuration tweaks:
-      # NEO4J_dbms_memory_heap_initial_size: 15g
-      # NEO4J_dbms_memory_heap_max_size: 15g
-      # NEO4J_dbms_memory_pagecache_size: 15g
+      # NEO4J_dbms_memory_heap_initial__size=12000m
+      # NEO4J_dbms_memory_heap_max__size=12000m
+      # NEO4J_dbms_memory_pagecache_size=12100m
     volumes:
       - ./data/neo4j:/data
     healthcheck:
