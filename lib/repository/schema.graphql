@@ -1,0 +1,37 @@
+# An object where key is language code and value is a string: { 'en': 'Wind', 'fr': 'Vent' }
+scalar LanguageContextStringField
+# An ISO date time string
+scalar GraphQLDateTime
+
+type Resource {
+  slug: String!
+  uuid: ID!
+  name: String!
+  start_date: GraphQLDateTime
+  end_date: GraphQLDateTime
+  title: LanguageContextStringField
+  caption: LanguageContextStringField
+  content: LanguageContextStringField
+  type: String!
+}
+
+type PageInfo {
+  limit: Int!
+  offset: Int!
+  total: Int!
+}
+
+input PageRequestDetails {
+  limit: Int!
+  offset: Int!
+}
+
+type ResourcesPage {
+  resources: [Resource]!
+  info: PageInfo!
+}
+
+type Query {
+  # Resources
+  resourceFindRecommendedResourcesFor(uuid: ID!, page: PageRequestDetails): ResourcesPage
+}
