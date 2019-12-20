@@ -27,6 +27,11 @@ input PageRequestDetails {
   offset: Int!
 }
 
+input ResourceFilters {
+  from: String # ISO date string
+  to: String # ISO date string
+}
+
 type ResourcesPage {
   resources: [Resource]!
   info: PageInfo!
@@ -34,5 +39,9 @@ type ResourcesPage {
 
 type Query {
   # Resources
-  resourceFindRecommendedResourcesFor(uuid: ID!, page: PageRequestDetails): ResourcesPage
+  resourceFindRecommendedResourcesFor(
+    uuid: ID!,
+    filters: ResourceFilters,
+    page: PageRequestDetails
+  ): ResourcesPage
 }

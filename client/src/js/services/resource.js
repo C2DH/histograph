@@ -2,8 +2,8 @@ import gql from 'graphql-tag'
 
 const Query = {
   recommendedResources: gql`
-    query getRecommendedResources($uuid: ID!, $page: PageRequestDetails) {
-      recommended: resourceFindRecommendedResourcesFor(uuid: $uuid, page: $page) {
+    query getRecommendedResources($uuid: ID!, $filters: ResourceFilters, $page: PageRequestDetails) {
+      recommended: resourceFindRecommendedResourcesFor(uuid: $uuid, filters: $filters, page: $page) {
         resources {
           uuid
           title
@@ -28,9 +28,10 @@ class ResourceService {
     this.client = client
   }
 
-  findRecommendedResourcesFor(resourceUuid, offset = 0, limit = 50) {
+  findRecommendedResourcesFor(resourceUuid, filters, offset = 0, limit = 50) {
     const variables = {
       uuid: resourceUuid,
+      filters,
       page: { offset, limit }
     }
     return this.client.query({

@@ -22,7 +22,7 @@
                         on-pin="queue(resource)">
       </hi-resource-item>
     </div>
-    <div class="more {{classes.moreButton}}" ng-if='totalItems > relatedItems.length'>
+    <div class="more {{classes.moreButton}}" ng-if='totalItems > relatedItems.length && totalItems !== 0'>
       <button ng-click='loadMore()' class='btn btn-block '>{{isLoading?'loading...':'load more items'}}</button>
     </div>
   </div>

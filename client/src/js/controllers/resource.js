@@ -339,12 +339,12 @@ angular.module('histograph')
     const loadResources = () => {
       $scope.isLoading = true
       return ResourceService
-        .findRecommendedResourcesFor(resourceUuid, $scope.relatedItems.length)
+        .findRecommendedResourcesFor(resourceUuid, $scope.filters, $scope.relatedItems.length)
         .then(({ data: { recommended: { resources, info } } }) => {
           $scope.setRelatedItems($scope.relatedItems.concat(resources.map(props => ({ props }))))
           $scope.totalItems = info.total
         })
-        .catch(e => $log.error(e))
+        .catch(e => $log.error(e.message))
         .finally(() => $scope.$applyAsync(() => { $scope.isLoading = false }))
     }
 
