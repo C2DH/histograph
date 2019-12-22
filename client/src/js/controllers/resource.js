@@ -312,6 +312,7 @@ angular.module('histograph')
         marginBottom: theme.units(4)
       }
     })
+    $scope.setAvailableSortings([])
 
     const resourceUuid = $stateParams.id
 
