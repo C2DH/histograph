@@ -84,7 +84,7 @@ const EntityMenuElements = [
 ]
 
 const parseResourceItems = response => ({
-  items: response.result.items,
+  items: response.result.items.map(({ props }) => props),
   total: response.info.total_items
 })
 

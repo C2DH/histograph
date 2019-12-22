@@ -295,8 +295,8 @@ angular.module('histograph')
     // load timeline
     $scope.syncTimeline();
   })
-  .controller('RelatedItemsCtrl', function ($scope, $log, $stateParams, $filter,
-    specials, relatedModel, relatedVizFactory, socket, EVENTS, ResourceService) {
+  .controller('RelatedItemsCtrl', function ($scope, $log, $stateParams, $location,
+    relatedModel, relatedVizFactory, EVENTS, ResourceService) {
     withStyles($scope, {
       resourceItem: {
         display: 'flex',
@@ -337,9 +337,10 @@ angular.module('histograph')
     }
 
     const loadResources = () => {
+      const filters = $location.search()
       $scope.isLoading = true
       return ResourceService
-        .findRecommendedResourcesFor(resourceUuid, $scope.filters, $scope.relatedItems.length)
+        .findRecommendedResourcesFor(resourceUuid, filters, $scope.relatedItems.length)
         .then(({ data: { recommended: { resources, info } } }) => {
           $scope.setRelatedItems($scope.relatedItems.concat(resources.map(props => ({ props }))))
           $scope.totalItems = info.total
@@ -356,11 +357,6 @@ angular.module('histograph')
 
     $scope.loadMore = loadResources
 
-    $scope.$on(EVENTS.API_PARAMS_CHANGED, function () {
-      $scope.sync();
-      // if ($stateParams.ids || $stateParams.query || ~~!specials.indexOf('syncGraph')) $scope.syncGraph();
-    });
+    $scope.$on(EVENTS.API_PARAMS_CHANGED, $scope.sync);
     $scope.sync()
-
-    // if ($stateParams.ids || $stateParams.query || ~~!specials.indexOf('syncGraph')) $scope.syncGraph();
   })

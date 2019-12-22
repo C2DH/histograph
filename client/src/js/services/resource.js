@@ -1,4 +1,13 @@
+import { toPairs, fromPairs } from 'lodash'
 import gql from 'graphql-tag'
+
+const arrayFilterKeys = ['with', 'without']
+
+const sanitizedFilters = filters => fromPairs(toPairs(filters)
+  .map(([key, value]) => {
+    if (arrayFilterKeys.includes(key)) return [key, value.split(',')]
+    return [key, value]
+  }))
 
 const Query = {
   recommendedResources: gql`
@@ -31,7 +40,7 @@ class ResourceService {
   findRecommendedResourcesFor(resourceUuid, filters, offset = 0, limit = 50) {
     const variables = {
       uuid: resourceUuid,
-      filters,
+      filters: sanitizedFilters(filters),
       page: { offset, limit }
     }
     return this.client.query({

@@ -30,6 +30,7 @@ input PageRequestDetails {
 input ResourceFilters {
   from: String # ISO date string
   to: String # ISO date string
+  with: [String]
 }
 
 type ResourcesPage {

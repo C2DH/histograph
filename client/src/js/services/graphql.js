@@ -5,7 +5,13 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 function graphqlClientFactory(HgSettings) {
   return new ApolloClient({
     link: createHttpLink({ uri: `${HgSettings.apiBaseUrl}/api/graphql` }),
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
+    defaultOptions: {
+      query: {
+        fetchPolicy: 'no-cache',
+        errorPolicy: 'all',
+      }
+    }
   })
 }
 
