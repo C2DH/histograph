@@ -1,3 +1,4 @@
+import { get } from 'lodash'
 /**
  * @ngdoc overview
  * @name histograph
@@ -9,7 +10,7 @@
  * Use suggestFactory as service
  */
 angular.module('histograph')
-  .directive('snippets', function ($log, $location, $timeout, EVENTS, SuggestFactory, EntityFactory, EntityRelatedFactory) {
+  .directive('snippets', function ($log, $location, $timeout, EVENTS, SuggestFactory, EntityFactory, EntityRelatedFactory, ResourceFactory) {
     return {
       restrict: 'A',
       templateUrl: 'templates/partials/helpers/snippet.html',
@@ -160,14 +161,18 @@ angular.module('histograph')
             }
           }
 
-          if (itemsIdsToLoad.length == 1 && target.type == 'node' && target.data.node.type != 'resource') {
-            EntityFactory.get({
+          const factory = get(target, 'data.node.type') === 'resource'
+            ? ResourceFactory
+            : EntityFactory
+
+          if (itemsIdsToLoad.length == 1 && target.type == 'node') {
+            factory.get({
               id: itemsIdsToLoad[0]
             }, function (res) {
               if (res.result && res.result.item) { scope.fill([res.result.item]); }
             });
           } else if (itemsIdsToLoad.length > 0) {
-            EntityFactory.get({
+            factory.get({
               id: itemsIdsToLoad
             }, function (res) {
               if (res.result && res.result.items.length) { scope.fill(res.result.items); }
