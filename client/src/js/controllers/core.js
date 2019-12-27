@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash'
+import { withStyles, theme } from '../styles'
 
 const isTimelineEnabledForUrl = urlPath => !urlPath.startsWith('/actions/')
 
@@ -1243,21 +1244,151 @@ angular.module('histograph')
       $uibModalInstance.dismiss('cancel');
     };
   })
-  .controller('ResourceContextCtrl', function ($scope, $log, $stateParams, $filter, specials, relatedItems, relatedModel, relatedVizFactory, relatedFactory, socket, EVENTS, $controller) {
+  /*
+    A generic controller for every relatedItem
+  */
+  .controller('RelatedItemsCtrl', function ($scope, $log, $stateParams, $filter, specials, relatedItems, relatedModel, relatedVizFactory, relatedFactory, socket, EVENTS) {
+    withStyles($scope, {
+      resourceItem: {
+        display: 'flex',
+        flexBasis: '33.3%',
+        padding: theme.units(0.5)
+      },
+      relatedResourcesContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        height: '100%'
+      },
+      moreButton: {
+        marginBottom: theme.units(4)
+      }
+    })
+
+    $scope.totalItems = relatedItems.info.total_items;
+    $scope.limit = relatedItems.info.limit;
+    $scope.offset = relatedItems.info.offset;
+    // $scope.page        = 1; // always first page!!
+
+    /*
+      set order by
+      according to the favourite orderby. Avoid default values.
+    */
+    if (relatedItems.info.orderby !== 'relevance') $scope.setSorting(relatedItems.info.orderby);
+
+    /*
+      set facets
+    */
+    $scope.setFacets('type', relatedItems.info.groups);
+
+    $log.debug('RelatedItemsCtrl ready');
+    /*
+      Load graph data
+    */
+    $scope.syncGraph = function () {
+      $scope.lock('graph');
+      relatedVizFactory.get(angular.extend({
+        model: relatedModel,
+        viz: 'graph',
+        limit: 100,
+        language: $scope.language
+      }, $stateParams, $scope.params), function (res) {
+        $scope.unlock('graph');
+        if ($stateParams.ids) {
+          $scope.setGraph(res.result.graph, {
+            centers: $stateParams.ids
+          });
+        } else if ($scope.item && $scope.item.id) {
+          $scope.setGraph(res.result.graph, {
+            centers: [$scope.item.id]
+          });
+        } else $scope.setGraph(res.result.graph);
+      });
+    }
+
+
+    /*
+      Reload related items, with filters.
+    */
+    $scope.sync = function () {
+      $scope.lock('RelatedItemsCtrl');
+
+      relatedFactory.get(angular.extend({
+        model: relatedModel,
+        limit: $scope.limit,
+        offset: $scope.offset
+      }, $stateParams, $scope.params), function (res) {
+        $scope.unlock('RelatedItemsCtrl');
+        $scope.offset = res.info.offset;
+        $scope.limit = res.info.limit;
+        $scope.totalItems = res.info.total_items;
+        if ($scope.offset > 0) $scope.addRelatedItems(res.result.items);
+        else $scope.setRelatedItems(res.result.items);
+        // reset if needed
+        $scope.setFacets('type', res.info.groups);
+      })
+    };
+
+    /*
+      listener: EVENTS.API_PARAMS_CHANGED
+      some query parameter has changed, reload the list accordingly.
+    */
+    $scope.$on(EVENTS.API_PARAMS_CHANGED, function () {
+      // reset offset
+      $scope.offset = 0;
+      $log.debug('RelatedItemsCtrl @API_PARAMS_CHANGED', $scope.params);
+      $scope.sync();
+      if ($stateParams.ids || $stateParams.query || ~~!specials.indexOf('syncGraph')) $scope.syncGraph();
+    });
+
+
+    $scope.$on(EVENTS.INFINITE_SCROLL, function (e) {
+      $scope.offset += $scope.limit;
+      $log.debug('RelatedItemsCtrl @INFINITE_SCROLL', '- skip:', $scope.offset, '- limit:', $scope.limit);
+
+      $scope.sync();
+    });
+
+    function onSocket(result) {
+      console.log('RelatedItemsCtrl @socket', result)
+      for (let i = 0, l = $scope.relatedItems.length; i < l; i++) {
+        if ($scope.relatedItems[i].id == result.resource.id) {
+          $scope.relatedItems[i] = result.data.related.resource
+          break;
+        }
+      }
+    }
+
+    /*
+      on socket events,
+    */
+    socket.on('entity:upvote-related-resource:done', onSocket);
+    socket.on('entity:downvote-related-resource:done', onSocket);
+    socket.on('entity:merge-entity:done', onSocket);
+    socket.on('entity:upvote-related-resource:done', onSocket);
+
+    // $scope.syncGraph();
+    $log.log('RelatedItemsCtrl -> setRelatedItems - items', relatedItems.result.items);
+    $scope.setRelatedItems(relatedItems.result.items);
+
+    if ($stateParams.ids || $stateParams.query || ~~!specials.indexOf('syncGraph')) $scope.syncGraph();
+  })
+  .controller('ResourceContextCtrl', function (
+    $scope, $log, $stateParams, relatedModel,
+    relatedVizFactory, relatedFactory, socket,
+    EVENTS, $controller, ResourceService
+  ) {
     $scope.currentTab = $scope.item.resource.iiif_url ? 'resource-image' : 'related-resource';
 
-    $controller('RelatedItemsCtrl', {
+    $controller('RelatedResourceItemsCtrl', {
       $scope: $scope,
       $log: $log,
       $stateParams: $stateParams,
-      $filter: $filter,
-      specials: specials,
-      relatedItems: relatedItems,
       relatedModel: relatedModel,
       relatedVizFactory: relatedVizFactory,
       relatedFactory: relatedFactory,
       socket: socket,
-      EVENTS: EVENTS
+      EVENTS: EVENTS,
+      ResourceService
     });
 
     $scope.selectTab = function (tabName) {
