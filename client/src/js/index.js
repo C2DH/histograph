@@ -106,7 +106,9 @@ require('./components/resource.js')
 require('./components/entity.js')
 require('./components/entity-card.js')
 
+require('./services/graphql.js')
 require('./services/entity.js')
+require('./services/resource.js')
 
 require('./controllers/core.js')
 require('./controllers/filters.js')
@@ -134,6 +136,7 @@ require('./controllers/changes-history.js')
 require('./controllers/merge-entities.js')
 require('./controllers/tag-documents.js')
 require('./controllers/new-search.js')
+require('./controllers/related.js')
 
 // modal controllers. templates in templates/modal
 require('./controllers/modals/contribute.js')

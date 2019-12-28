@@ -5,6 +5,7 @@ const _ = require('lodash')
 const socketIo = require('socket.io')
 const path = require('path')
 const requireAll = require('require-all')
+const { ApolloServer } = require('apollo-server-express')
 
 const auth = require('./auth')
 const settings = require('./settings')
@@ -390,6 +391,11 @@ apiRouter.use('/entity', require('./lib/endpoints/public/entity'))
 apiRouter.use('/suggest', require('./lib/endpoints/public/suggest'))
 apiRouter.use('/explorer', require('./lib/endpoints/public/explorer'))
 apiRouter.use('/actions', require('./lib/endpoints/public/actions'))
+
+const graphqlDefinitions = require('./lib/repository/graphql')
+
+const apollo = new ApolloServer(graphqlDefinitions);
+apollo.applyMiddleware({ app, path: '/api/graphql' })
 
 apiRouter.route(/\/.+/)
   .get((req, res, next) => {

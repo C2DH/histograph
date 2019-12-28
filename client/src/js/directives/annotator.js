@@ -48,8 +48,10 @@ angular.module('histograph')
           const paths = [
             `${attrs.field}.${language}`,
             `props.${attrs.field}_${language}`,
+            `${attrs.field}_${language}`,
             `${attrs.field}.${fallbackLanguage}`,
             `props.${attrs.field}_${fallbackLanguage}`,
+            `${attrs.field}_${fallbackLanguage}`,
           ]
           const content = paths.reduce((c, path) => {
             if (c !== undefined) return c

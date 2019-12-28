@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash'
+import { withStyles, theme } from '../styles'
 
 const isTimelineEnabledForUrl = urlPath => !urlPath.startsWith('/actions/')
 
@@ -1247,6 +1248,22 @@ angular.module('histograph')
     A generic controller for every relatedItem
   */
   .controller('RelatedItemsCtrl', function ($scope, $log, $stateParams, $filter, specials, relatedItems, relatedModel, relatedVizFactory, relatedFactory, socket, EVENTS) {
+    withStyles($scope, {
+      resourceItem: {
+        display: 'flex',
+        flexBasis: '33.3%',
+        padding: theme.units(0.5)
+      },
+      relatedResourcesContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        height: '100%'
+      },
+      moreButton: {
+        marginBottom: theme.units(4)
+      }
+    })
+
     $scope.totalItems = relatedItems.info.total_items;
     $scope.limit = relatedItems.info.limit;
     $scope.offset = relatedItems.info.offset;
@@ -1355,22 +1372,23 @@ angular.module('histograph')
 
     if ($stateParams.ids || $stateParams.query || ~~!specials.indexOf('syncGraph')) $scope.syncGraph();
   })
-
-  .controller('ResourceContextCtrl', function ($scope, $log, $stateParams, $filter, specials, relatedItems, relatedModel, relatedVizFactory, relatedFactory, socket, EVENTS, $controller) {
+  .controller('ResourceContextCtrl', function (
+    $scope, $log, $stateParams, relatedModel,
+    relatedVizFactory, relatedFactory, socket,
+    EVENTS, $controller, ResourceService
+  ) {
     $scope.currentTab = $scope.item.resource.iiif_url ? 'resource-image' : 'related-resource';
 
-    $controller('RelatedItemsCtrl', {
+    $controller('RelatedResourceItemsCtrl', {
       $scope: $scope,
       $log: $log,
       $stateParams: $stateParams,
-      $filter: $filter,
-      specials: specials,
-      relatedItems: relatedItems,
       relatedModel: relatedModel,
       relatedVizFactory: relatedVizFactory,
       relatedFactory: relatedFactory,
       socket: socket,
-      EVENTS: EVENTS
+      EVENTS: EVENTS,
+      ResourceService
     });
 
     $scope.selectTab = function (tabName) {
