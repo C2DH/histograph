@@ -88,19 +88,17 @@ module.exports = {
   /*
     Available params are limit, offset, order by.
   */
-  getMany: function(params, next) {
+  getMany: (params, next) => {
     models.getMany({
       queries: {
         count_items: rQueries.count_resources,
         items: rQueries.get_resources
       },
-      params: params
-    }, function (err, results) {
-      if(err)
-        next(err)
-      else
-        next(null, module.exports.normalize(results.items, params), results.count_items);
-    });
+      params
+    }, (err, results) => {
+      if (err) next(err)
+      else next(null, module.exports.normalize(results.items, params), results.count_items)
+    })
   },
   /*
     Get annotated text

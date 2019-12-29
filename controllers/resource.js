@@ -123,9 +123,11 @@ module.exports = function(io){
         form.params.topicModellingScoresLowerThreshold = parseFloat(form.params.topicModellingScoresLowerThreshold)
       }
 
-      if (form.params.keywords) {
-        const keywords = form.params.keywords.split(',').map(decodeURIComponent)
-        form.params.fullTextQuery = keywords.map(kw => `"${kw}"`).join(' AND ')
+      if (form.params.keywords || form.params.keyword) {
+        const keywords = form.params.keywords
+          ? form.params.keywords.split(',').map(decodeURIComponent)
+          : [decodeURIComponent(form.params.keyword)]
+        form.params.fullTextQuery = keywords.join(' AND ')
         const { language = 'en' } = req.query
         form.params.fullTextIndex = `text_${language}`
       }

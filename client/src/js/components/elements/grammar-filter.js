@@ -45,13 +45,16 @@ const template = /* html */ `
 function controller($scope) {
   $scope.uid = $scope.id
 
-  $scope.$watch('value', v => {
+  const update = v => {
     const selectionLabel = $scope.choices
       .filter(({ value }) => value === v)
       .map(({ label }) => label)[0]
     $scope.selectionLabel = selectionLabel === undefined
       ? '' : selectionLabel
-  })
+  }
+
+  $scope.$watch('value', update)
+  $scope.$watch('choices', () => update($scope.value))
 
   $scope.setChoice = item => {
     const { value } = item
