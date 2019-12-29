@@ -30,6 +30,7 @@
     "angular-ui-router": "0.2.15",
     "apollo-cache-inmemory": "^1.6.5",
     "apollo-client": "^2.6.8",
+    "apollo-link": "^1.2.13",
     "apollo-link-http": "^1.5.16",
     "auth0-js": "9.11.3",
     "bootstrap": "^3.3.4",
