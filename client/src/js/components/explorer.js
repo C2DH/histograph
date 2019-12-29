@@ -34,8 +34,8 @@ const TypeToUnits = {
   bar: 1
 }
 
-const gearIconSize = '2em'
-const gearIconMarginPadding = '0.2em'
+const overlayIconSize = '2em'
+const overlayIconMarginPadding = '0.2em'
 
 const styles = {
   tooltip: {
@@ -68,8 +68,8 @@ const styles = {
       opacity: 0.3,
       position: 'absolute',
       border: 'none',
-      margin: gearIconMarginPadding,
-      padding: gearIconMarginPadding,
+      margin: overlayIconMarginPadding,
+      padding: overlayIconMarginPadding,
       // marginRight: '1em',
       outline: 'none',
       display: 'none',
@@ -79,9 +79,9 @@ const styles = {
         opacity: 1,
       },
       '& .fa': {
-        width: gearIconSize,
-        height: gearIconSize,
-        lineHeight: gearIconSize
+        width: overlayIconSize,
+        height: overlayIconSize,
+        lineHeight: overlayIconSize
       }
     }
   },
@@ -99,7 +99,7 @@ const styles = {
     width: '100%',
     height: '100%',
     flexDirection: 'row'
-  }
+  },
 }
 
 /**

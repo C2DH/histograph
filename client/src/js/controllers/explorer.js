@@ -23,6 +23,13 @@ const styles = {
       width: '100%'
     }
   },
+  flex: {
+    display: 'flex',
+  },
+  graphHeader: {
+    display: 'flex',
+    justifyContent: 'space-between'
+  },
   graphFooter: {
     display: 'flex',
     justifyContent: 'space-between'
@@ -41,7 +48,8 @@ const styles = {
   },
   barZoomLabel: {
     lineHeight: '1em',
-    margin: [['auto', 0]]
+    margin: [['auto', 0]],
+    fontSize: '11px',
   },
   container: {
     display: 'flex',
@@ -72,6 +80,13 @@ const styles = {
     flex: '1 1 75%',
     // flexGrow: 1,
     // overflowY: 'scroll',
+    margin: '0 1em 0 1em',
+  },
+  explorerMainPanel: {
+    display: 'flex',
+    alignContent: 'stretch',
+    flexDirection: 'column',
+    flex: '1 1 75%',
     margin: '1em 1em 0 1em',
   },
   button: {
@@ -85,18 +100,48 @@ const styles = {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    margin: [[0, '1em']],
     '& span': {
       margin: [[0, '.3em']]
     },
     '& input': {
       margin: [[0, '.3em']]
     },
+    fontSize: '11px',
   },
   binMethod: {
     marginRight: '1em',
+  },
+  tooltipBody: {
+    '& ul': {
+      margin: 0,
+      padding: 0,
+      listStyleType: 'none',
+      textAlign: 'left'
+    }
+  },
+  resourcesPanelExplainer: {
+    marginTop: theme.units(1),
+    borderTop: '1px solid #eee'
+  },
+  explainerBody: {
+    marginTop: theme.units(1),
+    marginLeft: theme.units(2.6),
+    display: 'flex',
+    flexDirection: 'row',
+    '& div': {
+      margin: [[0, theme.units(0.2)]]
+    }
   }
 }
+
+const ScaleTooltipBody = /* html */ `
+<p>
+  Scale explorable charts of the same kind 
+  to the maximum value. For example, scale all
+  keyword frequency charts to the maximum frequency
+  of all keywords. 
+</p>
+`
 
 function toQueryParameters(o = {}) {
   return Object.keys(o).reduce((acc, key) => {
@@ -120,6 +165,28 @@ const BinMethods = [
   { label: 'Month', value: 'month' },
 ]
 
+const DefaultSubfilterOption = {
+  value: undefined,
+  label: 'all resources in the bin'
+}
+
+const SubfilterLabelBuilders = {
+  keywordPresenceFrequency: value => `resources that mention "${value.keyword}"`
+}
+
+const filtersToSubfilterOptions = filters => Object
+  .keys(filters || {})
+  .sort()
+  .map(key => {
+    const [filterType] = key.split('-')
+    const value = filters[key]
+    const builder = SubfilterLabelBuilders[filterType]
+    return builder
+      ? { label: builder(value), value: key }
+      : undefined
+  })
+  .filter(item => item !== undefined)
+
 angular.module('histograph')
   .controller('ExplorerCtrl', function (
     $scope, $log, $location,
@@ -131,6 +198,11 @@ angular.module('histograph')
     $scope.uid = $scope.$id
 
     $scope.busyCounter = []
+
+    $scope.scaleTooltipBody = ScaleTooltipBody
+    $scope.resourcesSubfilterOptions = [
+      DefaultSubfilterOption
+    ]
 
     // NOTE: a workaround to disable ruler (see filters.js). Ugly but saves from refactoring.
     $scope.rulerDisabled = true
@@ -180,7 +252,8 @@ angular.module('histograph')
         editPlotId,
         explorables,
         scaleKw,
-        binMethod
+        binMethod,
+        resourcesSubfilter
       } = $location.search()
       const parsedFilters = isEmpty(filters) ? undefined : JSON.parse(atob(filters))
       const parsedExplorables = isEmpty(explorables) ? [] : explorables.split(',')
@@ -195,7 +268,8 @@ angular.module('histograph')
         editPlotId,
         explorables: parsedExplorables,
         scaleKeywordPlots: scaleKw,
-        binMethod
+        binMethod,
+        resourcesSubfilter
       }
     }
 
@@ -221,6 +295,7 @@ angular.module('histograph')
     $scope.$watch('params.explorables', () => parametersToUrl(true), true)
     $scope.$watch('params.scaleKeywordPlots', () => parametersToUrl())
     $scope.$watch('params.binMethod', () => parametersToUrl())
+    $scope.$watch('params.resourcesSubfilter', () => parametersToUrl())
     parametersFromUrl()
 
     $scope.setBinsCount = val => {
@@ -297,6 +372,15 @@ angular.module('histograph')
 
       if (!bins) return
 
+      const subfilterOptions = filtersToSubfilterOptions($scope.params.filters)
+      $scope.resourcesSubfilterOptions = [DefaultSubfilterOption]
+        .concat(subfilterOptions)
+
+      const subfilterOptionsValues = $scope.resourcesSubfilterOptions.map(({ value }) => value)
+      if (!subfilterOptionsValues.includes($scope.params.resourcesSubfilter)) {
+        $scope.params.resourcesSubfilter = undefined
+      }
+
       allPlotsIds.forEach(id => {
         const { language } = $scope
         const queryParams = assignIn({
@@ -335,18 +419,29 @@ angular.module('histograph')
       }
     }, true)
 
-    $scope.$watch('selectedItemMeta', selectedMeta => {
-      if (selectedMeta === undefined) {
-        $scope.resourcesSearchParams = undefined
-      } else {
-        $scope.resourcesSearchParams = {
-          from_uuid: selectedMeta.firstResourceUuid,
-          to_uuid: selectedMeta.lastResourceUuid,
-          from: selectedMeta.minStartDate.replace(/T.*$/, ''),
-          to: moment(clone(selectedMeta.maxEndDate)).add(1, 'days').toISOString().replace(/T.*$/, ''),
-        }
-      }
-    }, true)
+    $scope.$watch(
+      () => ({
+        selectedMeta: $scope.selectedItemMeta,
+        resourcesSubfilterPart: get($scope.params.filters, $scope.params.resourcesSubfilter)
+      }),
+      ({ selectedMeta, resourcesSubfilterPart }) => {
+        const metaPart = selectedMeta === undefined
+          ? {}
+          : {
+            from_uuid: selectedMeta.firstResourceUuid,
+            to_uuid: selectedMeta.lastResourceUuid,
+            from: selectedMeta.minStartDate.replace(/T.*$/, ''),
+            to: moment(clone(selectedMeta.maxEndDate)).add(1, 'days').toISOString().replace(/T.*$/, ''),
+          }
+
+        $scope.resourcesSearchParams = Object.assign(
+          {},
+          metaPart,
+          resourcesSubfilterPart
+        )
+      },
+      true
+    )
 
     $scope.loadResources = params => {
       if (isEqual(Object.keys(params), ['limit', 'offset'])) return Promise.resolve(EmptyResourceResponse)
@@ -427,4 +522,8 @@ angular.module('histograph')
     }), ({ isOn, ids }) => {
       $scope.availableMaxScaledIds = isOn ? ids : []
     }, true);
+
+    $scope.onSubfilterValueChanged = value => {
+      $scope.params.resourcesSubfilter = value
+    }
   })

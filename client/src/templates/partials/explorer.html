@@ -21,7 +21,39 @@
     </div>
 
     <!-- Explorer pane -->
-    <div class="{{classes.containerChild}} {{classes.mainPanel}}">
+    <div class="{{classes.containerChild}} {{classes.explorerMainPanel}}">
+
+      <div class="{{classes.graphHeader}}">
+        <div class="{{classes.flex}}">
+          <div class="dropdown {{classes.binMethod}}">
+            <div class="btn-group" uib-dropdown is-open="false">
+              <button id="bin-method-{{uid}}" type="button" class="btn btn-default btn-line" uib-dropdown-toggle>
+                <span>Aggregate by</span> <i>{{getBinMethodLabel(params.binMethod)}}</i> <span class="caret"></span>
+              </button>
+              <ul class="uib-dropdown-menu dropdown-menu" role="menu" aria-labelledby="bin-method-{{uid}}">
+                <li ng-repeat="item in binMethods">
+                  <a ng-click='setBinMethod(item.value)'>{{ item.label }}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- toggle scaling -->
+          <div class="{{classes.scaleToggle}}">
+            <input type="checkbox" ng-model="params.scaleKeywordPlots">
+            <span>scale to max</span>
+            <span class="fa fa-question-circle" 
+                uib-tooltip-html="scaleTooltipBody"
+                tooltip-class="{{classes.tooltipBody}}"
+                tooltip-append-to-body="false"
+                tooltip-placement="right-top">
+          </div>
+        </div>
+        <div class="{{classes.flex}}">
+          <div class="sans-serif {{classes.barZoomLabel}}" ng-if="itemsPerBin > 0">
+            <b>1</b> bin = <b>{{itemsPerBin}}</b> resource{{ itemsPerBin === 1 ? '' : 's'}}
+          </div>                      
+        </div>
+      </div>
 
       <!-- Explorer graph -->
       <div hi-explorer="explorerConfig"
@@ -54,26 +86,9 @@
             </div>
           </div>
           
-          <!-- toggle scaling -->
-          <div class="{{classes.scaleToggle}}">
-            <input type="checkbox" ng-model="params.scaleKeywordPlots">
-            <span>Scale keywords to maximum</span>
-          </div>
         </div>
         <div class="{{classes.graphFooterSection}}">
           <div>
-              <div class="dropdown {{classes.binMethod}}">
-                <div class="btn-group" uib-dropdown is-open="false">
-                  <button id="bin-method-{{uid}}" type="button" class="btn btn-default btn-line" uib-dropdown-toggle>
-                    <span>Aggregate by</span> <i>{{getBinMethodLabel(params.binMethod)}}</i> <span class="caret"></span>
-                  </button>
-                  <ul class="uib-dropdown-menu dropdown-menu" role="menu" aria-labelledby="bin-method-{{uid}}">
-                    <li ng-repeat="item in binMethods">
-                      <a ng-click='setBinMethod(item.value)'>{{ item.label }}</a>
-                    </li>
-                  </ul>
-                </div>
-              </div>      
           </div>
           <div>
             <button class="btn btn-default {{classes.zoomInButton}}" 
@@ -83,12 +98,18 @@
               <i class="fa fa-search-plus"></i> Zoom into current bin
             </button>
           </div>
-          <div class="sans-serif {{classes.barZoomLabel}}" ng-if="itemsPerBin > 0">
-            1 bin = {{itemsPerBin}} resource{{ itemsPerBin === 1 ? '' : 's'}}
-          </div>
         </div>
       </div>
   
+      <div class="{{classes.resourcesPanelExplainer}}">
+        <div class="{{classes.explainerBody}}">
+          Displaying 
+          <hi-grammar-filter choices="resourcesSubfilterOptions"
+                             value="params.resourcesSubfilter"
+                             on-changed="onSubfilterValueChanged(value)">
+          </hi-grammar-filter>:
+        </div>
+      </div>
       <!-- Resources list -->
       <div hi-resources-panel
            load-resources="loadResources"
