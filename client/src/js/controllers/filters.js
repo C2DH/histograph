@@ -247,7 +247,7 @@ angular.module('histograph')
 
     $scope.$watch('filters.keywords', (keywords, oldKeywords) => {
       if (isEmpty(keywords) && isEmpty(oldKeywords)) return
-      const kw = !isEmpty(keywords) ? singleValueAsList(keywords).map(encodeURIComponent).join(',') : undefined
+      const kw = !isEmpty(keywords) ? singleValueAsList(keywords).join(',') : undefined
       const searchParams = omitBy(assignIn({}, $location.search(), { keywords: kw }), isUndefined)
       $location.search(searchParams)
     }, true)

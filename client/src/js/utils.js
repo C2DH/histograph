@@ -2,7 +2,8 @@ import {
   get, identity, isUndefined,
   assignIn, isString, isEmpty,
   isArray, clone, includes,
-  concat, uniq, isNil, head
+  concat, uniq, isNil, head,
+  isEqual
 } from 'lodash'
 
 import lucene from 'lucene'
@@ -24,11 +25,16 @@ export function bindStateChangeToObject($scope, $location, objectName, parameter
         ? defaultValue : deserialize(serializedValue)
       return acc
     }, {})
-    $scope[objectName] = newObject
+    const oldObject = $scope[objectName]
+
+    if (!isEqual(newObject, oldObject)) {
+      $scope[objectName] = newObject
+    }
   }
   $scope.$on('$locationChangeSuccess', locationChangeHandler)
 
-  $scope.$watch(objectName, obj => {
+  $scope.$watch(objectName, (obj) => {
+
     const newSearchParams = parameters.reduce((acc, p) => {
       const params = isString(p) ? [p] : p
       const urlParameterName = get(params, 0)
@@ -52,12 +58,14 @@ export function bindStateChangeToObject($scope, $location, objectName, parameter
 
 export function serializeStringList(l) {
   if (isEmpty(l)) return ''
-  return l.map(encodeURIComponent).join(',')
+  // return l.map(encodeURIComponent).join(',')
+  return l.join(',')
 }
 
 export function deserializeStringList(l) {
   if (isEmpty(l)) return []
-  return l.split(',').map(encodeURIComponent)
+  // return l.split(',').map(decodeURIComponent)
+  return l.split(',')
 }
 
 export function prepareApiQueryParameters(obj) {
