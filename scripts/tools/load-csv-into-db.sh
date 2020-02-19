@@ -30,7 +30,7 @@ $DOCKER_EXEC \
   run -it --rm \
   --volume=$DB_ROOT:/data \
   --volume=$CSV_ROOT:/csvs \
-  neo4j \
+  neo4j:3.5 \
   neo4j-admin import \
   --nodes "/csvs/headers/entity.csv,/csvs/entity.csv" \
   --nodes "/csvs/headers/resource.csv,$RESOURCE_FILES" \
