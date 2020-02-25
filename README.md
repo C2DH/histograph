@@ -72,6 +72,53 @@ Where:
 
 Ingestion pipeline uses a `resource_creator` tool which is bundled as a docker image. The image is rather big (almost 4Gb) because it includes a 1Gb pytorch dependency and pretty big NER/NED models. Plan your free space accordingly.
 
+## Topic modelling
+
+Custom topic modelling scores can be associated with documents in Histograph. To load topic modelling scores first topics need to be created. Afterwards scores for all topics can be loaded for every document. The Python code below can be used as a starting point of topic modelling ingestion script:
+
+```python
+import requests, json
+
+API_KEY = '<api_key_from_the_top_right_menu_in_histograph>'
+HISTOGRAPH_API_URL = 'http://localhost:8000/api'
+
+headers = { 'Authorization': f'Bearer {API_KEY}', 'Content-Type': 'application/json'}
+
+# add topics
+topic_id = 0
+payload = {
+    "label": "topic one",
+    "keywords": ["one", "keyword"]
+}
+
+response = requests.put(f'{HISTOGRAPH_API_URL}/v1/topics/default/{topic_id}', headers=headers, data=json.dumps(payload))
+print(response.status_code, response.text)
+
+topic_id = 1
+payload = {
+    "label": "topic two",
+    "keywords": ["two", "keyword"]
+}
+
+response = requests.put(f'{HISTOGRAPH_API_URL}/v1/topics/default/{topic_id}', headers=headers, data=json.dumps(payload))
+print(response.status_code, response.text)
+
+# add topics scores
+
+document_slug = 'book_SIX_CHAPTER_XXV'
+
+payload = {
+    "scores": [0.2, 0.7]
+}
+
+response = requests.put(
+    f'{HISTOGRAPH_API_URL}/v1/resources/{document_slug}/topic-modelling-scores',
+    headers=headers,
+    data=json.dumps(payload)
+)
+print(response.status_code, response.text)
+```
+
 # Architecture
 
 Histograph is made up of several components:
