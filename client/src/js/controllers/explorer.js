@@ -432,6 +432,7 @@ angular.module('histograph')
             to_uuid: selectedMeta.lastResourceUuid,
             from: selectedMeta.minStartDate.replace(/T.*$/, ''),
             to: moment(clone(selectedMeta.maxEndDate)).add(1, 'days').toISOString().replace(/T.*$/, ''),
+            language: $scope.language
           }
 
         $scope.resourcesSearchParams = Object.assign(
