@@ -425,15 +425,20 @@ angular.module('histograph')
         resourcesSubfilterPart: get($scope.params.filters, $scope.params.resourcesSubfilter)
       }),
       ({ selectedMeta, resourcesSubfilterPart }) => {
-        const metaPart = selectedMeta === undefined
+        let metaPart = selectedMeta === undefined
           ? {}
           : {
-            from_uuid: selectedMeta.firstResourceUuid,
-            to_uuid: selectedMeta.lastResourceUuid,
+            // from_uuid: selectedMeta.firstResourceUuid,
+            // to_uuid: selectedMeta.lastResourceUuid,
             from: selectedMeta.minStartDate.replace(/T.*$/, ''),
-            to: moment(clone(selectedMeta.maxEndDate)).add(1, 'days').toISOString().replace(/T.*$/, ''),
+            to: moment(clone(selectedMeta.maxStartDate)).add(1, 'days').toISOString().replace(/T.*$/, ''),
             language: $scope.language
           }
+
+        const refData = getReferenceData() || {}
+        const plotData = refData.data || {}
+        const val = plotData[$scope.params.step]
+        if (val == null || val === 0 || val[0] === 0) metaPart = {}
 
         $scope.resourcesSearchParams = Object.assign(
           {},

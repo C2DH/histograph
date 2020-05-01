@@ -147,6 +147,7 @@ module.exports = {
     async.series([
       function count_items (callback) {
         var query = parser.agentBrown(options.queries.count_items, options.params);
+        // console.log('***', query, options.params)
         neo4j.query(query, options.params, function (err, result) {
           if(err) {
             callback(err);
